@@ -40,13 +40,13 @@ if (isset($_GET["message"])) {
 		echo '<table cellspacing="0" class="admintable">'."\n";
 		echo "<tr>\n";
 		echo "<td>".$gettext->gettext("Section")."</td>\n";
-		echo "<td>".$gettext->gettext("Active")."</td>\n";
+		echo "<td width=\"10%\">".$gettext->gettext("Active")."</td>\n";
 		if ($edit) {
-			echo "<td>&nbsp;</td>\n";
-			echo "<td>&nbsp;</td>\n";
+			echo "<td width=\"10%\">&nbsp;</td>\n";
+			echo "<td width=\"10%\">&nbsp;</td>\n";
 		}
 		if ($remove)
-			echo "<td>&nbsp;</td>\n";
+			echo "<td width=\"10%\">&nbsp;</td>\n";
 		echo "</tr>\n";
 		
 		$currow = "row1";
@@ -56,9 +56,9 @@ if (isset($_GET["message"])) {
 		foreach ($sections as $one_section) {
 			echo "<tr class=\"$currow\">\n";
 			echo "<td>".$one_section->display_name."</td>\n";
-			echo "<td>".($one_section->active == 1?$gettext->gettext("True"):$gettext->gettext("False"))."</td>\n";
+			echo "<td width=\"10%\">".($one_section->active == 1?$gettext->gettext("True"):$gettext->gettext("False"))."</td>\n";
 			if ($edit) {
-				echo "<td>";
+				echo "<td width=\"10%\">";
 				if ($count > 1 && count($sections) > 1) {
 					echo "<a href=\"movesection.php?direction=up&section_id=".$one_section->section_id."\"><img src=\"../images/arrow-u.png\" alt=\"".$gettext->gettext("Up")."\" border=\"0\" /></a> ";
 				}
@@ -69,10 +69,10 @@ if (isset($_GET["message"])) {
 					echo "&nbsp;";
 				}
 				echo "</td>\n";
-				echo "<td><a href=\"editsection.php?section_id=".$one_section->section_id."&parent_id=".$one_section->parent_id."\">".$gettext->gettext("Edit")."</a></td>\n";
+				echo "<td width=\"10%\"><a href=\"editsection.php?section_id=".$one_section->section_id."&parent_id=".$one_section->parent_id."\">".$gettext->gettext("Edit")."</a></td>\n";
 			}
 			if ($remove)
-				echo "<td><a href=\"deletesection.php?section_id=".$one_section->section_id."\" onclick=\"return confirm('".$gettext->gettext("Are you sure you want to delete?")."');\">".$gettext->gettext("Delete")."</a></td>\n";
+				echo "<td width=\"10%\"><a href=\"deletesection.php?section_id=".$one_section->section_id."\" onclick=\"return confirm('".$gettext->gettext("Are you sure you want to delete?")."');\">".$gettext->gettext("Delete")."</a></td>\n";
 			echo "</tr>\n";
 
 			($currow=="row1"?$currow="row2":$currow="row1");

@@ -117,7 +117,7 @@ while (($file = $ls->read()) != "") {
 }
 
 #Setup the object sent to modules
-$modulecmsobj->db = &$newdb;
+$modulecmsobj->db = &$dbnew;
 $modulecmsobj->config = &$config;
 
 #Setup hash for storing all modules

@@ -12,9 +12,9 @@ $gettext->reset();
 <a href="listtemplates.php"><?=$gettext->gettext("Template Management")?></a>
 <a href="listusers.php"><?=$gettext->gettext("User Management")?></a>
 <a href="listgroups.php"><?=$gettext->gettext("Group Management")?></a>
+<a href="modules.php"><?=$gettext->gettext("Module Management")?></a>
 <a href="adminlog.php"><?=$gettext->gettext("Admin Log")?></a>
 <a href="editprefs.php"><?=$gettext->gettext("User Preferences")?></a>
-<a href="modules.php"><?=$gettext->gettext("Module Admin")?></a>
 <a href="tools.php"><?=$gettext->gettext("Tools")?></a>
 <a href="../index.php" target="_new"><?=$gettext->gettext("Show Site")?></a>
 <a href="logout.php"><?=$gettext->gettext("Logout")?></a>
