@@ -51,5 +51,27 @@ cms_mapi_register_executeadmin_function($module_name, 'bookmarks_module_executea
 cms_mapi_register_help_function($module_name, 'bookmarks_module_help');
 cms_mapi_register_about_function($module_name, 'bookmarks_module_about');
 
+function bookmarks_module_about()
+{
+	?>
+	<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
+	<dl>
+		<dt>Version: 0.1</dt>
+		<dd>Initial release. The code framework is based on the News module by Robert
+			Campbell &lt;rob@techcom.dydnsns.org&gt;</dd>
+		<dt>Version: 0.9</dt>
+			<dd>First release of code to rest of world!</dd>
+		<dt>Version: 0.9.1</dt>
+			<dd>Bug fixes to help, column handling and the admin list.</dd>
+		<dt>Version: 1.0</dt>
+			<dd>Support email notifications from the submit bookmarks form. Addded delete option.
+			Admin list now displays bookmarks that are not attached to any category.<br />
+			Now required CommonCode 1.1<br />
+			Tidied up code.<br>
+			</dd>
+	</dl>
+	<?php
+}
+
 # vim:ts=4 sw=4 noet
 ?>

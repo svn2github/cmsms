@@ -500,35 +500,9 @@ function bookmarks_module_frontend_display_form($cms, $module_id, $return_id, $p
 	$categories = commoncode_module_get_categories($db, $categories_table_name);
 	$bookmark = bookmarks_module_admin_get_bookmark($db, -1);
 
-	$include_back_button = false;
-	if(isset($params[$id.'include_back_button']))
-	{
-		$include_back_button = settype($params[$id.'include_back_button'], 'boolean');
-	}
-	else if(isset($params['include_back_button']))
-	{
-		$include_back_button = settype($params['include_back_button'], 'boolean');
-	}
-
-	$email_to = '';
-	if(isset($params[$id.'email_to']))
-	{
-		$email_to = $params[$id.'email_to'];
-	}
-	else if(isset($params['email_to']))
-	{
-		$email_to = $params[$id.'email_to'];
-	}
-
-	$email_from = '';
-	if(isset($params[$id.'email_from']))
-	{
-		$email_from = $params[$id.'email_from'];
-	}
-	else if(isset($params['email_from']))
-	{
-		$email_from = $params[$id.'email_from'];
-	}
+	$include_back_button = getParamValue('include_back_button', $params, false);
+	$email_to = getParamValue('email_to', $params);
+	$email_from = getParamValue('email_from', $params);
 
 	$button_text = 'Add';
 	if($bookmark_id > 0)

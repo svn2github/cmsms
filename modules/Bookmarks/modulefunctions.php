@@ -185,64 +185,14 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 		return;
 	}
 
-	$type = "text";
-	if(isset($params[$id."type"]))
+	$type = getParamValue('type', $params, 'text');
+	$display_approved = getParamValue('display_approved', $params, false);
+	$show_category_with_title = getParamValue('show_category_with_title', $params);
+	$category = getParamValue('category', $params);
+	$number = getParamValue('number', $params);
+	$order_by_date = getParamValue('order_by_date', $params, false);
+	if($order_by_date)
 	{
-		$type = $params[$id."type"];
-	}
-	else if(isset($params["type"]))
-	{
-		$type = $params["type"];
-	}
-
-
-	$display_approved = false;
-	if(isset($params[$id."display_approved"]))
-	{
-		$display_approved = settype($params[$id."display_approved"], 'boolean');
-	}
-	else if(isset($params["display_approved"]))
-	{
-		$display_approved = settype($params["display_approved"], 'boolean');
-	}
-
-
-	$show_category_with_title = true;
-	if(isset($params[$id."show_category_with_title"]))
-	{
-		$show_category_with_title = settype($params[$id."show_category_with_title"], 'boolean');
-	}
-	else if(isset($params["show_category_with_title"]))
-	{
-		$show_category_with_title = settype($params["show_category_with_title"], 'boolean');
-	}
-
-	$category = '';
-	if(isset($params[$id."category"]))
-	{
-		$category = $params[$id."category"];
-	}
-	else if(isset($params["category"]))
-	{
-		$category = $params["category"];
-	}
-
-	$number = '';
-	if(isset($params[$id."number"]))
-	{
-		$number = $params[$id."number"];
-	}
-	else if(isset($params["number"]))
-	{
-		$number = $params["number"];
-	}
-
-
-	$order_by_date = false;
-	if(isset($params["order_by_date"]) && ($params["order_by_date"] == 1 || $params["order_by_date"] == true)
-		|| isset($params[$id."order_by_date"]) && ($params[$id."order_by_date"] == 1 || $params[$id."order_by_date"] == true))
-	{
-		$order_by_date = true;
 		$show_category_with_title = false;
 	}
 
@@ -356,11 +306,7 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 		}
 		else
 		{
-			$number_of_columns = 3;
-			if (!empty($params["columns"]))
-			{
-				$number_of_columns = $params["columns"];
-			}
+			$number_of_columns = getParamValue('columns', $params, 3);
 
 			$num_rows = $dbresult->RecordCount();
 			$rows_per_column = intval($num_rows / $number_of_columns) + 10; /* 10 is a fudge factor to make it look better! */
@@ -600,27 +546,6 @@ and display bookmarks.  The code would look something like:
 </tr>
 </table>
 <?php
-}
-
-function bookmarks_module_about()
-{
-	?>
-	<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
-	<dl>
-		<dt>Version: 0.1</dt>
-		<dd>Initial realase. The code framework is based on the News module by Robert
-			Campbell &lt;rob@techcom.dydnsns.org&gt;</dd>
-		<dt>Version: 0.9</dt>
-			<dd>First release of code to rest of world!</dd>
-		<dt>Version: 0.9.1</dt>
-			<dd>Bug fixes to help, column handling and the admin list.</dd>
-		<dt>Version: 1.0</dt>
-			<dd>Support email notifications from the submit bookmarks form. Addded delete option.
-			Admin list now displays bookmarks that are not attached to any category.
-			Tidied up code.<br>
-			</dd>
-	</dl>
-	<?php
 }
 
 # vim:ts=4 sw=4 noet
