@@ -515,41 +515,85 @@ function bookmarks_module_executeadmin($cms,$module_id)
 
 function bookmarks_module_help(/*$cms*/)
 {
-	?>
-	<h3>What does this do?</h3>
-	<p>Bookmarks is a module for displaying bookmarks on your page. When the
-	module is installed, a Bookmarks admin page is added to the bottom menu
-	that will allow you to manage your bookmarks.</p>
-	<h3>Security</h3>
-	<p>The user must belong to a group with the 'Modify Bookmarks' permission
-	in order to add, edit, or delete Bookmarks entries.</p>
-	<h3>How do I use it?</h3>
-	<p>The easiest way to use it is in conjunction with the cms_module tag.
-	This will insert the module into your template or page anywhere you wish,
-	and display bookmarks.  The code would look something like:
-	<code>{cms_module module="bookmarks" columns="2" category="humour"}</code></p>
-	<h3>What Parameters Exist?</h3>
-	<p>
-	<ul>
-	<li><em>(optional)</em> columns="2" - Number of columns to display the bookmark list in. </li>
-	<li><em>(optional)</em> category="category" - Only display items for that category. Leaving empty, will show all categories</li>
-	<li><em>(optional)</em> show_category_with_title="true" - Display the category at the start of the list</li>
-	<li><em>(optional)</em> display_approved="false" - Display unapproved bookmarks</li>
-	<li><em>(optional)</em> number - set to the number of bookmarks to display</li>
-	<li><em>(optional)</em> type="text" - set to "text" for html display or "rss" for an rss feed</li>
-	<li><em>(optional)</em> order_by_date="false" - set to "true" to order the list of bookmarks by date. If set to true, will turn off show_category_with_title</li>
-	<li><em>(optional)</em> auto_detect_link - set to "true" to output the RSS autodetect &lt;link&gt; element for use in &lt;head&gt;</li>
-	<li><em>(optional)</em> makerssbutton - set to display an RSS image that links to the RSS feed</li>
-	<li><em>(optional)</em> summaries - set to "true" to display the summary information.</li>
-	<li><em>(optional)</em> addform - set to "true" to display a form allowing users to submit bookmarks</li>
-	<li><em>(optional)</em> include_back_button - used with addform=true. When set, will include a back button on the form</li>
-	<li><em>(optional)</em> email_to - used with addform=true. Set to the email address to which email notifications of new bookmarks will be sent</li>
-	<li><em>(optional)</em> email_from - used with addform=true. Set to the email address to be used in the "from" field for email notifications</li>
-
-
-	</ul>
-	</p>
-	<?php
+?>
+<h3>What does this do?</h3>
+<p>Bookmarks is a module for displaying bookmarks on your page. When the
+module is installed, a Bookmarks admin page is added to the bottom menu
+that will allow you to manage your bookmarks.</p>
+<h3>Security</h3>
+<p>The user must belong to a group with the 'Modify Bookmarks' permission
+in order to add, edit, or delete Bookmarks entries.</p>
+<h3>How do I use it?</h3>
+<p>The easiest way to use it is in conjunction with the cms_module tag.
+This will insert the module into your template or page anywhere you wish,
+and display bookmarks.  The code would look something like:
+<code>{cms_module module="bookmarks" columns="2" category="humour"}</code></p>
+<h3>What Parameters Exist?</h3>
+<table border=0 cellpadding=3 cellspacing=0>
+<tr>
+	<td>columns</td>
+	<td>Number of columns to display the bookmark list in. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>category</td>
+	<td>Only display items for that category. Leaving unset, will show all categories. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>show_category_with_title</td>
+	<td> Display the category at the start of the list. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>display_approved</td>
+	<td>Display unapproved bookmarks. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>number</td>
+	<td>Set to the maximum number of bookmarks to display. Most useful when used with
+	order_by_date. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>Set to "text" for html display or "rss" for an rss feed. Default if not set is
+	"text". <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>order_by_date</td>
+	<td>Set to "true" to order the list of bookmarks by date. If set to true, will turn
+	off show_category_with_title. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>auto_detect_link</td>
+	<td>set to "true" to output the RSS autodetect &lt;link&gt; element for use in
+	&lt;head&gt;. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>makerssbutton</td>
+	<td>Set to display an RSS image that links to the RSS feed. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>summaries</td>
+	<td>Set to "true" to display the summary information. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>addform</td>
+	<td>Set to "true" to display a form allowing users to submit bookmarks. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>include_back_button</td>
+	<td>Used with addform=true. When set, will include a back button on the form. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>email_to</td>
+	<td>Used with addform=true. Set to the email address to which email notifications of
+	new bookmarks will be sent. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>email_from</td>
+	<td>Used with addform=true. Set to the email address to be used in the "from" field
+	for email notifications. <em>(optional)</em></td>
+</tr>
+</table>
+<?php
 }
 
 function bookmarks_module_about()
@@ -564,6 +608,9 @@ function bookmarks_module_about()
 			<dd>First release of code to rest of world!</dd>
 		<dt>Version: 0.9.1</dt>
 			<dd>Bug fixes to help, column handling and the admin list.</dd>
+		<dt>Version: 1.0</dt>
+			<dd>Support email notifications from the submit bookmarks form.<br>
+			Tidied up code.</dd>
 	</dl>
 	<?php
 }
