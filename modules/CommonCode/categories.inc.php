@@ -62,18 +62,6 @@ function commoncode_module_admin_display_category($cms, $module_id, $module_name
 	<tr>
 		<th>Name</th>
 		<th>Order</th>
-
-EOT;
-	if($num_cats > 0)
-	{
-		echo <<<EOT
-		<th>Name</th>
-		<th>Order</th>
-
-EOT;
-	}
-
-	echo <<<EOT
 	</tr>
 	<tr>
 
@@ -89,17 +77,6 @@ EOT;
 	$count = 1;
 	for($i = 0; $i < $num_cats; $i++,$count ++)
 	{
-		if($count >= $rows_per_col)
-		{
-			$count = 1;
-			echo <<<EOT
-	</tr>
-	<tr>
-
-EOT;
-			$padding = 0;
-		}
-
 		if($i < $num_cats)
 		{
 			$category = $categories[$i];
@@ -107,9 +84,11 @@ EOT;
 			$name = (empty($category['category_name']) && $id > 0) ? '== NOT SET ==' : $category['category_name'];
 			$order = $category['category_order'];
 			echo <<<EOT
+	<tr>
 		<td><input type='hidden' name='{$module_id}id[]' value='$id'>
 			<input type='text' name='{$module_id}name[]' value='$name'></td>
 		<td><input type='text' name='{$module_id}order[]' value='$order'></td>
+	</tr>
 
 EOT;
 		}
@@ -117,7 +96,7 @@ EOT;
 	echo <<<EOT
 	</tr>
 	<tr>
-		<td valign='top' colspan='4' align='center'><input type='submit' value='Update Categories'></td>
+		<td valign='top' colspan='2' align='center'><input type='submit' value='Update Categories'></td>
 	</tr>
 	</table>
 
@@ -141,9 +120,9 @@ function commoncode_module_admin_update_categories($cms, $module_id, $categories
 
 	/* @var $db ADOConnection */
 	/* @var $rs ADORecordset */
-	$ids = getRequestValue($module_id.'id');
-	$names = getRequestValue($module_id.'name');
-	$order_bys = getRequestValue($module_id.'order');
+	$ids = get_request_value($module_id.'id');
+	$names = get_request_value($module_id.'name');
+	$order_bys = get_request_value($module_id.'order');
 
 	//$db->debug = true;
 	//DB($ids, '$ids');

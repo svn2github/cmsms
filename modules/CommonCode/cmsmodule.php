@@ -30,7 +30,6 @@ cms_mapi_register_help_function($module_name, 'commoncode_module_help');
 cms_mapi_register_about_function($module_name, 'commoncode_module_about');
 
 // Load functions
-require_once(dirname(__FILE__).'/modulefunctions.php');
 require_once(dirname(__FILE__).'/categories.inc.php');
 
 function commoncode_module_help($cms)
@@ -54,6 +53,7 @@ function commoncode_module_about()
 		Added getParamValue()</dd>
 	<dt>Version: 1.2</dt>
 		<dd>Registered public functions with CMS</dd>
+		<dd>Removed functions that are now in core code.</dd>
 </dl>
 <?php
 }
