@@ -941,6 +941,12 @@ EOT;
 				return;
 			}
 		}
+		elseif($display == 'upcominglist')
+		{
+			$start = date('Y-m-d H:i');
+			$sql .= "$where ($events_table_name.event_date >= '$start') ";
+			$where = ' AND ';
+		}
 		else
 		{
 			if($month != -1)
@@ -1023,7 +1029,7 @@ EOT;
 					}
 					else 
 					{
-						$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'day'=>$day_of_month, 'display'=>'list'), '', true);
+						$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'day'=>$day_of_month, 'display'=>'list', 'summaries'=>true), '', true);
 						$url = str_replace('&amp;', '&', $url);
 						
 						$days[$day_of_month][0] = $url;
@@ -1096,22 +1102,18 @@ EOT;
 					else
 						$event_date_string = strftime($datetime_format, $event_date_time);
 						
-		
-					
-					
-					
-					
-								
+					$summary_string = '';
+					if($summaries)
+						$summary_string = "<p class='calendar-summary'><span class='calendar-summary-title'>Summary: </span>$event_summary</p>";
+						
 					echo <<<EOT
 					<div class='calendar-event' id='$table_id'>
 					<h2>$event_title</h2>
 					<div class='calendar-date'><span class='calendar-date-title'>Date: </span>$event_date_string</div>
-					<p class='calendar-summary'><span class='calendar-summary-title'>Summary: </span>$event_summary</p>
+					$summary_string
 					<p class='calendar-details'><span class='calendar-details-title'>Details: </span>$event_details</p>					
 					</div>
 EOT;
-
-					
 				}
 				
 				if(strstr(basename($_SERVER ['SCRIPT_NAME']), 'index') === false)
@@ -1120,6 +1122,41 @@ EOT;
 				
 					echo <<<EOT
 				<p class='calendar-returnlink'>$link.</p>
+EOT;
+				}
+			}		
+
+		}
+		elseif($display == 'upcominglist')
+		{
+			if($rs->RowCount() > 0)
+			{
+				$event_date_string = strftime($date_format, strtotime($start));
+				echo "<h1>$event_date_string</h1>\n";
+				while($event = $rs->FetchRow())
+				{
+					//debug_display($row, '$row');
+					extract($event);
+				
+					$event_date_time = strtotime($event_date);
+					if(strftime('%H%M', $event_date_time)== '0000')
+						$event_date_string = strftime($date_format, $event_date_time);
+					else
+						$event_date_string = strftime($datetime_format, $event_date_time);
+
+					$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'event_id'=>$event_id, 'display'=>'event'), '', true);
+					$url = str_replace('&amp;', '&', $url);
+					
+					$summary_string = '';
+					if($summaries)
+						$summary_string = "<p class='calendar-summary'><span class='calendar-summary-title'>Summary: </span>$event_summary</p>";
+					
+					echo <<<EOT
+					<div class='calendar-event' id='$table_id'>
+					<h2><a href='$url'>$event_title</a></h2>
+					<div class='calendar-date'><span class='calendar-date-title'>Date: </span>$event_date_string</div>
+					$summary_string					
+					</div>
 EOT;
 				}
 			}		
