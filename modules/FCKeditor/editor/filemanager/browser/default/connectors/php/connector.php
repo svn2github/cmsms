@@ -25,6 +25,7 @@ include('basexml.php') ;
 include('commands.php') ;
 
 // Get the "UserFiles" path.
+/*
 $GLOBALS["UserFilesPath"] = '' ;
 
 if ( isset( $_GET['ServerPath'] ) )
@@ -35,6 +36,10 @@ if ( isset( $_GET['ServerPath'] ) )
 }
 else
 	$GLOBALS["UserFilesPath"] = '/UserFiles/' ;
+*/
+
+include ('../../../../../../../../config.php');
+$GLOBALS['UserFilesPath'] = $config["uploads_path"];
 
 // Map the "UserFiles" path to a local directory.
 //$GLOBALS["UserFilesDirectory"] = GetRootPath() . str_replace( '/', '\\', $GLOBALS["UserFilesPath"] ) ;

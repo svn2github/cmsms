@@ -96,10 +96,10 @@ FCKConfig.StylesXmlPath	= '../fckstyles.xml' ;
 
 // Link Browsing
 FCKConfig.LinkBrowser = true ;
-FCKConfig.LinkBrowserURL = FCKConfig.BasePath + "filemanager/browser/default/browser.html?Connector=connectors/asp/connector.asp" ;
+//FCKConfig.LinkBrowserURL = FCKConfig.BasePath + "filemanager/browser/default/browser.html?Connector=connectors/asp/connector.asp" ;
 //FCKConfig.LinkBrowserURL = FCKConfig.BasePath + "filemanager/browser/default/browser.html?Connector=connectors/asp/connector.asp&ServerPath=/CustomFiles/" ;
 //FCKConfig.LinkBrowserURL = FCKConfig.BasePath + "filemanager/browser/default/browser.html?Connector=connectors/aspx/connector.aspx" ;
-//FCKConfig.LinkBrowserURL = FCKConfig.BasePath + "filemanager/browser/default/browser.html?Connector=connectors/php/connector.php" ;
+FCKConfig.LinkBrowserURL = FCKConfig.BasePath + "filemanager/browser/default/browser.html?Connector=connectors/php/connector.php" ;
 FCKConfig.LinkBrowserWindowWidth	= screen.width * 0.7 ;	// 70%
 FCKConfig.LinkBrowserWindowHeight	= screen.height * 0.7 ;	// 70%
 
@@ -113,9 +113,9 @@ FCKConfig.LinkUploadDeniedExtensions	= ".exe .asp .php .aspx .js .cfm .dll" ;	//
 
 // Image Browsing
 FCKConfig.ImageBrowser = true ;
-FCKConfig.ImageBrowserURL = FCKConfig.BasePath + "filemanager/browser/default/browser.html?Type=Image&Connector=connectors/asp/connector.asp" ;
+//FCKConfig.ImageBrowserURL = FCKConfig.BasePath + "filemanager/browser/default/browser.html?Type=Image&Connector=connectors/asp/connector.asp" ;
 //FCKConfig.ImageBrowserURL = FCKConfig.BasePath + "filemanager/browser/default/browser.html?Type=Image&Connector=connectors/aspx/connector.aspx" ;
-//FCKConfig.ImageBrowserURL = FCKConfig.BasePath + "filemanager/browser/default/browser.html?Type=Image&Connector=connectors/php/connector.php" ;
+FCKConfig.ImageBrowserURL = FCKConfig.BasePath + "filemanager/browser/default/browser.html?Type=Image&Connector=connectors/php/connector.php" ;
 FCKConfig.ImageBrowserWindowWidth  = screen.width * 0.7 ;	// 70% ;
 FCKConfig.ImageBrowserWindowHeight = screen.height * 0.7 ;	// 70% ;
 

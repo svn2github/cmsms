@@ -42,12 +42,10 @@ function fckeditor_module_help($cms)
 {
 	//Text to show for the help box...
 	?>
-
 	<h3>What does this do?</h3>
 	<p>Enalbes FCKeditor to be used as a WYSIWYG.</p>
 	<h3>How do I use it?</h3>
 	<p>Install it, then go to User Preferences and Set FCKeditor to be your wysiwyg of choice.</p>
-
 	<?php
 }
 
