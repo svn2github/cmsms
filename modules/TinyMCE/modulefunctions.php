@@ -45,7 +45,7 @@ function tinymce_module_header_function(&$cms)
 
 				$striptags = cms_mapi_get_preference('TinyMCE', 'striptags', 'false');
 
-				if ($striptags)
+				if ($striptags == 'true')
 				{
 					$css .= '&stripbackground=true';
 				}
