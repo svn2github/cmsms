@@ -18,7 +18,7 @@
 
 function tinymce_module_header_function(&$cms)
 {
-	if (isset($cms->variables['tinymce_textareas']))
+	if (array_key_exists('tinymce_textareas', $cms->variables))
 	{
 	?>
 
@@ -64,7 +64,7 @@ function tinymce_module_textbox_function(&$cms, $name='textbox', $columns='80', 
 	{
 		$variables['tinymce_stylesheet'] = $stylesheet;
 	}
-	if (!isset($variables['tinymce_textareas']))
+	if (!array_key_exists('tinymce_textareas', $variables))
 	{
 		$variables['tinymce_textareas'] = array();
 	}
