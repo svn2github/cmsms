@@ -82,46 +82,11 @@ class News extends cmsmodule {
 	}
 
 	function executeadmin($cms,$id) {
-		if ($_POST[$id."action"] == "add" || $_GET[$id."action"] == "add") {
-			?>
 
-<div class="adminform">
-
-<?=create_module_admin_start_form("News", $id)?>
-
-<table>
-	<tr>
-		<td>Title:</td>
-		<td><input name="<?=$id?>newstitle" maxlength="255" /></td>
-	</tr>
-	<tr>
-		<td>Content:</td>
-		<td><textarea name="<?=$id?>newscontent" cols="45" rows="8"></textarea></td>
-	</tr>
-	<tr>
-		<td>&nbsp;</td>
-		<td><input type="submit" name="<?=$id?>addsubmit" value="Add News Item" /></td>
-	</tr>
-</table>
-
-<?=create_module_admin_end_form()?>
-
-</div>
-
-			<?
-		} else if (isset($_POST[$id."addsubmit"])) {
-
-			$title = "";
-			if (isset($_POST[$id."newstitle"])) $title = $_POST[$id."newstitle"];
-			$data = "";
-			if (isset($_POST[$id."newscontent"])) $data = $_POST[$id."newscontent"];
-			$db = $cms->db;
-			$new_id = $db->GenID($cms->config->db_prefix."module_news_seq");
-			$query = "INSERT INTO ".$cms->config->db_prefix."module_news (news_id, news_title, news_data, news_date, create_date) VALUES ($new_id, ".$db->qstr($title).", ".$db->qstr($data).",".$db->DBTimeStamp(time()).",".$db->DBTimeStamp(time()).")";
-			$dbresult = $db->Execute($query);
-			redirect("moduleinterface?module=News");
+		if (isset($_POST[$id."action"]) || isset($_GET[$id."action"])) {
+			$moduleaction = $_POST[$id."action"] . $_GET[$id."action"];
+			include_once(dirname(__FILE__)."/adminform.php");
 		} else {
-
 			$db = $cms->db;
 			$query = "SELECT news_id, news_title, news_data, news_date FROM ".$cms->config->db_prefix."module_news ORDER BY news_date desc";
 			$dbresult = $db->Execute($query);
@@ -138,8 +103,8 @@ class News extends cmsmodule {
 					echo "<tr class=\"$rowclass\">\n";
 					echo "<td>".$row["news_title"]."</td>\n";
 					echo "<td>".$row["news_date"]."</td>\n";
-					echo "<td>".create_module_admin_link("News",$id,array("action"=>"edit"),"Edit")."</td>\n";
-					echo "<td>".create_module_admin_link("News",$id,array("action"=>"delete"),"Delete")."</td>\n";
+					echo "<td>".create_module_admin_link("News",$id,array("action"=>"edit","news_id"=>$row["news_id"]),"Edit")."</td>\n";
+					echo "<td>".create_module_admin_link("News",$id,array("action"=>"delete","news_id"=>$row["news_id"]),"Delete", "Are you sure you want to delete?")."</td>\n";
 					echo "</tr>\n";
 					($rowclass=="row1"?$rowclass="row2":$rowclass="row1");
 				}

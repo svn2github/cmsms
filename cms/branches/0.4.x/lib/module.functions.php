@@ -56,13 +56,17 @@ function remove_permission($cms, $permission_name) {
 	$db->Execute($query);
 }
 
-function create_module_admin_link($module, $id, $params, $text) {
+function create_module_admin_link($module, $id, $params, $text, $warn_message="") {
 
 	$val = "<a href=\"moduleinterface.php?module=$module";
 	foreach ($params as $key=>$value) {
 		$val .= "&$id$key=$value";
 	}
-	$val .= "\">$text</a>";
+	$val .= "\"";
+	if ($warn_message !== "") {
+		$val .= " onclick=\"return confirm('$warn_message');\"";
+	}
+	$val .= ">$text</a>";
 	return $val;
 
 }
