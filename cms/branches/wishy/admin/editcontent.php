@@ -90,7 +90,8 @@ if ($access)
 		redirect("listcontent.php");
 		return;
 	}
-	else if ($content_id != -1 && !$preview && !$content_change)
+	#else if ($content_id != -1 && !$preview && !$content_change)
+	else if ($content_id != -1 && !$preview)
 	{
 		$contentobj = ContentManager::LoadContentFromId($content_id);
 	}

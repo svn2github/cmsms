@@ -86,6 +86,23 @@ class Content extends ContentBase
 
 		return $text;
 	}
+
+	function GetURL()
+	{
+		global $config;
+		$url = "";
+
+		if ($config["assume_mod_rewrite"])
+		{
+			$url = $config["root_url"]."/".$this->mId.".shtml";
+		}
+		else 
+		{
+			$url = $config["root_url"]."/index.php?".$config["query_var"]."=".$this->mId;
+		}
+
+		return $url;
+	}
 }
 
 class Link extends ContentBase

@@ -20,7 +20,7 @@
  * Entry point for all non-admin pages
  *
  * @package CMS
- */
+ */	
 $starttime = microtime();
 
 @ob_start();
@@ -62,10 +62,10 @@ if (isset($config["query_var"]) && $config["query_var"] != "" && isset($_GET[$co
 #{
 #	$page = $_SERVER["PATH_INFO"];
 #}
-else if (isset($_SERVER["QUERY_STRING"]) && strpos($_SERVER["QUERY_STRING"], 'deleteinstall') === false)
-{
-	$page = $_SERVER["QUERY_STRING"];
-}
+#else if (isset($_SERVER["QUERY_STRING"]) && strpos($_SERVER["QUERY_STRING"], 'deleteinstall') === false)
+#{
+#	$page = $_SERVER["QUERY_STRING"];
+#}
 
 if ($page == "")
 {
@@ -74,7 +74,7 @@ if ($page == "")
 
 if (get_site_preference('enablecustom404') == "0")
 {
-	#$old_error_handler = set_error_handler("ErrorHandler404");
+	$old_error_handler = set_error_handler("ErrorHandler404");
 }
 
 $html = "";
@@ -91,7 +91,7 @@ else
 
 if (get_site_preference('enablecustom404') == "0")
 {
-	#set_error_handler($old_error_handler);
+	set_error_handler($old_error_handler);
 }
 
 #if(password_protected($page) != -1 && !check_access(password_protected($page)))

@@ -69,13 +69,12 @@ if (isset($_POST["cancel"])) {
 $userid = get_userid();
 $access = check_permission($userid, 'Add Content');
 
-#Fill contentobj with parameters
-$contentobj->FillParams($_POST);
-
 if ($access)
 {
 	if ($submit)
 	{
+		#Fill contentobj with parameters
+		$contentobj->FillParams($_POST);
 		$contentobj->Save();
 		ContentManager::SetAllHierarchyPositions();
 		audit($contentobj->id, $contentobj->name, 'Added Content');

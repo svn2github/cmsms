@@ -188,7 +188,7 @@ if (isset($_GET["message"])) {
 
 				if($one->Active())
 				{
-					echo "<td align=\"center\">".($one->default_page == 1?$image_true:"<a href=\"listcontent.php?setinactive=".$one->Id()."\">".$image_true."</a>")."</td>\n";
+					echo "<td align=\"center\">".($one->DefaultContent() == 1?$image_true:"<a href=\"listcontent.php?setinactive=".$one->Id()."\">".$image_true."</a>")."</td>\n";
 				}
 				else 
 				{

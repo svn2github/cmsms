@@ -93,7 +93,7 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 			}
 			else
 			{
-				$menu .= "<li><a href=\"".$onecontent->Alias()."\">".$onecontent->GetPropertyValue('menutext')."</a></li>\n";
+				$menu .= "<li><a href=\"".$onecontent->GetURL()."\">".$onecontent->GetPropertyValue('menutext')."</a></li>\n";
 			}
 			$in_hr = 1;
 			$last_level = $depth;

@@ -674,6 +674,13 @@ class ContentBase
 	}
 
 	/**
+	 * Function for content types to override to set their proper generated URL
+	 */
+	function GetURL()
+	{
+	}
+
+	/**
 	 * Show the content
 	 */
 	function Show()
@@ -860,7 +867,8 @@ class ContentManager
 		global $gCms;
 		$db = &$gCms->db;
 
-		$dbresult;
+		$dbresult = '';
+		$tpl_name = '';
 
 		if (is_numeric($tpl_name) && strpos($tpl_name,'.') === FALSE && strpos($tpl_name,',') === FALSE) //Fix for postgres
 		{
