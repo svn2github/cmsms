@@ -1003,7 +1003,7 @@ class ContentManager
 			$row = $dbresult->FetchRow();
 
 			#Make sure the type exists.  If so, instantiate and load
-			if (in_array($row['type'], ListContentTypes()))
+			if (in_array($row['type'], @ContentManager::ListContentTypes()))
 			{
 				$contentobj = new $row['type'];
 				$contentobj->LoadFromData($row,true);
