@@ -928,7 +928,7 @@ class CMSModule extends ModuleOperations
 	 */
 	function CreatePermission($permission_name, $permission_text)
 	{
-		$db = $cms->db;
+		$db = $this->cms->db;
 
 		$query = "SELECT permission_id FROM ".cms_db_prefix()."permissions WHERE permission_name =" . $db->qstr($permission_name); 
 		$result = $db->Execute($query);
@@ -997,6 +997,62 @@ class CMSModule extends ModuleOperations
 	function SetPreference($preference_name, $value)
 	{
 		return set_site_preference($this->GetName() . "_mapi_pref_" . $preference_name, $value);
+	}
+
+	/**
+	 * Creates a string containing links to all the pages.
+
+	 * @param string the current page to display
+	 * @param string the amount of items being listed
+	 * @param string the amount of items to list per page
+	 */
+	function CreatePagination($id, $action, $returnid, $page, $totalrows, $limit)
+	{
+		$link = '<a href="moduleinterface.php?module='.$this->GetName().'&amp;'.$id.'returnid='.$id.$returnid.'&amp;'.$id.'page=';
+		$page_string = "";
+		$from = ($page * $limit) - $limit;
+		$numofpages = floor($totalrows / $limit);
+		if ($numofpages * $limit < $totalrows)
+		{
+			$numofpages++;
+		}
+
+		if ($numofpages > 1)
+		{
+			if($page != 1)
+			{
+				$pageprev = $page-1;
+				$page_string .= $link.$pageprev."\">".lang('previous')."</a>&nbsp;";
+			}
+			else
+			{
+				$page_string .= lang('previous')." ";
+			}
+
+			for($i = 1; $i <= $numofpages; $i++)
+			{
+				if($i == $page)
+				{
+					 $page_string .= $i."&nbsp;";
+				}
+				else
+				{
+					 $page_string .= $link.$i."\">$i</a>&nbsp;";
+				}
+			}
+
+			if (($totalrows - ($limit * $page)) > 0)
+			{
+				$pagenext = $page+1;
+				$page_string .= $link.$pagenext."\">".lang('next')."</a>";
+			}
+			else
+			{
+				$page_string .= lang('next')." ";
+			}
+		}
+
+		return $page_string;
 	}
 }
 

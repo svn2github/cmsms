@@ -66,6 +66,11 @@ class News extends CMSModule
 		$this->CreatePermission('Modify News', 'Modify News');
 	}
 
+	function InstallPostMessage()
+	{
+		return 'Make sure to set the "Modify News" permission on users who will be administering News items.';
+	}
+
 	function Upgrade($oldversion, $newversion)
 	{
 		$current_version = $oldversion;
@@ -178,7 +183,7 @@ class News extends CMSModule
 		  </tr>
 		  <tr>
 			<td>Content:</td>
-			<td><?php echo $this->CreateTextarea(true, $data, $id.'newscontent', 'syntaxHighlight', $id.'newscontent')?></td>
+			<td><?php echo $this->CreateTextarea(true, $id, $data, 'newscontent', 'syntaxHighlight', 'newscontent')?></td>
 		  </tr>
 		  <tr>
 			<td>Post Date:</td>
@@ -235,7 +240,7 @@ class News extends CMSModule
 		<?php
 	}
 
-	function DoAction($action, $id, $params, $resultid = -1)
+	function DoAction($action, $id, $params, $returnid = -1)
 	{
 		$db = $this->cms->db;
 		switch ($action)
@@ -244,7 +249,7 @@ class News extends CMSModule
 				if (isset($params["makerssbutton"]))
 				{
 					$params = array_merge($params, array("showtemplate"=>"false","type"=>"rss"));
-					echo cms_mapi_create_user_link('News', $id, $return_id, $params, "<img border=\"0\" src=\"images/cms/xml_rss.gif\" alt=\"RSS Newsfeed\" />");
+					echo $this->CreateLink($id, 'default', $returnid, "<img border=\"0\" src=\"images/cms/xml_rss.gif\" alt=\"RSS Newsfeed\" />", $params);
 					return;
 				}
 
@@ -312,7 +317,7 @@ class News extends CMSModule
 						echo "  <link>";
 						echo cms_htmlentities($cms->config["news_url"], ENT_NOQUOTES, get_encoding($encoding));
 						echo "</link>\n";
-						echo "  <description>Current linkblog entries</description>\n";
+						echo "  <description>Current News entries</description>\n";
 
 					}
 
@@ -416,7 +421,7 @@ class News extends CMSModule
 
 			case "defaultadmin":
 				$rowsperpage=20;
-				$access = CheckPermission('Modify News');
+				$access = $this->CheckPermission('Modify News');
 				$newscat = (isset($params['news_cat'])?$params['news_cat']:"");
 				$current_page = (isset($params['page'])?$params['page']:"1");
 				if (!isset($current_page))
@@ -504,7 +509,7 @@ class News extends CMSModule
 				{
 					echo "<table cellspacing=\"0\" class=\"admintable\">\n";
 					echo "<tr>\n";
-					echo "<td colspan=\"6\"><div align=\"right\" class=\"clearbox\">".cms_mapi_admin_pagination("News",$id,$current_page,$dbresult->RowCount(),$rowsperpage)."</td>";
+					echo "<td colspan=\"6\"><div align=\"right\" class=\"clearbox\">".$this->CreatePagination($id, 'defaultadmin', $returnid, $current_page, $dbresult->RowCount(), $rowsperpage)."</td>";
 					echo "</tr>\n";
 					echo "<tr>\n";
 					echo "<td width=\"2%\">&nbsp;</td>\n";
@@ -533,8 +538,8 @@ class News extends CMSModule
 						echo "<td>".$row["news_title"]."</td>\n";
 						echo "<td>".$row["news_cat"]."</td>\n";
 						echo "<td>".$row["news_date"]."</td>\n";
-						echo "<td>".cms_mapi_create_admin_link("News",$id,array("action"=>"edit","news_id"=>$row["news_id"],"news_cat"=>$newscat),"Edit")."</td>\n";
-						echo "<td>".cms_mapi_create_admin_link("News",$id,array("action"=>"delete","news_id"=>$row["news_id"]),"Delete", "Are you sure you want to delete?")."</td>\n";
+						echo "<td>".$this->CreateLink($id, 'News', $returnid, 'Edit', array("action"=>"edit","news_id"=>$row["news_id"],"news_cat"=>$newscat))."</td>\n";
+						echo "<td>".$this->CreateLink($id, 'News', $returnid, 'Delete', array("action"=>"delete","news_id"=>$row["news_id"]), 'Are you sure you want to delete?')."</td>\n";
 						echo "</tr>\n";
 						($rowclass=="row1"?$rowclass="row2":$rowclass="row1");
 					}
@@ -579,14 +584,14 @@ class News extends CMSModule
 
 			case "add":
 				$post_date = rtrim(ltrim($db->DBTimeStamp(time()), "'"), "'");
-				$this->AdminForm($id, 'completeadd');
+				$this->AdminForm($id, 'completeedit', '', '', '', $post_date);
 				break;
 
 			case "delete":
 				$query = "DELETE FROM ".cms_db_prefix()."module_news WHERE news_id = ?";
-				$dbresult = $db->Execute($query, array((isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:"")));
-				Audit($itemid, (isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:""), "News", "Deleted News Item");
-				redirect($config["root_url"]."/admin/moduleinterface.php?module=News");
+				$dbresult = $db->Execute($query, array($params['news_id']));
+				$this->Audit($params['news_id'], 'News', 'Deleted New Item');
+				$this->Redirect($id, 'defaultadmin', $returnid);
 				break;
 
 			case "completeadd":
@@ -702,7 +707,7 @@ class News extends CMSModule
 					}
 					$query = $querystart . $queryend . ")";
 					$dbresult = $db->Execute($query, $params);
-					$this->Audit($new_id, "News", 'Added News Item');
+					$this->Audit($new_id, 'News', 'Added News Item');
 					$this->Redirect($id, 'defaultadmin');
 					return;
 				}
@@ -827,7 +832,7 @@ class News extends CMSModule
 					array_push($params, $newsid);
 					$dbresult = $db->Execute($query, $params);
 
-					$this->Audit($new_id, "News", "Edited News Item");
+					$this->Audit($newsid, 'News', 'Edited News Item');
 					$this->Redirect($id, 'defaultadmin');
 					return;
 				}
