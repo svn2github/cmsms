@@ -1,4 +1,7 @@
-Version 0.7.3 -- Subversion
+Version 0.8 -- Subversion
+-----------------
+
+Version 0.7.3 -- Tue Nov 23 2004
 -----------------
 
 * Added Italian translation (emanuelez)
@@ -8,6 +11,7 @@ Version 0.7.3 -- Subversion
 * Added active/inactive toggle in Content Management (Xorn725)
 * Added categories and other fixes to the News module (calguy1000)
 * Added breadcrumbs and sitemap plugins (Manarth)
+* Added clear cache button to site preferences (#000055)
 * Fixed syntax highlighting not submitting data of second textarea.
 * Fixed HTMLArea to display properly with all languages, even if some
 still default to en_US
@@ -19,6 +23,8 @@ still default to en_US
 * Fixed error message with Deleting templates (Part of #000047)
 * Fixed check_ownership and check_authorship to be more consistant 
 (Xorn725)
+* Fixed htmlarea so that it doesn't convert double quotes in &quot; and
+mess up smarty tags
 * Reenabled Image Manager
 * Removed Allow Admin Access from add/edit user
 * Updated adodb to 4.54
