@@ -210,7 +210,8 @@ EOT;
 				<dt>Version: 0.5+</dt>
 					<dd>Fix event display so that if the end date is not set, we don't display "to". 
 					Filter by category when displaying an upcominglist.
-					Fix End date setting that was off by one.</dd>
+					Fix End date setting that was off by one.
+					Fix odd behaviour of year when transitioning from Jan to Dec or Dec to Jan in display=calendar.</dd>
 				<dt>Version: 0.5</dt>
 					<dd>Fix the drop down list for end date year. Fix DE translation of "Return" (thanks Piratos!).
 					 Fix spacing around "to" (thanks Greg!). Add Danish and Dutch translations courtesy of board members esmann and dont.</dd>
@@ -1252,12 +1253,13 @@ EOT;
 				{
 					$start = sprintf('%04d-%02d-01 00:00:00', $year, $month);
 					$nextmonth = $month+1;
+					$nextyear = $year;
 					if($nextmonth > 12)
 					{
 						$nextmonth = 1;
-						$year++;
+						$nextyear++;
 					}
-					$last_day_of_month = mktime(0, 0, 0, $nextmonth, 0, $year);
+					$last_day_of_month = mktime(0, 0, 0, $nextmonth, 0, $nextyear);
 					$end = sprintf('%04d-%02d-%02d 23:59:59', date('Y', $last_day_of_month), date('m', $last_day_of_month), date('d', $last_day_of_month));
 					
 				}
@@ -1374,6 +1376,7 @@ EOT;
 			$day_name_length = 3;
 			$month_href = null;
 			$pn = array('&laquo;'=>$prev, '&raquo;'=>$next);
+			
 			$cal = generate_calendar($year, $month, $days, $day_name_length, $month_href, $first_day_of_week, $pn, $table_id);
 			echo $cal;
 		}
