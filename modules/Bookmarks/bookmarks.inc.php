@@ -72,7 +72,8 @@ function bookmarks_module_admin_get_bookmark($db, $bookmark_id, $default_to_appr
 function bookmarks_module_admin_main($cms, $module_id)
 {
 	$db = $cms->db; /* @var $db ADOConnection */
-	$categories = bookmarks_module_get_categories($db);
+	$categories_table_name = cms_db_prefix().'module_bookmarks_categories';
+	$categories = commoncode_module_get_categories($db, $categories_table_name);
 	if(count($categories) == 0)
 	{
 		// Display category admin
@@ -296,7 +297,8 @@ function bookmarks_module_admin_edit_bookmark($cms, $module_id)
 function bookmarks_module_admin_display_bookmark_edit_form($cms, $module_id, $bookmark_id=-1)
 {
 	$db = $cms->db; /* @var $db ADOConnection */
-	$categories = bookmarks_module_get_categories($db);
+	$categories_table_name = cms_db_prefix().'module_bookmarks_categories';
+	$categories = commoncode_module_get_categories($db, $categories_table_name);
 	$bookmark = bookmarks_module_admin_get_bookmark($db, $bookmark_id, 1);
 
 	$button_text = 'Add';
@@ -494,7 +496,8 @@ function bookmarks_module_admin_delete_bookmark($cms, $module_id)
 function bookmarks_module_frontend_display_form($cms, $module_id, $return_id, $params)
 {
 	$db = $cms->db; /* @var $db ADOConnection */
-	$categories = bookmarks_module_get_categories($db);
+	$categories_table_name = cms_db_prefix().'module_bookmarks_categories';
+	$categories = commoncode_module_get_categories($db, $categories_table_name);
 	$bookmark = bookmarks_module_admin_get_bookmark($db, -1);
 
 	$include_back_button = false;
@@ -660,5 +663,22 @@ function bookmarks_module_frontend_add($cms, $module_id, $return_id, $params)
 
 	$link = cms_mapi_create_content_link_by_page_id($return_id, "Return");
 	echo "<p class='cms-module-bookmarks-submitted'>Thank you for your submission. $link.</p>";
+}
+
+function bookmarks_module_admin_display_category($cms, $module_id)
+{
+	$categories_table_name = cms_db_prefix().'module_bookmarks_categories';
+	echo <<<EOT
+	<p>
+	<a href='moduleinterface.php?module=Bookmarks'>Add Bookmark</a>
+	| <a href='moduleinterface.php?module=Bookmarks&amp;{$module_id}action=bookmarks'>Manage Bookmarks</a>
+	| Manage Categories
+	</p>
+
+    <h4>Manage Categories</h4>
+
+EOT;
+	commoncode_module_admin_display_category($cms, $module_id, "Bookmarks", $categories_table_name);
+	
 }
 ?>

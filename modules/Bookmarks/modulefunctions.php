@@ -18,7 +18,6 @@
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 include_once(dirname(__FILE__).'/bookmarks.inc.php');
-include_once(dirname(__FILE__).'/categories.inc.php');
 
 function bookmarks_module_check_for_common_code($cms, $show_message = true, $min_version = BOOKMARKS_MODULE_MIN_COMMONCODE_VERSION)
 {
@@ -469,6 +468,7 @@ function bookmarks_module_executeadmin($cms,$module_id)
 	if(bookmarks_module_check_for_common_code($cms))
 	{
 		include_once(BOOKMARKS_MODULE_COMMONCODE_FILE);
+		include_once(BOOKMARKS_MODULE_COMMONCODE_CATEGORY_FILE);
 
 		$access = cms_mapi_check_permission($cms, "Modify Bookmarks");
 		if (!$access)  {
@@ -508,7 +508,8 @@ function bookmarks_module_executeadmin($cms,$module_id)
 			break;
 
 			case 'categories_update':
-				bookmarks_module_admin_update_categories($cms, $module_id);
+				commoncode_module_admin_update_categories($cms, $module_id);
+				RedirectTo($_SERVER['PHP_SELF'] . '?module=Bookmarks&'.$module_id.'action=categories&result=1');
 			break;
 
 			default:
