@@ -104,8 +104,8 @@ EOT;
 */
 function bookmarks_module_admin_display_bookmarks($cms, $module_id)
 {
-	$keyword = getRequestValue($module_id.'keyword', '', 'Bookmarks');
-	$not_approved_only = getRequestValue($module_id.'not_approved_only', 0, 'Bookmarks');
+	$keyword = get_request_value($module_id.'keyword', '', 'Bookmarks');
+	$not_approved_only = get_request_value($module_id.'not_approved_only', 0, 'Bookmarks');
 
 	$not_approved_only_checked_off = '';
 	$not_approved_only_checked_on = '';
@@ -178,7 +178,7 @@ EOT;
 					OR $bookmarks_table_name.bookmark_url LIKE '%$keyword%'
 					OR $bookmarks_table_name.bookmark_summary LIKE '%$keyword%' ";
 	}
-	$order_by = getRequestValue($module_id.'order_by', '');
+	$order_by = get_request_value($module_id.'order_by', '');
 	if(!empty($order_by))
 	{
 		$sql .= "ORDER BY $bookmarks_table_name.modified_date";
@@ -193,7 +193,7 @@ EOT;
 
 	if ($rs && $rs->RowCount() > 0)
 	{
-		$number_of_columns = getRequestValue($module_id.'columns', 2);
+		$number_of_columns = get_request_value($module_id.'columns', 2);
 
 		$num_rows = $rs->RecordCount();
 		$rows_per_column = intval($num_rows / $number_of_columns) + 0; /* 10 is a fudge factor to make it look better! */
@@ -278,12 +278,12 @@ function bookmarks_module_admin_edit_bookmark($cms, $module_id)
 {
 	echo "<h4>Edit Bookmark</h4>\n";
 
-	$bookmark_id = getRequestValue($module_id.'bookmark_id', -1);
+	$bookmark_id = get_request_value($module_id.'bookmark_id', -1);
 	if($bookmark_id > 0)
 	bookmarks_module_admin_display_bookmark_edit_form($cms, $module_id, $bookmark_id);
 	else
 	{
-		RedirectTo($_SERVER['PHP_SELF'] . '?module=Bookmarks');
+		redirect($_SERVER['PHP_SELF'] . '?module=Bookmarks');
 	}
 }
 
@@ -397,12 +397,12 @@ function bookmarks_module_admin_update_bookmark($cms, $module_id, $approved=0)
 
 	/* @var $rs ADORecordset */
 	$user_id = $cms->variables['user_id'];
-	$categories = getRequestValue($module_id.'bookmark_categories');
-	$bookmark_id = getRequestValue($module_id.'bookmark_id', -1);
-	$bookmark_title = $db->quote(getRequestValue($module_id.'bookmark_title'), get_magic_quotes_runtime());
-	$bookmark_url = $db->quote(getRequestValue($module_id.'bookmark_url'), get_magic_quotes_runtime());
-	$bookmark_summary = $db->quote(getRequestValue($module_id.'bookmark_summary'), get_magic_quotes_runtime());
-	$bookmark_approved = getRequestValue($module_id.'bookmark_approved', 0);
+	$categories = get_request_value($module_id.'bookmark_categories');
+	$bookmark_id = get_request_value($module_id.'bookmark_id', -1);
+	$bookmark_title = $db->quote(get_request_value($module_id.'bookmark_title'), get_magic_quotes_runtime());
+	$bookmark_url = $db->quote(get_request_value($module_id.'bookmark_url'), get_magic_quotes_runtime());
+	$bookmark_summary = $db->quote(get_request_value($module_id.'bookmark_summary'), get_magic_quotes_runtime());
+	$bookmark_approved = get_request_value($module_id.'bookmark_approved', 0);
 
 	if($approved && $bookmark_id > -1)
 	{
@@ -474,7 +474,7 @@ function bookmarks_module_admin_delete_bookmark($cms, $module_id)
 	$bookmarks_table_name = cms_db_prefix().'module_bookmarks';
 	$bookmarks_to_categories_table_name = cms_db_prefix().'module_bookmarks_to_categories';
 
-	$bookmark_id = getRequestValue($module_id.'bookmark_id', -1);
+	$bookmark_id = get_request_value($module_id.'bookmark_id', -1);
 
 	
 	// delete current bookmarks_to_categories records for this bookmark
@@ -500,9 +500,9 @@ function bookmarks_module_frontend_display_form($cms, $module_id, $return_id, $p
 	$categories = commoncode_module_get_categories($db, $categories_table_name);
 	$bookmark = bookmarks_module_admin_get_bookmark($db, -1);
 
-	$include_back_button = getParamValue($module_id, 'include_back_button', $params, false);
-	$email_to = getParamValue($module_id, 'email_to', $params);
-	$email_from = getParamValue($module_id, 'email_from', $params);
+	$include_back_button = get_param_value($module_id, 'include_back_button', $params, false);
+	$email_to = get_param_value($module_id, 'email_to', $params);
+	$email_from = get_param_value($module_id, 'email_from', $params);
 
 	$button_text = 'Add';
 	if($bookmark_id > 0)
@@ -608,11 +608,11 @@ function bookmarks_module_frontend_add($cms, $module_id, $return_id, $params)
 {
 	$approved=0;
 	bookmarks_module_admin_update_bookmark($cms, $module_id, $approved);
-	$email_to = getRequestValue($module_id.'email_to');
+	$email_to = get_request_value($module_id.'email_to');
 	if($email_to != '')
 	{
 		// get admin email address.
-		$email_from = getRequestValue($module_id.'email_from', '');
+		$email_from = get_request_value($module_id.'email_from', '');
 		if($email_from == '')
 		{
 			// guess an email addresss!
