@@ -75,6 +75,7 @@ if (isset($_POST["serialized_content"]))
 		$tmpobj->mAlias = $contentobj->mAlias;
 		$tmpobj->mOwner = $contentobj->mOwner;
 		$tmpobj->mActive = $contentobj->mActive;
+		$tmpobj->mShowInMenu = $contentobj->mShowInMenu;
 		$contentobj = $tmpobj;
 	}
 }
@@ -83,6 +84,7 @@ else
 	$contentobj = new $content_type;
 	$contentobj->mOwner = $userid;
 	$contentobj->mActive = true;
+	$contentobj->mShowInMenu = true;
 }
 
 if ($access)
@@ -146,7 +148,6 @@ $typesdropdown .= "</select>";
 </div> <!--end adminform-->
 
 <input type="hidden" name="serialized_content" value="<?php echo base64_encode(serialize($contentobj)) ?>">
-<input type="hidden" name="content_type" value="<?php echo $content_type ?>">
 
 </form>
 

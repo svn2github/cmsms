@@ -78,6 +78,7 @@ if (isset($_POST["serialized_content"]))
 		$tmpobj->mAlias = $contentobj->mAlias;
 		$tmpobj->mOwner = $contentobj->mOwner;
 		$tmpobj->mActive = $contentobj->mActive;
+		$tmpobj->mShowInMenu = $contentobj->mShowInMenu;
 		$contentobj = $tmpobj;
 	}
 }
@@ -103,7 +104,7 @@ if ($access)
 		audit($contentobj->Id(), $contentobj->Name(), 'Added Content');
 		redirect("listcontent.php");
 	}
-	else if ($content_id != -1 && !$preview)
+	else if ($content_id != -1 && !$preview && get_class($contentobj) != $content_type)
 	{
 		$contentobj = ContentManager::LoadContentFromId($content_id);
 		$content_type = $contentobj->Type();
@@ -162,7 +163,6 @@ $typesdropdown .= "</select>";
 </div> <!--end adminform-->
 
 <input type="hidden" name="serialized_content" value="<?php echo base64_encode(serialize($contentobj)) ?>">
-<input type="hidden" name="content_type" value="<?php echo $content_type ?>">
 <input type="hidden" name="content_id" value="<?php echo $content_id?>">
 
 </form>

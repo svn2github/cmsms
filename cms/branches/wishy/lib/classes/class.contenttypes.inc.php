@@ -198,5 +198,111 @@ class Link extends ContentBase
 	}
 }
 
+class Separator extends ContentBase
+{
+	function FillParams($params)
+	{
+		if (isset($params))
+		{
+			$this->mName = $params['title'];
+			if (isset($params['active']))
+			{
+				$this->mActive = true;
+			}
+			else
+			{
+				$this->mActive = false;
+			}
+			if (isset($params['showinmenu']))
+			{
+				$this->mShowInMenu = true;
+			}
+			else
+			{
+				$this->mShowInMenu = false;
+			}
+		}
+	}
+
+	function Show()
+	{
+	}
+
+	function Edit()
+	{
+		$text = "";
+
+		$text .= '<tr><td>'.lang('title').':</td><td><input type="text" name="title" value="'.$this->mName.'"></td></tr>';
+		$text .= '<tr><td>'.lang('active').':</td><td><input type="checkbox" name="active"'.($this->mActive?' checked="true"':'').'></td></tr>';
+		$text .= '<tr><td>'.lang('showinmenu').':</td><td><input type="checkbox" name="showinmenu"'.($this->mShowInMenu?' checked="true"':'').'></td></tr>';
+
+		return $text;
+	}
+
+	function GetURL()
+	{
+		return '#';
+	}
+}
+
+class SectionHeader extends ContentBase
+{
+	function SetProperties()
+	{
+	}
+
+	function FillParams($params)
+	{
+		if (isset($params))
+		{
+			if (isset($params['title']))
+			{
+				$this->mName = $params['title'];
+			}
+			if (isset($params['menutext']))
+			{
+				$this->mMenuText = $params['menutext'];
+			}
+			if (isset($params['active']))
+			{
+				$this->mActive = true;
+			}
+			else
+			{
+				$this->mActive = false;
+			}
+			if (isset($params['showinmenu']))
+			{
+				$this->mShowInMenu = true;
+			}
+			else
+			{
+				$this->mShowInMenu = false;
+			}
+		}
+	}
+
+	function Show()
+	{
+	}
+
+	function Edit()
+	{
+		$text = "";
+
+		$text .= '<tr><td>'.lang('title').':</td><td><input type="text" name="title" value="'.$this->mName.'"></td></tr>';
+		$text .= '<tr><td>'.lang('menutext').':</td><td><input type="text" name="menutext" value="'.$this->mMenuText.'"></td></tr>';
+		$text .= '<tr><td>'.lang('active').':</td><td><input type="checkbox" name="active"'.($this->mActive?' checked="true"':'').'></td></tr>';
+		$text .= '<tr><td>'.lang('showinmenu').':</td><td><input type="checkbox" name="showinmenu"'.($this->mShowInMenu?' checked="true"':'').'></td></tr>';
+
+		return $text;
+	}
+
+	function GetURL()
+	{
+		return '#';
+	}
+}
+
 # vim:ts=4 sw=4 noet
 ?>

@@ -103,6 +103,7 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 			$in_hr = 1;
 			$last_level = $depth;
 		}
+		$count++;
 	}
 
 	for ($i = 0; $i < $last_level; $i++) $menu .= "</ul>";
