@@ -35,15 +35,15 @@ function htmlarea_module_header_function(&$cms)
 
 	<script type="text/javascript" src="<?php echo $config["root_url"]?>/modules/HTMLArea/htmlarea/htmlarea.js"></script>
 
-	<script type="text/javascript" defer="1">
+	<script type="text/javascript">
 		<!--
 
-		//HTMLArea.loadPlugin("ImageManager");
-		//HTMLArea.loadPlugin("InsertFile");
-		//HTMLArea.loadPlugin("TableOperations");
-		//HTMLArea.loadPlugin("ContextMenu");
-		//HTMLArea.loadPlugin("CharacterMap");
-		//HTMLArea.loadPlugin("FindReplace");
+		HTMLArea.loadPlugin("ImageManager");
+		HTMLArea.loadPlugin("InsertFile");
+		HTMLArea.loadPlugin("TableOperations");
+		HTMLArea.loadPlugin("ContextMenu");
+		HTMLArea.loadPlugin("CharacterMap");
+		HTMLArea.loadPlugin("FindReplace");
 		HTMLArea.loadPlugin("InvertBackground");
 		<?php if ($config["use_Indite"] == true) { ?>	
 			//HTMLArea.loadPlugin("Indite");	
@@ -75,16 +75,16 @@ function htmlarea_module_header_function(&$cms)
 				}
 		 	?>
 
-			//editor<?php echo $count?>.registerPlugin(InsertFile);
-			//editor<?php echo $count?>.registerPlugin(TableOperations);
-			//editor<?php echo $count?>.registerPlugin(ContextMenu);
-			//editor<?php echo $count?>.registerPlugin(CharacterMap);
-			//editor<?php echo $count?>.registerPlugin(FindReplace);
-			//editor<?php echo $count?>.registerPlugin(InvertBackground);
+			editor<?php echo $count?>.registerPlugin(InsertFile);
+			editor<?php echo $count?>.registerPlugin(TableOperations);
+			editor<?php echo $count?>.registerPlugin(ContextMenu);
+			editor<?php echo $count?>.registerPlugin(CharacterMap);
+			editor<?php echo $count?>.registerPlugin(FindReplace);
+			editor<?php echo $count?>.registerPlugin(InvertBackground);
 
 			<?php
 				if ($config["use_Indite"] == true)
-					echo "//editor".$count.".registerPlugin(Indite);";
+					echo "editor".$count.".registerPlugin(Indite);";
 
 				$template_id = -1;
 				if (isset($_POST["template_id"])) 
@@ -99,9 +99,10 @@ function htmlarea_module_header_function(&$cms)
 
 				if (array_key_exists('htmlarea_stylesheet', $cms->variables))
 				{
+					$obj = get_stylesheet(str_replace('../stylesheet.php?templateid=', '', $cms->variables['htmlarea_stylesheet']));
 			?>	
 
-			editor<?php echo $count?>.config.pageStyle = "@import url('<?php echo str_replace('..', '', $config['root_url'] . $cms->variables['htmlarea_stylesheet'])?>')";
+			editor<?php echo $count?>.config.pageStyle = editor<?php echo $count?>.config.pageStyle + "<?php echo preg_replace('/\r\n/', '', str_replace("'", "\\'", $obj['stylesheet']))?>";
 			<?php
 				}
 			?>
