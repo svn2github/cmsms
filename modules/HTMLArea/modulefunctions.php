@@ -102,11 +102,12 @@ function htmlarea_module_header_function(&$cms)
 					$obj = get_stylesheet(str_replace('../stylesheet.php?templateid=', '', $cms->variables['htmlarea_stylesheet']));
 			?>	
 
-			editor<?php echo $count?>.config.pageStyle = editor<?php echo $count?>.config.pageStyle + "<?php echo preg_replace('/\r\n/', '', str_replace("'", "\\'", $obj['stylesheet']))?>";
+			editor<?php echo $count?>.config.pageStyle = editor<?php echo $count?>.config.pageStyle + "<?php echo preg_replace('/\r?\n/', '', str_replace("'", "\\'", $obj['stylesheet']))?>";
 			<?php
 				}
 			?>
 
+			editor<?php echo $count?>.config.baseURL = "<?php echo $cms->config['root_url']?>/";
 			editor<?php echo $count?>.generate();
 			<?php
 					$count++;
