@@ -59,6 +59,11 @@ class RSS extends CMSModule
 		return 'wishy@cmsmadesimple.org';
 	}
 
+	function GetDependencies()
+	{
+		return array('PHPLayers'=>'1.1');
+	}
+
 	function GetChangeLog()
 	{
 		return "
@@ -76,8 +81,6 @@ class RSS extends CMSModule
 	{
 		if ($name == 'default')
 		{
-			//This is the entryway into the module.  All requests from CMS will come through here.
-
 			$config = $this->cms->config;
 
 			define('MAGPIE_CACHE_DIR', $config["root_path"].'/smarty/cms/cache');

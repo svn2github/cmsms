@@ -76,6 +76,11 @@ class Comments extends CMSModule
 		$db->CreateSequence(cms_db_prefix()."module_comments_seq");
 	}
 
+	function InstallPostMessage()
+	{
+		return "this is a test";
+	}
+
 	function Uninstall()
 	{
 		$db = $this->cms->db;
@@ -84,6 +89,11 @@ class Comments extends CMSModule
 		$dict->ExecuteSQLArray($sqlarray);
 
 		$db->DropSequence(cms_db_prefix()."module_comments_seq");
+	}
+
+	function UninstallPostMessage()
+	{
+		return "this is a test";
 	}
 
 	function GetChangeLog()

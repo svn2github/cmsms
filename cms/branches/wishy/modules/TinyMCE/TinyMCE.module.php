@@ -27,11 +27,6 @@ class TinyMCE extends CMSModule
 		return 'TinyMCE';
 	}
 
-	function IsPluginModule()
-	{
-		return true;
-	}
-
 	function HasAdmin()
 	{
 		return true;
@@ -62,12 +57,12 @@ class TinyMCE extends CMSModule
 			if (isset($_REQUEST[$id.'striptags']))
 			{
 				$striptags = $_REQUEST[$id.'striptags'];
-				cms_mapi_set_preference('TinyMCE', 'striptags', $striptags);
+				$this->SetPreference('TinyMCE', 'striptags', $striptags);
 			}
 		}
 		else
 		{
-			$striptags = cms_mapi_get_preference('TinyMCE', 'striptags', 'false');
+			$striptags = $this->GetPreference('TinyMCE', 'striptags', 'false');
 		}
 
 		?>
@@ -146,7 +141,7 @@ class TinyMCE extends CMSModule
 				{
 					$css = $gCms->variables['tinymce_stylesheet'];
 	
-					$striptags = cms_mapi_get_preference('TinyMCE', 'striptags', 'false');
+					$striptags = $this->GetPreference('TinyMCE', 'striptags', 'false');
 	
 					if ($striptags == 'true')
 					{
