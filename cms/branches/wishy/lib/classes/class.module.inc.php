@@ -163,6 +163,11 @@ class CMSModule extends ModuleOperations
 		return array();
 	}
  
+ 	/**
+	 * Checks to see if currently installed modules depend on this module.  This is
+	 * used by the plugins.php page to make sure that a module can't be uninstalled
+	 * before any modules depending on it are uninstalled first.
+	 */
 	function CheckForDependents()
 	{
 		global $gCms;
@@ -652,6 +657,8 @@ class CMSModule extends ModuleOperations
 	 * Returns the start of a module form
 	 *
 	 * @param string The id given to the module on execution
+	 * @param string The action that this form should do when the form is submitted
+	 * @param string The id to eventually return to when the module is finished it's task
 	 * @param string Method to use for the form tag.  Defaults to 'post'
 	 * @param string Optional enctype to use, Good for situations where files are being uploaded
 	 */
@@ -675,11 +682,26 @@ class CMSModule extends ModuleOperations
 		return $text;
 	}
 
+	/**
+	 * Returns the end of the a module form.  This is basically just a wrapper around </form>, but
+	 * could be extended later on down the road.  It's here mainly for consistency.
+	 */
 	function CreateFormEnd()
 	{
 		return '</form>'."\n";
 	}
 
+	/**
+	 * Returns the xhtml equivalent of an input textbox.  This is basically a nice little wrapper
+	 * to make sure that id's are placed in names and also that it's xhtml compliant.
+	 *
+	 * @param string The id given to the module on execution
+	 * @param string The html name of the textbox
+	 * @param string The predefined value of the textbox, if any
+	 * @param string The number of columns wide the textbox should be displayed
+	 * @param string The maximum number of characters that should be allowed to be entered
+	 * @param string Any additional text that should be added into the tag when rendered
+	 */
 	function CreateInputText($id, $name, $value='', $size='10', $maxlength='255', $addttext='')
 	{
 		$text = '<input type="text" name="'.$id.$name.'" value="'.$value.'" size="'.$size.'" maxlength="'.$maxlength.'"';
@@ -691,6 +713,15 @@ class CMSModule extends ModuleOperations
 		return $text;
 	}
 
+	/**
+	 * Returns the xhtml equivalent of a hidden field.  This is basically a nice little wrapper
+	 * to make sure that id's are placed in names and also that it's xhtml compliant.
+	 *
+	 * @param string The id given to the module on execution
+	 * @param string The html name of the hidden field 
+	 * @param string The predefined value of the field, if any
+	 * @param string Any additional text that should be added into the tag when rendered
+	 */
 	function CreateInputHidden($id, $name, $value='', $addttext='')
 	{
 		$text = '<input type="hidden" name="'.$id.$name.'" value="'.$value.'"';
@@ -702,6 +733,15 @@ class CMSModule extends ModuleOperations
 		return $text;
 	}
 
+	/**
+	 * Returns the xhtml equivalent of a submit button.  This is basically a nice little wrapper
+	 * to make sure that id's are placed in names and also that it's xhtml compliant.
+	 *
+	 * @param string The id given to the module on execution
+	 * @param string The html name of the button
+	 * @param string The predefined value of the button, if any
+	 * @param string Any additional text that should be added into the tag when rendered
+	 */
 	function CreateInputSubmit($id, $name, $value='', $addttext='')
 	{
 		$text = '<input type="submit" name="'.$id.$name.'" value="'.$value.'"';
@@ -713,6 +753,17 @@ class CMSModule extends ModuleOperations
 		return $text . "\n";
 	}
 
+	/**
+	 * Returns the xhtml equivalent of a dropdown list.  This is basically a nice little wrapper
+	 * to make sure that id's are placed in names and also that it is xhtml compliant.
+	 *
+	 * @param string The id given to the module on execution
+	 * @param string The html name of the dropdown list
+	 * @param string An array of items to put into the dropdown list... they should be $key=>$value pairs
+	 * @param string The default selected index of the dropdown list.  Setting to -1 will result in the first choice being selected
+	 * @param string The default selected value of the dropdown list.  Setting to '' will result in the first choice being selected
+	 * @param string Any additional text that should be added into the tag when rendered
+	 */
 	function CreateInputDropdown($id, $name, $items, $selectedindex=-1, $selectedvalue='', $addttext='')
 	{
 		$text = '<select name="'.$id.$name.'"';
@@ -744,6 +795,17 @@ class CMSModule extends ModuleOperations
 		return create_textarea($enablewysiwyg, $text, $id.$name, $classname, $htmlid, $encoding, $stylesheet);
 	}
 
+	/**
+	 * Returns the xhtml equivalent of an href link  This is basically a nice little wrapper
+	 * to make sure that id's are placed in names and also that it's xhtml compliant.
+	 *
+	 * @param string The id given to the module on execution
+	 * @param string The action that this form should do when the form is submitted
+	 * @param string The id to eventually return to when the module is finished it's task
+	 * @param string The text that will have to be clicked to follow the link
+	 * @param string An array of params that should be inlucded in the URL of the link.  These should be in a $key=>$value format.
+	 * @param string Text to display in a javascript warning box.  If they click no, the link is not followed by the browser.
+	 */
 	function CreateLink($id, $action, $returnid, $contents, $params, $warn_message='')
 	{
 		$text = '<a href="moduleinterface.php?module='.$this->GetName().'&amp;id='.$id.'&amp;'.$id.'action='.$action;
@@ -764,6 +826,13 @@ class CMSModule extends ModuleOperations
 		return $text;
 	}
 
+	/**
+	 * Redirects the user to another action of the module. 
+	 *
+	 * @param string The id given to the module on execution
+	 * @param string The action that this form should do when the form is submitted
+	 * @param string The id to eventually return to when the module is finished it's task
+	 */
 	function Redirect($id, $action, $returnid='')
 	{
 		global $gCms;
@@ -779,6 +848,13 @@ class CMSModule extends ModuleOperations
 		redirect($text);
 	}
 
+	/**
+	 * Redirects the user to a content page outside of the module.  The passed around returnid is
+	 * frequently used for this so that the user will return back to the page from which they first
+	 * entered the module.
+	 *
+	 * @param string Content id to redirect to.
+	 */
 	function RedirectContent($id)
 	{
 		$content = ContentManager::LoadContentFromId($id);
