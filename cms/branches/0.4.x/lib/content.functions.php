@@ -86,7 +86,7 @@ class Smarty_CMS extends Smarty {
 				if (isset($cmsmodules[$line["page_type"]])) {
 					@ob_start();
 					$obj = $cmsmodules[$line["page_type"]]['Instance'];
-					$obj->execute($modulecmsobj,"1",$params);
+					$obj->execute($modulecmsobj,"randstringgoeshere_",$params);
 					$modoutput = @ob_get_contents();
 					@ob_end_clean();
 					$tpl_source = ereg_replace("\{content\}", $modoutput, $tpl_source);

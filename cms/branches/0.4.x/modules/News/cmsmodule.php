@@ -64,6 +64,32 @@ class News extends cmsmodule {
 			}
 		}
 	}
+
+	function executeadmin($cms,$id) {
+		$db = $cms->db;
+		$query = "SELECT news_id, news_title, news_data, news_date FROM ".$cms->config->db_prefix."module_news ORDER BY news_date desc";
+		$dbresult = $db->Execute($query);
+		if ($dbresult && $dbresult->RowCount()) {
+			echo "<table cellspacing=\"0\" class=\"admintable\">\n";
+			echo "<tr>\n";
+			echo "<td>Title</td>\n";
+			echo "<td width=\"20%\">Posting Date</td>\n";
+			echo "<td width=\"10%\">&nbsp;</td>\n";
+			echo "<td width=\"10%\">&nbsp;</td>\n";
+			echo "</tr>\n";
+			$rowclass="row1";
+			while ($row = $dbresult->FetchRow()) {
+				echo "<tr class=\"$rowclass\">\n";
+				echo "<td>".$row["news_title"]."</td>\n";
+				echo "<td>".$row["news_date"]."</td>\n";
+				echo "<td>".create_module_admin_link("News",$id,array("action"=>"edit"),"Edit")."</td>\n";
+				echo "<td>".create_module_admin_link("News",$id,array("action"=>"delete"),"Delete")."</td>\n";
+				echo "</tr>\n";
+				($rowclass=="row1"?$rowclass="row2":$rowclass="row1");
+			}
+			echo "</table>\n";
+		}
+	}
 }
 
 $cmsmodules[MODULE_NAME]['Instance'] = new News;

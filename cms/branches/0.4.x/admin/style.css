@@ -71,6 +71,8 @@ div.nav form {
 	text-align: center;
 	left-margin: auto;
 	right-margin: auto;
+	padding-bottom: 2px;
+	margin-bottom: 4px;
 }
 
 /* end navigation style */
@@ -163,6 +165,10 @@ table.admintable td {
 	color: #64879d;
 	padding: 4px;
 	border: 1px solid #64879d;
+}
+
+.smallselect {
+	font-size: 70%;
 }
 
 /* end table style */

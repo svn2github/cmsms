@@ -15,9 +15,14 @@ class cmsmodule {
 		die("cmsmodule::execute() not implemented!");
 	}
 
+	function executeadmin($cms,$id) {
+		//This is the entryway for the admin section of the module.  It's optional.
+	}
+
 	function upgrade($cms, $oldversion, $newversion) {
 		//This function will be run for upgrading
 	}
+
 
 }
 
@@ -49,6 +54,17 @@ function remove_permission($cms, $permission_name) {
 
 	$query = "DELETE FROM ".$cms->config->db_prefix."permissions WHERE permission_name = " . $db->qstr($permission_name);
 	$db->Execute($query);
+}
+
+function create_module_admin_link($module, $id, $params, $text) {
+
+	$val = "<a href=\"moduleinterface.php?module=$module";
+	foreach ($params as $key=>$value) {
+		$val .= "&$id$key=$value";
+	}
+	$val .= "\">$text</a>";
+	return $val;
+
 }
 
 ?>
