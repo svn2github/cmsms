@@ -1507,7 +1507,7 @@ EOT;
 					}
 					else 
 					{
-						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string" . $this->lang('to') . "$event_date_end_string</div>\n";
+						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string " . $this->lang('to') . " $event_date_end_string</div>\n";
 					}
 					
 					$summary_string = $this->lang('Summary');
