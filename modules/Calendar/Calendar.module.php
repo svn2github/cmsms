@@ -67,7 +67,7 @@ class Calendar extends CMSModule
 
 	function GetVersion()
 	{
-		return '0.5';
+		return '0.6';
 	}
 
 	function GetDescription($lang = 'en_GB')
@@ -207,11 +207,12 @@ EOT;
 		return <<<EOT
 			<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
 			<dl>
-				<dt>Version: 0.5+</dt>
+				<dt>Version: 0.6</dt>
 					<dd>Fix event display so that if the end date is not set, we don't display "to". 
 					Filter by category when displaying an upcominglist.
 					Fix End date setting that was off by one.
-					Fix odd behaviour of year when transitioning from Jan to Dec or Dec to Jan in display=calendar.</dd>
+					Fix odd behaviour of year when transitioning from Jan to Dec or Dec to Jan in the calendar view.
+					Support mutli-day events in the calendar view.</dd>
 				<dt>Version: 0.5</dt>
 					<dd>Fix the drop down list for end date year. Fix DE translation of "Return" (thanks Piratos!).
 					 Fix spacing around "to" (thanks Greg!). Add Danish and Dutch translations courtesy of board members esmann and dont.</dd>
@@ -1248,6 +1249,14 @@ EOT;
 				{
 					$start = sprintf('%04d-%02d-%0d 00:00:00', $year, $month, $day);
 					$end = sprintf('%04d-%02d-%0d 23:59:59', $year, $month, $day);
+					//$sql .= "$where ($events_table_name.event_date_start >= '$start'  AND ($events_table_name.event_date_end <= '$end' OR $events_table_name.event_date_end IS NULL)) ";
+					$sql .= "$where (
+								($events_table_name.event_date_start >= '$start' AND ($events_table_name.event_date_start <= '$start' OR $events_table_name.event_date_end IS NULL)) 
+								OR
+								($events_table_name.event_date_start < '$start' AND $events_table_name.event_date_end >= '$end') 
+								OR
+								($events_table_name.event_date_end >= '$start' AND $events_table_name.event_date_end <= '$end')
+								)";
 				}
 				else 
 				{
@@ -1261,9 +1270,9 @@ EOT;
 					}
 					$last_day_of_month = mktime(0, 0, 0, $nextmonth, 0, $nextyear);
 					$end = sprintf('%04d-%02d-%02d 23:59:59', date('Y', $last_day_of_month), date('m', $last_day_of_month), date('d', $last_day_of_month));
+					$sql .= "$where ($events_table_name.event_date_start >= '$start' OR $events_table_name.event_date_end >= '$start')\n";
 					
 				}
-				$sql .= "$where ($events_table_name.event_date_start >= '$start'  AND ($events_table_name.event_date_end <= '$end' OR $events_table_name.event_date_end IS NULL)) ";
 				$where = ' AND ';
 			}
 			if($category)
@@ -1308,7 +1317,10 @@ EOT;
 			{
 				while($row = $rs->FetchRow())
 				{
-					$day_of_month = date('j', strtotime($row['event_date_start']));
+					$event_date_start_in_seconds = strtotime($row['event_date_start']);
+					$day_of_month = date('j', $event_date_start_in_seconds);
+					$event_date_start_month = date('n', $event_date_start_in_seconds);
+					$event_date_start_year = date('Y', $event_date_start_in_seconds);
 					if($summaries)
 					{
 						if(!isset($content[$day_of_month]))
@@ -1318,15 +1330,87 @@ EOT;
 						$event_id = $row['event_id'];
 						$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'event_id'=>$event_id, 'display'=>'event'), '', true);
 						$url = str_replace('&amp;', '&', $url);
+						
+						// double check month is correct for multi-date events
+						if($event_date_start_month == $month)
+						{
+							$content[$day_of_month] .= "<li><a href='$url' title='$label' alt='$label' >$title</a></li>"; 
+						}
+						
+						// Display multi-day events
+						if($row['event_date_end'] != '' && $row['event_date_start'] != $row['event_date_end'])
+						{
+							$event_date_end_in_seconds = strtotime($row['event_date_end']);
+							$event_date_end_day = date('j', $event_date_end_in_seconds);
+							$event_date_end_month = date('n', $event_date_end_in_seconds);
+							$event_date_end_year = date('Y', $event_date_end_in_seconds);
 							
-						$content[$day_of_month] .= "<li><a href='$url' title='$label' alt='$label' >$title</a></li>"; 
+							// dates up to $day_of_month are in "next month"
+							for($i = 1; $i < $day_of_month; $i++)
+							{
+								if($event_date_end_month == $month)
+								{
+									$content[$i] .= "<li><a href='$url' title='$label' alt='$label' >$title</a></li>"; 
+								}
+								if($i == $event_date_end_day)
+									break;
+							}
+							// dates after $day_of_month are in "this month"
+							for($i = $day_of_month+1; $i < 32; $i++)
+							{
+								if($event_date_start_month == $month)
+								{
+									$content[$i] .= "<li><a href='$url' title='$label' alt='$label' >$title</a></li>"; 
+								}
+								if($i == $event_date_end_day)
+									break;
+							}
+						}
 					}
 					else 
-					{
-						$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'day'=>$day_of_month, 'display'=>'list', 'summaries'=>true), '', true);
-						$url = str_replace('&amp;', '&', $url);
+					{					
+						// double check month is correct for multi-date events
+						if($event_date_start_month == $month)
+						{
+							$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'day'=>$day_of_month, 'display'=>'list', 'summaries'=>true), '', true);
+							$url = str_replace('&amp;', '&', $url);
+							$days[$day_of_month][0] = $url;
+						}
 						
-						$days[$day_of_month][0] = $url;
+						// Display multi-day events
+						if($row['event_date_end'] != '' && $row['event_date_start'] != $row['event_date_end'])
+						{
+							$event_date_end_in_seconds = strtotime($row['event_date_end']);
+							$event_date_end_day = date('j', $event_date_end_in_seconds);
+							$event_date_end_month = date('n', $event_date_end_in_seconds);
+							$event_date_end_year = date('Y', $event_date_end_in_seconds);
+							
+							// dates up to $day_of_month are in "next month"
+							for($i = 1; $i < $day_of_month; $i++)
+							{
+								if($event_date_end_month == $month)
+								{
+									$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'day'=>$i, 'display'=>'list', 'summaries'=>true), '', true);
+									$url = str_replace('&amp;', '&', $url);
+									$days[$i][0] = $url;
+								}
+								if($i == $event_date_end_day)
+									break;
+							}
+							// dates after $day_of_month are in "this month"
+							for($i = $day_of_month+1; $i < 32; $i++)
+							{	
+								if($event_date_start_month == $month)
+								{
+									$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'day'=>$i, 'display'=>'list', 'summaries'=>true), '', true);
+									$url = str_replace('&amp;', '&', $url);
+									$days[$i][0] = $url;
+								}
+								if($i == $event_date_end_day)
+									break;
+							}
+						}
+						
 					}
 				}
 			}
