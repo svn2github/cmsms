@@ -493,6 +493,11 @@ function bookmarks_module_executeadmin($cms,$module_id)
 				bookmarks_module_admin_edit_bookmark($cms, $module_id);
 			break;
 
+			case 'delete_bookmark':
+				bookmarks_module_admin_delete_bookmark($cms, $module_id);
+				RedirectTo($_SERVER['PHP_SELF'] . "?module=Bookmarks&{$module_id}action=bookmarks&result=1");
+			break;
+
 			case 'bookmarks_update':
 				bookmarks_module_admin_update_bookmark($cms, $module_id, 1);
 				RedirectTo($_SERVER['PHP_SELF'] . "?module=Bookmarks&{$module_id}action=bookmarks&result=1");
@@ -609,8 +614,10 @@ function bookmarks_module_about()
 		<dt>Version: 0.9.1</dt>
 			<dd>Bug fixes to help, column handling and the admin list.</dd>
 		<dt>Version: 1.0</dt>
-			<dd>Support email notifications from the submit bookmarks form.<br>
-			Tidied up code.</dd>
+			<dd>Support email notifications from the submit bookmarks form. Addded delete option.
+			Admin list now displays bookmarks that are not attached to any category.
+			Tidied up code.<br>
+			</dd>
 	</dl>
 	<?php
 }

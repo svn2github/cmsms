@@ -202,6 +202,7 @@ EOT;
 		$row_count = 0;
 
 		$edit_url = $_SERVER['PHP_SELF'] . '?module=Bookmarks&amp;'.$module_id.'action=edit_bookmark&amp;'.$module_id.'bookmark_id';
+		$delete_url = $_SERVER['PHP_SELF'] . '?module=Bookmarks&amp;'.$module_id.'action=delete_bookmark&amp;'.$module_id.'bookmark_id';
 
 		// true / false images
 		$image_true ="<img src=\"../images/cms/true.gif\" alt=\"".lang('true')."\" title=\"".lang('true')."\" border=\"0\">";
@@ -236,7 +237,7 @@ EOT;
 				}
 				echo "<div style='font-weight: bold; margin: 5px 0px;'>Category: $current_category_name</div>\n";
 				echo "<table cellspacing=0 class='admintable'>\n";
-				echo "<tr><th>Title</th><th>Url</th><th style='padding: 0px 10px;'>Approved</th><th>Summary</th></tr>\n";
+				echo "<tr><th>Title</th><th>Url</th><th style='padding: 0px 10px;'>Approved</th><th>Summary</th><th></th><th></th></tr>\n";
 			}
 
 			echo <<<EOT
@@ -245,6 +246,12 @@ EOT;
 					<td width='33%'><a class='bookmark-link' href='$bookmark_url' target='_blank'>$bookmark_url</a></td>
 					<td align='center'>$bookmark_approved </td>
 					<td width='33%'>$bookmark_summary </td>
+					
+EOT;
+			// edit and delete icons - borrwed from content list for consistency
+			echo "\t\t\t\t<td align='center'><a href='$edit_url=$bookmark_id'><img src='../images/cms/edit.gif' width='16' height='16' border='0' alt='" . lang('edit') . "' title='" . lang('edit') . "'></a></td>\n";
+			echo "\t\t\t\t<td align='center'><a href='$delete_url=$bookmark_id' onclick=\"return confirm('" . lang('deleteconfirm') . "');\"><img src='../images/cms/delete.gif' width='16' height='16' border='0' alt='" . lang('delete') . "' title='" . lang('delete') . "'></a></td>\n";
+			echo <<<EOT
 				</tr>
 
 EOT;
@@ -310,25 +317,25 @@ function bookmarks_module_admin_display_bookmark_edit_form($cms, $module_id, $bo
 	echo <<<EOT
 
 <input type='hidden' name='{$module_id}action' value='bookmarks_update'>
-<input type="hidden" name="{$module_id}id" value="$bookmark_id">
+<input type="hidden" name="{$module_id}bookmark_id" value="$bookmark_id">
 
 <table border=0 cellpadding=5 cellspacing=0>
     <tr>
         <td align="right">Title:</td>
-        <td colspan=3><input name="{$module_id}title" size=50 value="{$bookmark['bookmark_title']}"></td>
+        <td colspan=3><input name="{$module_id}bookmark_title" size=50 value="{$bookmark['bookmark_title']}"></td>
     </tr>
     <tr>
         <td align="right">Address:</td>
-        <td colspan=3><input name="{$module_id}url" size=50 value="{$bookmark['bookmark_url']}"></td>
+        <td colspan=3><input name="{$module_id}bookmark_url" size=50 value="{$bookmark['bookmark_url']}"></td>
     </tr>
     <tr>
     	<td style='padding-right: 5px;'>Approved:</td>
-    	<td><input type='radio' name="{$module_id}approved" $approved_checked_on value=1>Yes
-    		<input type='radio' name="{$module_id}approved" $approved_checked_off value=0>No</td>
+    	<td><input type='radio' name="{$module_id}bookmark_approved" $approved_checked_on value=1>Yes
+    		<input type='radio' name="{$module_id}bookmark_approved" $approved_checked_off value=0>No</td>
     <tr>
     <tr>
         <td align="right">Summary:</td>
-        <td colspan=3><input name="{$module_id}summary" size=50 value="{$bookmark['bookmark_summary']}"></td>
+        <td colspan=3><input name="{$module_id}bookmark_summary" size=50 value="{$bookmark['bookmark_summary']}"></td>
     </tr>
     <tr>
         <td align="right">Categories:</td>
@@ -355,7 +362,7 @@ EOT;
 			$checked = '';
 			if(in_array($cat_id, $bookmark['categories']))
 			$checked = 'checked';
-			echo "<div><input type='checkbox' value='$cat_id' name='{$module_id}categories[]' $checked>$cat_name</div>\n";
+			echo "<div><input type='checkbox' value='$cat_id' name='{$module_id}bookmark_categories[]' $checked>$cat_name</div>\n";
 		}
 	}
 	echo <<<EOT
@@ -386,23 +393,22 @@ function bookmarks_module_admin_update_bookmark($cms, $module_id, $approved=0)
 	$bookmarks_table_name = cms_db_prefix().'module_bookmarks';
 	$bookmarks_to_categories_table_name = cms_db_prefix().'module_bookmarks_to_categories';
 
-	/* @var $db ADOConnection */
 	/* @var $rs ADORecordset */
 	$user_id = $cms->variables['user_id'];
-	$categories = getRequestValue($module_id.'categories');
-	$bookmark_id = getRequestValue($module_id.'id', -1);
-	$title = $db->quote(getRequestValue($module_id.'title'), get_magic_quotes_runtime());
-	$url = $db->quote(getRequestValue($module_id.'url'), get_magic_quotes_runtime());
-	$summary = $db->quote(getRequestValue($module_id.'summary'), get_magic_quotes_runtime());
-	$bookmark_approved = getRequestValue($module_id.'approved', 0);
+	$categories = getRequestValue($module_id.'bookmark_categories');
+	$bookmark_id = getRequestValue($module_id.'bookmark_id', -1);
+	$bookmark_title = $db->quote(getRequestValue($module_id.'bookmark_title'), get_magic_quotes_runtime());
+	$bookmark_url = $db->quote(getRequestValue($module_id.'bookmark_url'), get_magic_quotes_runtime());
+	$bookmark_summary = $db->quote(getRequestValue($module_id.'bookmark_summary'), get_magic_quotes_runtime());
+	$bookmark_approved = getRequestValue($module_id.'bookmark_approved', 0);
 
 	if($approved && $bookmark_id > -1)
 	{
 		// update
 		$sql = "UPDATE $bookmarks_table_name SET
-					bookmark_title = $title
-					,bookmark_url = $url
-					,bookmark_summary = $summary
+					bookmark_title = $bookmark_title
+					,bookmark_url = $bookmark_url
+					,bookmark_summary = $bookmark_summary
 					,bookmark_approved = $bookmark_approved
 					,bookmark_modified_date = NOW()
 				WHERE bookmark_id = $bookmark_id";
@@ -423,11 +429,11 @@ function bookmarks_module_admin_update_bookmark($cms, $module_id, $approved=0)
 					,bookmark_modified_date
 				) VALUES (
 				$bookmark_id
-				,$title
-				,$url
-				,$summary
+				,$bookmark_title
+				,$bookmark_url
+				,$bookmark_summary
 				,$user_id
-				,$approved
+				,$bookmark_approved
 				,NOW()
 				,NOW()
 				)";
@@ -454,6 +460,29 @@ function bookmarks_module_admin_update_bookmark($cms, $module_id, $approved=0)
 
 }
 
+/**
+ * @return void
+ * @param CmsObject $cms
+ * @param string $module_id
+ * @desc Deletes a bookmark
+*/
+function bookmarks_module_admin_delete_bookmark($cms, $module_id)
+{
+	$db = $cms->db; /* @var $db ADOConnection */
+	$bookmarks_table_name = cms_db_prefix().'module_bookmarks';
+	$bookmarks_to_categories_table_name = cms_db_prefix().'module_bookmarks_to_categories';
+
+	$bookmark_id = getRequestValue($module_id.'bookmark_id', -1);
+
+	
+	// delete current bookmarks_to_categories records for this bookmark
+	$sql = "DELETE FROM $bookmarks_to_categories_table_name WHERE bookmark_id = $bookmark_id";
+	$db->Execute($sql);
+
+	// delete this bookmark
+	$sql = "DELETE FROM $bookmarks_table_name WHERE bookmark_id = $bookmark_id";
+	$db->Execute($sql);
+}
 
 /**
  * @return void
