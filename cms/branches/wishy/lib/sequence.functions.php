@@ -23,7 +23,7 @@
  *
  */
 	function setSequence($name, $actions, $panic, $active) {
-		$this = new Sequence();
+		$newSeq = new Sequence();
 		$actionsarr = array ();
 		if (is_array($actions)) {
 			$actionsarr = $actions;
@@ -33,11 +33,11 @@
 		 		$actionsarr[i] = trim ($actionsarr[i]);
 		 	}
 		}
-		$this->name = $name;
-		$this->actions = $actionsarr;
-		$this->panic = $panic;
-		$this->active = $active;
-		$this->Save();
+		$newSeq->name = $name;
+		$newSeq->actions = $actionsarr;
+		$newSeq->panic = $panic;
+		$newSeq->active = $active;
+		$newSeq->Save();
 	}
 
 /*
