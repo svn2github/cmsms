@@ -241,19 +241,19 @@ if (isset($_GET["message"])) {
 					{
 						if ($item_order == 1 && $num_same_level)
 						{
-							echo "<a href=\"movecontent.php?direction=down&amp;page_id=".$one->page_id."&amp;parent_id=".$one->parent_id."&amp;page=".$page."\">".
+							echo "<a href=\"movecontent.php?direction=down&amp;content_id=".$one->Id()."&amp;parent_id=".$one->ParentId()."&amp;page=".$page."\">".
 								"<img src=\"../images/cms/arrow-d.gif\" alt=\"".lang('down')."\" title=\"".lang('down')."\" border=\"0\"></a>";
 						}
 						else if ($item_order == $num_same_level)
 						{
-							echo "<a href=\"movecontent.php?direction=up&amp;page_id=".$one->page_id."&amp;parent_id=".$one->parent_id."&amp;page=".$page."\">".
+							echo "<a href=\"movecontent.php?direction=up&amp;content_id=".$one->Id()."&amp;parent_id=".$one->ParentId()."&amp;page=".$page."\">".
 								"<img src=\"../images/cms/arrow-u.gif\" alt=\"".lang('up')."\" title=\"".lang('up')."\" border=\"0\"></a>";
 						}
 						else
 						{
-							echo "<a href=\"movecontent.php?direction=down&amp;page_id=".$one->page_id."&amp;parent_id=".$one->parent_id."&amp;page=".$page."\">".
+							echo "<a href=\"movecontent.php?direction=down&amp;content_id=".$one->Id()."&amp;parent_id=".$one->ParentId()."&amp;page=".$page."\">".
 								"<img src=\"../images/cms/arrow-d.gif\" alt=\"".lang('down')."\" title=\"".lang('down')."\" border=\"0\"></a>&nbsp;".
-								"<a href=\"movecontent.php?direction=up&amp;page_id=".$one->page_id."&amp;parent_id=".$one->parent_id."&amp;page=".$page."\">".
+								"<a href=\"movecontent.php?direction=up&amp;content_id=".$one->Id()."&amp;parent_id=".$one->ParentId()."&amp;page=".$page."\">".
 								"<img src=\"../images/cms/arrow-u.gif\" alt=\"".lang('up')."\" title=\"".lang('up')."\" border=\"0\"></a>";
 						}
 					}
