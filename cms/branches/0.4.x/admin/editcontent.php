@@ -92,8 +92,8 @@ if (!$access) {
 }
 
 if (get_preference($config, $userid, 'use_wysiwyg') == "1") {
-	$tinymce_flag = "true";
-	$templatepostback = " onchange=\"document.editform.content_change.value=1;tinyMCE.triggerSave();document.editform.submit()\"";
+	$htmlarea_flag = "true";
+	$templatepostback = " onchange=\"document.editform.content_change.value=1;document.editform.content.value=content.getHTML();document.editform.submit()\"";
 }
 
 if ($access) {
@@ -317,7 +317,7 @@ else {
 <?php if ($content_type == "content") { ?>
 	<tr>
 		<td>*<?=$gettext->gettext("Content")?>:</td>
-		<td><textarea name="content" cols="90" rows="18"><?=htmlentities($content)?></textarea></td>
+		<td><textarea id="content" name="content" cols="90" rows="24"><?=htmlentities($content)?></textarea></td>
 	</tr>
 <?php } ?>
 	<tr>

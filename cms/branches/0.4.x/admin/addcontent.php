@@ -73,8 +73,8 @@ $access = check_permission($config, $userid, 'Add Content');
 
 $templatepostback = "";
 if (get_preference($config, $userid, 'use_wysiwyg') == "1") {
-	$tinymce_flag = "true";
-	$templatepostback = " onchange=\"tinyMCE.triggerSave();document.addform.submit()\"";
+	$htmlarea_flag = "true";
+	$templatepostback = " document.addform.submit()\"";
 }
 
 if ($access) {
@@ -255,7 +255,7 @@ else {
 <?php if ($content_type == "content") { ?>
 	<tr>
 		<td>*<?=$gettext->gettext("Content")?>:</td>
-		<td><textarea name="content" cols="90" rows="18"><?=$content?></textarea></td>
+		<td><textarea id="content" name="content" style="width:100%" cols="80" rows="24"><?=$content?></textarea></td>
 	</tr>
 <?php } ?>
 	<tr>
