@@ -855,6 +855,7 @@ class ContentBase
 	*/
 	function ContentPreRender($tpl_source)
 	{
+		return $tpl_source;
 	}
 
 	/**
