@@ -18,9 +18,10 @@
 
 function tinymce_module_header_function($cms)
 {
+	global $gCms;
 	?>
 
-	<script language="javascript" type="text/javascript" src="http://cms.wishy.org/modules/TinyMCE/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
+	<script language="javascript" type="text/javascript" src="<?php echo $gCms->config['root_url'] ?>/modules/TinyMCE/tinymce/jscripts/tiny_mce/tiny_mce.js"></script>
 	<script language="javascript" type="text/javascript">
 		tinyMCE.init({
 			mode : "specific_textareas",
