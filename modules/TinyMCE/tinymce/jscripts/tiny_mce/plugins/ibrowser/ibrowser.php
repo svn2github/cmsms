@@ -436,6 +436,7 @@ function uploadImg($img) {
   global $errors;
   global $l;
   global $tinyMCE_upload_allowed;
+  global $config;
   
   if (!$tinyMCE_upload_allowed) return false;
 
@@ -481,6 +482,7 @@ function deleteImg()
   global $tinyMCE_img_delete_allowed;
   global $errors;
   global $l;
+  global $config;
   
   if (!$tinyMCE_img_delete_allowed) return false;
 
