@@ -17,10 +17,19 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-cms_mapi_register_intermodule_function($module_name, 'admin_display_category', 'commoncode_module_admin_display_category');
-cms_mapi_register_intermodule_function($module_name, 'admin_update_categories', 'commoncode_module_admin_update_categories');
-cms_mapi_register_intermodule_function($module_name, 'get_categories', 'commoncode_module_get_categories');
+cms_mapi_register_intermodule_function($module_name, 'admin_display_category', 'commoncode_module_admin_display_category_intermodule');
+cms_mapi_register_intermodule_function($module_name, 'admin_update_categories', 'commoncode_module_admin_update_categories_intermodule');
+cms_mapi_register_intermodule_function($module_name, 'get_categories', 'commoncode_module_get_categories_intermodule');
 
+
+
+function commoncode_module_get_categories_intermodule($params)
+{
+	$db = $params[0];
+	$categories_table_name = $params[1];
+	$order_by = isset($params[2]) ? $params[2] : 'category_order, category_name';
+	commoncode_module_get_categories($db, $categories_table_name, $order_by);
+}
 /**
  * @return array
  * @param ADOConnection $db
@@ -42,6 +51,15 @@ function commoncode_module_get_categories($db, $categories_table_name, $order_by
     return $result;
 }
 
+function commoncode_module_admin_display_category_intermodule($params)
+{
+	$cms = $params[0];
+	$module_id = $params[1];
+	$module_name = $params[2];
+	$categories_table_name = $params[3];
+	commoncode_module_admin_display_category($cms, $module_id, $module_name, $categories_table_name);
+}
+	
 /**
  * @return void
  * @param CmsObject $cms
@@ -105,6 +123,19 @@ EOT;
     echo cms_mapi_create_admin_form_end();
 }
 
+
+function commoncode_module_admin_update_categories_intermodule($params)
+{
+	$cms = $params[0];
+	$module_id = $params[1];
+	$categories_table_name = $params[2];
+	$data_to_categories_table_name = $params[3];
+
+	commoncode_module_admin_update_categories($cms, $module_id, $categories_table_name,
+		$data_to_categories_table_name);
+}
+	
+
 /**
  * @return void
  * @param CmsObject $cms
@@ -115,8 +146,7 @@ function commoncode_module_admin_update_categories($cms, $module_id, $categories
 		$data_to_categories_table_name)
 {
     $db = $cms->db; /* @var $db ADOConnection */
-	$categories_table_name = cms_db_prefix().'module_bookmarks_categories';
-	$bookmarks_to_categories_table_name = cms_db_prefix().'module_bookmarks_to_categories';
+    $db->debug = true;
 
 	/* @var $db ADOConnection */
 	/* @var $rs ADORecordset */
@@ -160,7 +190,7 @@ function commoncode_module_admin_update_categories($cms, $module_id, $categories
 		elseif($name != '')
 		{
 			$name = $db->quote($names[$i], get_magic_quotes_runtime());
-			$new_id = $db->GenID(cms_db_prefix().$categories_table_name.'_seq');
+			$new_id = $db->GenID($categories_table_name.'_seq');
 
 			$sql = "INSERT INTO $categories_table_name (category_id, category_name, category_order)
 					VALUES ($new_id, $name, $order_by)";
