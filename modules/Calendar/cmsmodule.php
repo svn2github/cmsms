@@ -20,7 +20,7 @@
 // Set the module name -- should be the name of the class
 $module_name = "Calendar";
 
-// Load class definition 
+// Load class definition
 require_once(dirname(__FILE__).'/calendar.php');
 
 // Register module
@@ -45,14 +45,6 @@ cms_mapi_register_help_function($module_name, 'calendar_module__help');
 cms_mapi_register_about_function($module_name, 'calendar_module__about');
 
 //Register module to work as a content type
-cms_mapi_register_content_module($module_name);
-cms_mapi_register_content_module_set_properties_function($module_name, 'calendar_module__content_set_properties');
-cms_mapi_register_content_module_edit_function($module_name, 'calendar_module__content_edit');
-cms_mapi_register_content_module_fill_params_function($module_name, 'calendar_module__content_fill_params');
-cms_mapi_register_content_module_get_url_function($module_name, 'calendar_module__content_get_url');
-cms_mapi_register_content_module_show_function($module_name, 'calendar_module__content_show');
-
-
 
 function calendar_module__about()
 {
@@ -67,6 +59,7 @@ EOT;
 
 }
 
+// Generic module API functions
 function calendar_module__help($cms)
 {
 	$calendar = new AkraCalendar($cms); /* @var $calendar AkraCalendar */
@@ -75,14 +68,14 @@ function calendar_module__help($cms)
 
 function calendar_module__install($cms)
 {
-	$calendar = new AkraCalendar($cms); /* @var $calendar AkraCalendar */ 
+	$calendar = new AkraCalendar($cms); /* @var $calendar AkraCalendar */
 	$calendar->Install();
 }
 
 function calendar_module__upgrade($cms, $oldversion, $newversion)
 {
 	$calendar = new AkraCalendar($cms); /* @var $calendar AkraCalendar */
-	$calendar->Upgrade();
+	$calendar->Upgrade($oldversion, $newversion);
 }
 
 function calendar_module__uninstall($cms)
@@ -93,19 +86,22 @@ function calendar_module__uninstall($cms)
 
 function calendar_module__execute($cms, $id, $params)
 {
-	$calendar = new AkraCalendar($cms); /* @var $calendar AkraCalendar */
+	$calendar = new AkraCalendar($cms, $id); /* @var $calendar AkraCalendar */
+	$calendar->SetParams($params);
 	$calendar->Execute();
 }
 
 function calendar_module__executeuser($cms, $id, $return_id, $params)
 {
-	$calendar = new AkraCalendar($cms); /* @var $calendar AkraCalendar */
+	$calendar = new AkraCalendar($cms, $id); /* @var $calendar AkraCalendar */
+	$calendar->SetReturnId($return_id);
+	$calendar->SetParams($params);
 	$calendar->ExecuteUser();
 }
 
-function calendar_module__executeadmin($cms,$id)
+function calendar_module__executeadmin($cms, $id)
 {
-	$calendar = new AkraCalendar($cms); /* @var $calendar AkraCalendar */
+	$calendar = new AkraCalendar($cms, $id); /* @var $calendar AkraCalendar */
 	$calendar->ExecuteAdmin();
 }
 
