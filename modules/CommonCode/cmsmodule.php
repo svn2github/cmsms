@@ -22,7 +22,7 @@
 $module_name = "CommonCode";
 
 // Register module
-cms_mapi_register_module($module_name, "Rob Allen <rob@akrabat.com>", "1.0");
+cms_mapi_register_module($module_name, "Rob Allen <rob@akrabat.com>", "1.1");
 
 // Register callback help and about functions
 cms_mapi_register_help_function($module_name, 'commoncode_module_help');
@@ -39,13 +39,16 @@ function commoncode_module_help($cms)
 
 function commoncode_module_about()
 {
-	?>
-	<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
-	<dl>
+?>
+<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
+<dl>
 	<dt>Version: 1.0</dt>
-	<dd>Initial realase.<br>Functions provided: RedirectTo(), getRequestValue() and DB().</dd>
-	</dl>
-	<?php
+		<dd>Initial release.<br>Functions provided: RedirectTo(), getRequestValue() and DB().</dd>
+	<dt>Version: 1.1</dt>
+		<dd>Added categories.inc.php<br>
+		Added getParamValue()</dd>
+</dl>
+<?php
 }
 
 # vim:ts=4 sw=4 noet
