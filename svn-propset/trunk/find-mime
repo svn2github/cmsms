@@ -19,7 +19,7 @@
 
 VERSION="${0##*/} Version 0.1"
 
-USAGE="Usage: ${0##*/} -t|--text | -e|--exec | -h|--help -v|--version -u|--usage [path]"
+USAGE="Usage: ${0##*/} -t|--text | -e|--exec | -b|--bin | -a|--all | -h|--help -v|--version -u|--usage [path]"
 
 HELP="This script displays filenames with their mime-types.
 
@@ -108,6 +108,10 @@ while [ $# -gt 0 ]; do
     -b|--bin)
   		_MIME_TYPES="${NOT_BIN_MIME_TYPES[*]}"
 		REV="-v"
+		shift
+		;;
+    -a|--all)
+  		_MIME_TYPES=".*"
 		shift
 		;;
     -u|--usage)
