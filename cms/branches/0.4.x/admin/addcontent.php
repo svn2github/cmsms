@@ -108,7 +108,7 @@ if ($access) {
 				$order = $row["item_order"];	
 			}
 			$new_page_id = $dbnew->GenID($config->db_prefix."pages_seq");
-			$query = "INSERT INTO ".$config->db_prefix."pages (page_title, page_url, page_content, page_type, section_id, template_id, owner, show_in_menu, menu_text, item_order, active, create_date, modified_date) VALUES (".$dbnew->qstr($title).",".$dbnew->qstr($url).",".$dbnew->qstr($content).",".$dbnew->qstr($content_type).", $section_id, $template_id, $userid, $showinmenu, ".$dbnew->qstr($menutext).", $order, $active, now(), now())";
+			$query = "INSERT INTO ".$config->db_prefix."pages (page_id, page_title, page_url, page_content, page_type, section_id, template_id, owner, show_in_menu, menu_text, item_order, active, create_date, modified_date) VALUES ($new_page_id, ".$dbnew->qstr($title).",".$dbnew->qstr($url).",".$dbnew->qstr($content).",".$dbnew->qstr($content_type).", $section_id, $template_id, $userid, $showinmenu, ".$dbnew->qstr($menutext).", $order, $active, now(), now())";
 			$result = $dbnew->Execute($query);
 			if ($result) {
 				if (isset($_POST["additional_editors"])) {
@@ -261,7 +261,7 @@ else {
 		<td><?=$gettext->gettext("Section")?>:</td>
 		<td><?=$dropdown?></td>
 	</tr>
-<?php if ($content_type == "content") { ?>
+<?php if ($content_type != "link") { ?>
 	<tr>
 		<td><?=$gettext->gettext("Template")?>:</td>
 		<td><?=$dropdown2?></td>

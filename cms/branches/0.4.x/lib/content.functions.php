@@ -36,7 +36,7 @@ class Smarty_CMS extends Smarty {
 		$this->caching = true;
 		$this->assign('app_name','CMS');
 		$this->debugging = false;
-		$this->force_compile = false;
+		$this->force_compile = true;
 
 		$this->register_resource("db", array(&$this, "db_get_template",
 						       "db_get_timestamp",
@@ -47,9 +47,11 @@ class Smarty_CMS extends Smarty {
 	function db_get_template ($tpl_name, &$tpl_source, &$smarty_obj)
 	{
 
+		global $cmsmodules;
+
 		$db = $smarty_obj->configCMS->db;
 
-		$query = "SELECT UNIX_TIMESTAMP(p.modified_date) as modified_date, p.page_content, p.page_title, t.template_id, t.stylesheet, t.template_content FROM ".$this->configCMS->db_prefix."pages p INNER JOIN ".$this->configCMS->db_prefix."templates t ON p.template_id = t.template_id WHERE p.page_url = '$tpl_name' AND p.active = 1";
+		$query = "SELECT UNIX_TIMESTAMP(p.modified_date) as modified_date, p.page_content, p.page_title, p.page_type, t.template_id, t.stylesheet, t.template_content FROM ".$this->configCMS->db_prefix."pages p INNER JOIN ".$this->configCMS->db_prefix."templates t ON p.template_id = t.template_id WHERE p.page_url = '$tpl_name' AND p.active = 1";
 		$result = $db->Execute($query);
 
 		if ($result && $result->RowCount()) {
@@ -66,13 +68,27 @@ class Smarty_CMS extends Smarty {
 			$content = $line[page_content];
 			$title = $line[page_title];
 			$tpl_source = ereg_replace("\{stylesheet\}", $stylesheet, $tpl_source);
-			$tpl_source = ereg_replace("\{content\}", $content, $tpl_source);
 			$tpl_source = ereg_replace("\{title\}", $title, $tpl_source);
+
 			#So no one can do anything nasty
 			$tpl_source = ereg_replace("\{\/?php\}", "", $tpl_source);
-
-			if ($this->configCMS->use_bb_code == true && isset($this->configCMS->bbcodeparser)) {
-				$tpl_source = $this->configCMS->bbcodeparser->qparse($tpl_source);
+			
+			if ($line["page_type"] == "content") {
+				#If it's regular content, do this...
+				$tpl_source = ereg_replace("\{content\}", $content, $tpl_source);
+				if ($this->configCMS->use_bb_code == true && isset($this->configCMS->bbcodeparser)) {
+					$tpl_source = $this->configCMS->bbcodeparser->qparse($tpl_source);
+				}
+			} else {
+				#If it's a module, do this instead...
+				if (isset($cmsmodules[$line["page_type"]])) {
+					@ob_start();
+					$obj = $cmsmodules[$line["page_type"]]['Instance'];
+					$obj->execute();
+					$modoutput = @ob_get_contents();
+					@ob_end_clean();
+					$tpl_source = ereg_replace("\{content\}", $modoutput, $tpl_source);
+				}
 			}
 
 			return true;
@@ -87,20 +103,28 @@ class Smarty_CMS extends Smarty {
 
 		$db = $smarty_obj->configCMS->db;
 
-		$query = "SELECT UNIX_TIMESTAMP(IF(t.modified_date>p.modified_date,t.modified_date,p.modified_date)) as create_date FROM ".$this->configCMS->db_prefix."pages p INNER JOIN ".$this->configCMS->db_prefix."templates t ON t.template_id = p.template_id WHERE p.page_url = '$tpl_name' AND p.active = 1";
+		$query = "SELECT UNIX_TIMESTAMP(IF(t.modified_date>p.modified_date,t.modified_date,p.modified_date)) as create_date, p.page_type FROM ".$this->configCMS->db_prefix."pages p INNER JOIN ".$this->configCMS->db_prefix."templates t ON t.template_id = p.template_id WHERE p.page_url = '$tpl_name' AND p.active = 1";
 		$result = $db->Execute($query);
 
 		if ($result && $result->RowCount()) {
 			$line = $result->FetchRow();
 
-			$tpl_timestamp = $line["create_date"];
+			#We only want to cache "static" content
+			if ($line["page_type"] == "content") {
 
-			return true;
+				$tpl_timestamp = $line["create_date"];
+				return true;
+
+			} else {
+
+				$tpl_timestamp = time();
+				return true;
+
+			}
 		}
 		else {
 
 			$tpl_timestamp = time();
-
 			return false;
 		}
 	}
@@ -179,16 +203,16 @@ function db_get_menu_items(&$config) {
 
 		$menu_item = new MenuItem;
 		$menu_item->name = $line["menu_text"];
-		if ($line['page_type'] == "content") {
+		if ($line['page_type'] == "link") {
+			$menu_item->url = $line["page_url"];
+		}
+		else {
 			if (isset($config->query_var) && $config->query_var != "") {
 				$menu_item->url = $config->root_url."/index.php?".$config->query_var."=".$line["page_url"];
 			}
 			else {
 				$menu_item->url = $config->root_url."/index.php/".$line["page_url"];
 			}
-		}
-		else if ($line['page_type'] == "link") {
-			$menu_item->url = $line["page_url"];
 		}
 		array_push($current_section->items, $menu_item);
 	}
@@ -202,8 +226,16 @@ function db_get_menu_items(&$config) {
 
 function get_page_types(&$config) {
 
+	global $cmsmodules;
+
 	$result['content'] = 'Content';
 	$result['link'] = 'Link';
+
+	if (isset($cmsmodules)) {
+		foreach ($cmsmodules as $key=>$value) {
+			$result[$key] = $key;
+		}
+	}
 
 	return $result;
 
