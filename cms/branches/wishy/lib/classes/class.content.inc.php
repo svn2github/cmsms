@@ -990,7 +990,7 @@ class ContentManager
 		}
 		else
 		{
-			$query = "SELECT * FROM ".cms_db_prefix()."content WHERE content_id = ?";
+			$query = "SELECT * FROM ".cms_db_prefix()."content WHERE content_alias = ?";
 			if ($only_active == true)
 			{
 				$query .= " AND active = 1";
