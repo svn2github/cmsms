@@ -58,7 +58,7 @@ $MY_URL_TO_OPEN_FILE 	= $config["uploads_url"];
         You should always include server side executable file types in MY_DENY_EXTENSIONS !!!
 */
 
-$MY_ALLOW_EXTENSIONS	= array('html', 'doc', 'xls', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf');
+$MY_ALLOW_EXTENSIONS	= array('html', 'doc', 'xls', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf', 'mp3', 'ogg');
 $MY_DENY_EXTENSIONS		= array('php', 'php3', 'php4', 'phtml', 'shtml', 'cgi', 'pl');
 
 /*
@@ -66,7 +66,7 @@ $MY_DENY_EXTENSIONS		= array('php', 'php3', 'php4', 'phtml', 'shtml', 'cgi', 'pl
  This array specifies which files are listed in dialog. Setting to null causes that all files are listed.
  NOTE: File extensions arrays are case insensitive.
 */
-$MY_LIST_EXTENSIONS		= array('html', 'doc', 'xls', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf');
+$MY_LIST_EXTENSIONS		= array('html', 'doc', 'xls', 'txt', 'gif', 'jpeg', 'jpg', 'png', 'pdf', 'mp3', 'ogg');
 
 /*
  MY_ALLOW_CREATE
@@ -156,7 +156,7 @@ $MY_DATETIME_FORMAT		= "d.m.Y H:i";
  IF_DATE
     last modification time acording to $MY_DATETIME_FORMAT format
 */
-$MY_LINK_FORMAT         = '<SPAN CLASS="filelink"><IMG SRC="_editor_urlplugins/InsertFile/IF_ICON" ALT="IF_URL" BORDER="0">&nbsp;<A HREF="IF_URL">IF_CAPTION</A> &nbsp;<SPAN STYLE="font-size:70%">IF_SIZE &nbsp;IF_DATE</SPAN></SPAN>&nbsp;';
+$MY_LINK_FORMAT         = '<SPAN CLASS="filelink"><IMG SRC="_editor_urlplugins/InsertFile/IF_ICON" ALT="IF_URL" BORDER="0">&nbsp;<A HREF="'.$config['uploads_url'].'IF_URL">IF_CAPTION</A> &nbsp;<SPAN STYLE="font-size:70%">IF_SIZE &nbsp;IF_DATE</SPAN></SPAN>&nbsp;';
 
 
 /*

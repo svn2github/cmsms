@@ -314,7 +314,10 @@ class ImageManager
 		if($this->config['safe_mode'] == true
 			|| strlen(trim($this->config['thumbnail_dir'])) == 0)
 		{
-			Return Files::makeFile($this->getBaseURL(),$thumbnail);
+			//Return Files::makeFile($this->getBaseURL(),$thumbnail);
+			$path = Files::makePath($path_parts['dirname'],'');
+			$url_path = Files::makePath($this->getBaseURL(), $path);
+			Return Files::makeFile($url_path,$thumbnail);
 		}
 		else
 		{
