@@ -20,6 +20,8 @@
 
 cms_mapi_register_intermodule_function($module_name, 'RedirectTo', 'RedirectTo');
 cms_mapi_register_intermodule_function($module_name, 'DB', 'DB1');
+cms_mapi_register_intermodule_function($module_name, 'GetRequestValue', 'GetRequestValue1');
+cms_mapi_register_intermodule_function($module_name, 'GetParamValue', 'GetParamValue1');
 
 /**
 * @return void
@@ -112,6 +114,12 @@ function DB($var, $title="", $echo_to_screen = true)
 	return $output;
 }
 
+function GetRequestValue1($function_parameters)
+{
+	list($value, $default_value, $session_key) = $function_parameters;
+	return getRequestValue($value, $default_value, $session_key);
+}
+
 /**
 * @return mixed
 * @param string $value
@@ -194,7 +202,13 @@ function getValueWithDefault($value, $default_value = '')
 	return $return_value;
 }
 
-function getParamValue($value, $params, $default = '')
+function GetParamValue1($function_parameters)
+{
+	list($id, $value, $params, $default) = $function_parameters;
+	return getParamValue($id, $value, $params, $default);
+}
+
+function getParamValue($id, $value, $params, $default = '')
 {
 	$return_value = $default;
 	
@@ -221,6 +235,7 @@ function getParamValue($value, $params, $default = '')
 			$return_value = $params[$value];
 		}
 	}	
+	
 	return $return_value;
 }
 
