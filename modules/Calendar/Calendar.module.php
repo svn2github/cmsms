@@ -533,9 +533,9 @@ EOT;
 				$cat_name = $category['category_name'];
 				$checked = '';
 				if(in_array($cat_id, $event['categories']))
-				$checked = 'checked';
+					$checked = $cat_id;
 				echo "<div>";
-				echo $this->CreateInputCheckbox($id, 'event_categories[]', $cat_id, $cat_id);
+				echo $this->CreateInputCheckbox($id, 'event_categories[]', $cat_id, $checked);
 				echo $cat_name; 
 				echo "</div>\n";
 			}
