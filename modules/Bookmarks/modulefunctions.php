@@ -432,7 +432,8 @@ function bookmarks_module_executeadmin($cms,$module_id)
 
 		case 'categories_update':
 			$categories_table_name = cms_db_prefix().'module_bookmarks_categories';
-			commoncode_module_admin_update_categories($cms, $module_id, $categories_table_name);
+			commoncode_module_admin_update_categories($cms, $module_id, $categories_table_name,
+					cms_db_prefix()."module_bookmarks_to_categories");
 			redirect($_SERVER['PHP_SELF'] . '?module=Bookmarks&'.$module_id.'action=categories&result=1');
 		break;
 
