@@ -123,8 +123,9 @@ class Smarty_CMS extends Smarty {
 			#If this fails, then it basically is a standard 404 error or a custom with no template
 			if (!($contentobj === FALSE && $templateobj === FALSE))
 			{
-				$stylesheet = "";
+				$stylesheet = '<link rel="stylesheet" type="text/css" href="stylesheet.php?templateid='.$template_id.'" />';
 
+				/*
 				if (isset($templateobj->stylesheet) && $templateobj->stylesheet != '')
 				{
 					$stylesheet .= "<style type=\"text/css\">\n";
@@ -133,27 +134,30 @@ class Smarty_CMS extends Smarty {
 				}
 
 				#Handle "advanced" CSS Management
-				$tempstylesheet = "";
-
 				$cssquery = "SELECT css_text FROM ".cms_db_prefix()."css, ".cms_db_prefix()."css_assoc
 					WHERE	css_id		= assoc_css_id
 					AND		assoc_type	= 'template'
 					AND		assoc_to_id = '".$contentobj->TemplateId()."'";
 				$cssresult = $db->Execute($cssquery);
 
-				$stylesheet .= "<style type=\"text/css\">\n";
-				while ($cssline = $cssresult->FetchRow())
+				if ($cssresult && $cssresult->RowCount() > 0)
 				{
-					$tempstylesheet .= "\n".$cssline['css_text']."\n";
+					$tempstylesheet = "";
+					$stylesheet .= "<style type=\"text/css\">\n";
+					while ($cssline = $cssresult->FetchRow())
+					{
+						$tempstylesheet .= "\n".$cssline['css_text']."\n";
+					}
+					$stylesheet .= "{literal}".$tempstylesheet."{/literal}";
+					$stylesheet .= "</style>\n";
 				}
-				$stylesheet .= "{literal}".$tempstylesheet."{/literal}";
-				$stylesheet .= "</style>\n";
+				*/
 
 				#Time to fill our template content
 				#If it's in print mode, then just create a simple stupid template
 				if (isset($_GET["print"]))
 				{
-					$tpl_source = '<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0 Transitional//EN\"><html><head>{stylesheet}{literal}<style type=\"text/css\" media=\"print\">#back{display: none;}</style>{/literal}</head><body style="background-color: white; color: black; background-image; none;"><form action="index.php?page='.$tpl_name.'" method="post"><input type="submit" value="Go Back"></form>{content}</body></html>';
+					$tpl_source = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'."\n".'<html><head><title>{title}</title>{stylesheet}{literal}<style type="text/css" media="print">#back {display: none;}</style>{/literal}</head><body style="background-color: white; color: black; background-image: none;"><form action="index.php?page='.$tpl_name.'" method="post"><input type="submit" value="Go Back"></form>{content}</body></html>';
 				}
 				else
 				{

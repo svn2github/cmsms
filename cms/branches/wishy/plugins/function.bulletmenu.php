@@ -94,7 +94,7 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 			}
 			if ($onecontent->Type() == 'separator')
 			{
-				$menu .= "<hr class=\"separator\"/>\n";
+				$menu .= "<li style=\"list-style-type: none;\"><hr class=\"separator\"/></li>\n";
 			}
 			else
 			{
