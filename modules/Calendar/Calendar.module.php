@@ -996,7 +996,7 @@ EOT;
 			$sql .= " ORDER BY $events_table_name.event_date ASC";
 		}
 		//debug_display($sql, '$sql');
-		if(($display == 'list' || $display='upcominglist') && $limit > 0)
+		if(($display == 'list' || $display == 'upcominglist') && $limit > 0)
 		{
 			$rs = $db->SelectLimit($sql, $limit);
 		}
@@ -1004,7 +1004,7 @@ EOT;
 		{
 			$rs = $db->Execute($sql);
 		}
-		
+
 		if($display == 'calendar')
 		{
 			$days = array();
