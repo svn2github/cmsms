@@ -244,6 +244,24 @@ class CMSModule extends ModuleOperations
 	}
 
 	/**
+	 * Called before a user is deleted from the database.  Sends the user object.
+	 *
+	 * @param User The user that was just deleted 
+	 */
+	function DeleteUserPre(&$user)
+	{
+	}
+
+	/**
+	 * Called after a user is deleted from the database.  Sends the user object.
+	 *
+	 * @param User The user that was just deleted 
+	 */
+	function DeleteUserPost(&$user)
+	{
+	}
+
+	/**
 	 * ------------------------------------------------------------------
 	 * Group Related Functions
 	 * ------------------------------------------------------------------
@@ -282,6 +300,24 @@ class CMSModule extends ModuleOperations
 	 * @param Group The group that was just edited 
 	 */
 	function EditGroupPost(&$group)
+	{
+	}
+
+	/**
+	 * Called before a group is deleted from the database.  Sends the group object.
+	 *
+	 * @param Group The group that was just deleted
+	 */
+	function DeleteGroupPre(&$group)
+	{
+	}
+
+	/**
+	 * Called after a group is deleted from the database.  Sends the group object.
+	 *
+	 * @param Group The group that was just deleted 
+	 */
+	function DeleteGroupPost(&$group)
 	{
 	}
 
@@ -332,6 +368,26 @@ class CMSModule extends ModuleOperations
 	}
 
 	/**
+	 * Called before a template is deleted from the database.  Sends the template
+	 * object.
+	 *
+	 * @param Template The template that was just deleted
+	 */
+	function DeleteTemplatePre(&$template)
+	{
+	}
+
+	/**
+	 * Called after a template is deleted from the database.  Sends the template
+	 * object.
+	 *
+	 * @param Template The template that was just deleted 
+	 */
+	function DeleteTemplatePost(&$template)
+	{
+	}
+
+	/**
 	 * ------------------------------------------------------------------
 	 * HTML Blob Related Functions
 	 * ------------------------------------------------------------------
@@ -374,6 +430,26 @@ class CMSModule extends ModuleOperations
 	 * @param HtmlBlob The HTML blob that was just edited 
 	 */
 	function EditHtmlBlobPost(&$htmlblob)
+	{
+	}
+
+	/**
+	 * Called before an HTML blob is deleted from the database.  Sends the html
+	 * blob object.
+	 *
+	 * @param HtmlBlob The HTML blob that was just deleted
+	 */
+	function DeleteHtmlBlobPre(&$htmlblob)
+	{
+	}
+
+	/**
+	 * Called after an HTML blob is deleted from the database.  Sends the html
+	 * blob object.
+	 *
+	 * @param HtmlBlob The HTML blob that was just deleted 
+	 */
+	function DeleteHtmlBlobPost(&$htmlblob)
 	{
 	}
 
