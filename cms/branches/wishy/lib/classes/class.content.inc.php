@@ -452,18 +452,14 @@ class ContentBase
 		$dbresult = $db->Execute($query, array(
 			$this->mName,
 			$this->mOwner,
+			$this->mTemplateId,
+			$this->mParentId,
 			($this->mActive==true?1:0),
 			($this->mDefaultContent==true?1:0),
 			$this->mAlias,
 			$db->DBTimeStamp(time()),
 			$this->mId
 			));
-
-		# debug mode
-		if (true == $config["debug"])
-		{
-			$sql_queries .= "<p>$query</p>\n";
-		}
 
 		if (! $dbresult)
 		{
@@ -858,7 +854,7 @@ class ContentManager
 		}
 	}
 
-	function LoadContentFromAlias($alias)
+	function LoadContentFromAlias($alias, $only_active = false)
 	{
 		global $gCms;
 		$db = &$gCms->db;
@@ -868,11 +864,19 @@ class ContentManager
 		if (is_numeric($tpl_name) && strpos($tpl_name,'.') === FALSE && strpos($tpl_name,',') === FALSE) //Fix for postgres
 		{
 			$query = "SELECT type, content_id FROM ".cms_db_prefix()."content WHERE content_id = ? OR content_alias = ?";
+			if ($only_active == true)
+			{
+				$query .= " AND active = 1";
+			}
 			$dbresult = $db->Execute($query, array($alias,$alias));
 		}
 		else
 		{
 			$query = "SELECT type, content_id FROM ".cms_db_prefix()."content WHERE content_id = ?";
+			if ($only_active == true)
+			{
+				$query .= " AND active = 1";
+			}
 			$dbresult = $db->Execute($query, array($alias));
 		}
 
@@ -912,6 +916,35 @@ class ContentManager
 	 */
 	function IsCached($id)
 	{
+	}
+
+	function GetDefaultContent()
+	{
+		global $gCms;
+		$db = &$gCms->db;
+
+		$result = -1;
+
+		$query = "SELECT content_id FROM ".cms_db_prefix()."content WHERE default_content = 1";
+		$dbresult = $db->Execute($query);
+		if ($dbresult && $dbresult->RowCount() > 0)
+		{
+			$row = $dbresult->FetchRow();
+			$result = $row['content_id'];
+		}
+		else
+		{
+			#Just get something...
+			$query = "SELECT content_id FROM ".cms_db_prefix()."content";
+			$dbresult = $db->Execute($query);
+			if ($dbresult && $dbresult->RowCount() > 0)
+			{
+				$row = $dbresult->FetchRow();
+				$result = $row['content_id'];
+			}
+		}
+
+		return $result;
 	}
 
 	/**

@@ -69,7 +69,7 @@ else if (isset($_SERVER["QUERY_STRING"]) && strpos($_SERVER["QUERY_STRING"], 'de
 
 if ($page == "")
 {
-	$page = db_get_default_page();
+	$page = ContentManager::GetDefaultContent();
 }
 
 if (get_site_preference('enablecustom404') == "0")

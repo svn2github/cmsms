@@ -94,7 +94,7 @@ class Smarty_CMS extends Smarty {
 		else
 		{
 			#Find valid content by id or alias
-			$contentobj = ContentManager::LoadContentFromAlias($tpl_name);
+			$contentobj = ContentManager::LoadContentFromAlias($tpl_name, true);
 			$templateobj = FALSE;
 
 			#If the content object is false, then let's see if we should grab a template for a custom 404 error
@@ -161,7 +161,7 @@ class Smarty_CMS extends Smarty {
 				}
 
 				#Fill some variables with various information
-				$content = $contentobj->mProperties->GetValue('content_en');
+				$content = $contentobj->Show();
 				$title = $contentobj->Name();
 				$head_tags = $contentobj->mProperties->GetValue('head_tags');
 				$header_script = $contentobj->mProperties->GetValue('page_header');
@@ -262,7 +262,7 @@ class Smarty_CMS extends Smarty {
 			}
 			$result = $db->Execute($query);
 
-			if ($result && $result->RowCount())
+			if ($result && $result->RowCount() > 0)
 			{
 				$line = $result->FetchRow();
 
@@ -289,6 +289,7 @@ class Smarty_CMS extends Smarty {
 				else
 				{
 					$tpl_timestamp = time();
+					echo "2";
 					return true;
 				}
 			}
@@ -296,6 +297,7 @@ class Smarty_CMS extends Smarty {
 			{
 				$smarty_obj->assign('modified_date',time());
 				$tpl_timestamp = time();
+				echo "3";
 				return true;
 			}
 		}
