@@ -18,18 +18,20 @@
 
 function fckeditor_module_header_function($cms)
 {
+	global $gCms;
 	?>
 
-	<script type="text/javascript" src="http://cms.wishy.org/modules/FCKeditor/fckeditor.js"></script>
+	<script type="text/javascript" src="<?php echo $gCms->config['root_url'] ?>/modules/FCKeditor/fckeditor.js"></script>
 
 	<?php
 }
 
 function fckeditor_module_textbox_function($cms, $name='textbox', $columns='80', $rows='8', $encoding='', $content='')
 {
+	global $gCms;
 	require_once(dirname(__FILE__)."/fckeditor.php");
 	$neweditor = new FCKeditor($name);
-	$neweditor->BasePath = 'http://cms.wishy.org/modules/FCKeditor/';
+	$neweditor->BasePath = $gCms->config['root_url'] . '/modules/FCKeditor/';
 	$neweditor->Width = '100%';
 	$neweditor->Value = $content;
 	#$neweditor->ToolbarSet = 'Basic';
