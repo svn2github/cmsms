@@ -138,7 +138,7 @@ function tinymce_module_help($cms)
     ?>
 
     <h3>What does this do?</h3>
-    <p>Enalbes TinyMCE to be used as a WYSIWYG.</p>
+    <p>Enables TinyMCE to be used as a WYSIWYG.</p>
     <h3>How do I use it?</h3>
     <p>Install it, then go to User Preferences and Set TinyMCE  to be your wysiwyg of choice.</p>
 
