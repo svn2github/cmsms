@@ -17,6 +17,10 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+cms_mapi_register_intermodule_function($module_name, 'admin_display_category', 'commoncode_module_admin_display_category');
+cms_mapi_register_intermodule_function($module_name, 'admin_update_categories', 'commoncode_module_admin_update_categories');
+cms_mapi_register_intermodule_function($module_name, 'get_categories', 'commoncode_module_get_categories');
+
 /**
  * @return array
  * @param ADOConnection $db

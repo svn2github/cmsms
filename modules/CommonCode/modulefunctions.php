@@ -18,6 +18,8 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
+cms_mapi_register_intermodule_function($module_name, 'RedirectTo', 'RedirectTo');
+cms_mapi_register_intermodule_function($module_name, 'DB', 'DB1');
 
 /**
 * @return void
@@ -45,6 +47,17 @@ function RedirectTo($url)
 		header("Location: $url");
 	}
 	exit;
+}
+
+function  DB1($array)
+{
+	foreach($array as $title=>$item)
+	{
+		if(!$title)
+			$title = '';
+		DB($item, $title);
+	}
+	
 }
 
 /**

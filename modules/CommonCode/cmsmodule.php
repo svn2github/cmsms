@@ -21,12 +21,17 @@
 // Set the module name -- should be the name of the class
 $module_name = "CommonCode";
 
+
 // Register module
-cms_mapi_register_module($module_name, "Rob Allen <rob@akrabat.com>", "1.1");
+cms_mapi_register_module($module_name, "Rob Allen <rob@akrabat.com>", "1.2");
 
 // Register callback help and about functions
 cms_mapi_register_help_function($module_name, 'commoncode_module_help');
 cms_mapi_register_about_function($module_name, 'commoncode_module_about');
+
+// Load functions
+require_once(dirname(__FILE__).'/modulefunctions.php');
+require_once(dirname(__FILE__).'/categories.inc.php');
 
 function commoncode_module_help($cms)
 {
@@ -47,6 +52,8 @@ function commoncode_module_about()
 	<dt>Version: 1.1</dt>
 		<dd>Added categories.inc.php<br>
 		Added getParamValue()</dd>
+	<dt>Version: 1.2</dt>
+		<dd>Registered public functions with CMS</dd>
 </dl>
 <?php
 }
