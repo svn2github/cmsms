@@ -79,7 +79,7 @@ function count_sql_execs($db, $sql, $inputarray)
 	else $sql_execs++;
 	if ($gCms->config["debug"] == true)
 	{
-		$sql_queries .= "<p>$sql</p>\n";
+		#$sql_queries .= "<p>$sql</p>\n";
 	}
 }
 

@@ -148,7 +148,7 @@ if (isset($_GET["message"])) {
 			{
 				echo "<tr class=\"$currow\">\n";
 				echo "<td>".$one->Hierarchy()."</td>\n";
-				echo "<td><a href=\"editcontent.php?content_id=".$one->page_id."&amp;parent_id=".$one->parent_id."\">".$one->Name()."</a></td>\n";
+				echo "<td><a href=\"editcontent.php?content_id=".$one->Id()."\">".$one->Name()."</a></td>\n";
 				if ($one->GetPropertyValue("template_id"))
 				{
 					echo "<td>".$one->GetPropertyValue("template_id")."</td>\n";
@@ -158,9 +158,16 @@ if (isset($_GET["message"])) {
 					echo "<td>&nbsp;</td>\n";
 				}
 				echo "<td align=\"center\">".$one->Type()."</td>\n";
-	//			echo "<td>".($one->Type()=="link"?$one->page_url:"&nbsp;")."</td>\n";
-				echo "<td align=\"center\">".$one->Owner()."</td>\n";
-// 
+				if ($one->Owner() > -1)
+				{
+					$owner_user = UserOperations::LoadUserById($one->Owner());
+					echo "<td align=\"center\">".$owner_user->username."</td>\n";
+				}
+				else
+				{
+					echo "<td>&nbsp;</td>\n";
+				}
+
 				if($one->Active())
 				{
 					echo "<td align=\"center\">".($one->default_page == 1?$image_true:"<a href=\"listcontent.php?setinactive=".$one->Id()."\">".$image_true."</a>")."</td>\n";

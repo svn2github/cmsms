@@ -737,12 +737,6 @@ class ContentProperties
 		$query		= "SELECT * FROM ".cms_db_prefix()."content_props WHERE content_id = ?";
 		$dbresult	= $db->Execute($query, array($content_id));
 
-		# debug mode
-		if (true == $config["debug"])
-		{
-			$sql_queries .= "<p>$query</p>\n";
-		}
-
 		if ($dbresult && $dbresult->RowCount() > 0)
 		{
 			while ($row = $dbresult->FetchRow())
