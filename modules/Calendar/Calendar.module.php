@@ -207,6 +207,8 @@ EOT;
 		return <<<EOT
 			<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
 			<dl>
+				<dt>Version: 0.6+</dt>
+					<dd>More fixes for multi-day event on calendar</dd>
 				<dt>Version: 0.6</dt>
 					<dd>Fix event display so that if the end date is not set, we don't display "to". 
 					Filter by category when displaying an upcominglist.
@@ -1345,15 +1347,18 @@ EOT;
 							$event_date_end_month = date('n', $event_date_end_in_seconds);
 							$event_date_end_year = date('Y', $event_date_end_in_seconds);
 							
-							// dates up to $day_of_month are in "next month"
-							for($i = 1; $i < $day_of_month; $i++)
+							if($event_date_end_month != $event_date_start_month)
 							{
-								if($event_date_end_month == $month)
+								// dates up to $day_of_month are in "next month"
+								for($i = 1; $i < $day_of_month; $i++)
 								{
-									$content[$i] .= "<li><a href='$url' title='$label' alt='$label' >$title</a></li>"; 
+									if($event_date_end_month == $month)
+									{
+										$content[$i] .= "<li><a href='$url' title='$label' alt='$label' >$title</a></li>"; 
+									}
+									if($i == $event_date_end_day)
+										break;
 								}
-								if($i == $event_date_end_day)
-									break;
 							}
 							// dates after $day_of_month are in "this month"
 							for($i = $day_of_month+1; $i < 32; $i++)
@@ -1385,17 +1390,20 @@ EOT;
 							$event_date_end_month = date('n', $event_date_end_in_seconds);
 							$event_date_end_year = date('Y', $event_date_end_in_seconds);
 							
-							// dates up to $day_of_month are in "next month"
-							for($i = 1; $i < $day_of_month; $i++)
+							if($event_date_end_month != $event_date_start_month)
 							{
-								if($event_date_end_month == $month)
+								// dates up to $day_of_month are in "next month"
+								for($i = 1; $i < $day_of_month; $i++)
 								{
-									$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'day'=>$i, 'display'=>'list', 'summaries'=>true), '', true);
-									$url = str_replace('&amp;', '&', $url);
-									$days[$i][0] = $url;
+									if($event_date_end_month == $month)
+									{
+										$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'day'=>$i, 'display'=>'list', 'summaries'=>true), '', true);
+										$url = str_replace('&amp;', '&', $url);
+										$days[$i][0] = $url;
+									}
+									if($i == $event_date_end_day)
+										break;
 								}
-								if($i == $event_date_end_day)
-									break;
 							}
 							// dates after $day_of_month are in "this month"
 							for($i = $day_of_month+1; $i < 32; $i++)
