@@ -247,10 +247,7 @@ if ($tinyMCE_img_delete_allowed && isset($HTTP_POST_VARS['lib_action'])
           </tr>
           <tr>
             <td><?php 
-    if (!ereg('/$', $HTTP_SERVER_VARS['DOCUMENT_ROOT']))
-      $_root = $HTTP_SERVER_VARS['DOCUMENT_ROOT'].'/';
-    else
-      $_root = $HTTP_SERVER_VARS['DOCUMENT_ROOT'];
+    $_root = $config['image_uploads_path'].'/';
     
     echo $_root.$imglib;
     $d = @dir($_root.$imglib);
@@ -442,10 +439,7 @@ function uploadImg($img) {
   
   if (!$tinyMCE_upload_allowed) return false;
 
-  if (!ereg('/$', $HTTP_SERVER_VARS['DOCUMENT_ROOT']))
-    $_root = $HTTP_SERVER_VARS['DOCUMENT_ROOT'].'/';
-  else
-    $_root = $HTTP_SERVER_VARS['DOCUMENT_ROOT'];
+  $_root = $config['image_uploads_path'].'/';
   
   if ($HTTP_POST_FILES[$img]['size']>0) {
     $data['type'] = $HTTP_POST_FILES[$img]['type'];
@@ -490,10 +484,7 @@ function deleteImg()
   
   if (!$tinyMCE_img_delete_allowed) return false;
 
-  if (!ereg('/$', $HTTP_SERVER_VARS['DOCUMENT_ROOT']))
-    $_root = $HTTP_SERVER_VARS['DOCUMENT_ROOT'].'/';
-  else
-    $_root = $HTTP_SERVER_VARS['DOCUMENT_ROOT'];
+  $_root = $config['image_uploads_path'].'/';
 	
   $full_img_name = $_root.$imglib.$img;
 
