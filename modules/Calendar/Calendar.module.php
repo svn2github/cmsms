@@ -209,7 +209,8 @@ EOT;
 			<dl>
 				<dt>Version: 0.5+</dt>
 					<dd>Fix event display so that if the end date is not set, we don't display "to". 
-					Filter by category when displaying an upcominglist.</dd>
+					Filter by category when displaying an upcominglist.
+					Fix End date setting that was off by one.</dd>
 				<dt>Version: 0.5</dt>
 					<dd>Fix the drop down list for end date year. Fix DE translation of "Return" (thanks Piratos!).
 					 Fix spacing around "to" (thanks Greg!). Add Danish and Dutch translations courtesy of board members esmann and dont.</dd>
@@ -610,11 +611,16 @@ EOT;
 			$event_date_end_day = 0;
 			$event_date_end_month = 0;
 			$event_date_end_year = 0;
-		}	    
-		echo $this->CreateInputDropdown($id, 'event_date_end_day', array_merge(array(''=>0), $day_array), -1, $event_date_end_day);
-		echo $this->CreateInputDropdown($id, 'event_date_end_month', array_merge(array(''=>0), $month_array), -1, $event_date_end_month);
-		$year_array[''] =0;
+		}
+		
+		$day_array[''] = 0;
+		$month_array[''] = 0;
+		$year_array[''] = 0;
+		asort($day_array);
+		asort($month_array);
 		asort($year_array);
+		echo $this->CreateInputDropdown($id, 'event_date_end_day', $day_array, -1, $event_date_end_day);
+		echo $this->CreateInputDropdown($id, 'event_date_end_month',$month_array, -1, $event_date_end_month);
 		echo $this->CreateInputDropdown($id, 'event_date_end_year', $year_array, -1, $event_date_end_year);
 		echo '&nbsp;at&nbsp;';
 		echo $this->CreateInputDropdown($id, 'event_date_end_hour', $hour_array, -1, $event_date_end_hour);
@@ -1535,7 +1541,7 @@ EOT;
 EOT;
 					if($event_date_start == $event_date_end || $event_date_end_string == '')
 					{
-						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ":</span>$event_date_start_string</div>\n";
+						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string</div>\n";
 					}
 					else 
 					{
@@ -1544,14 +1550,17 @@ EOT;
 					
 					$summary_string = $this->lang('Summary');
 					$details_string = $this->lang('Details');
-					echo <<<EOT
+					
+					if($event_summary !='')
+					{
+						echo "<p class='calendar-summary'><span class='calendar-summary-title'>$summary_string: </span>$event_summary</p>\n";
+					}
+					if($event_details !='')
+					{
+						echo "<p class='calendar-details'><span class='calendar-details-title'>$details_string: </span>$event_details</p>\n";
+					}
+					echo "<p class='calendar-returnlink'>$link.</p>\n</div>\n";
 
-			<p class='calendar-summary'><span class='calendar-summary-title'>$summary_string: </span>$event_summary</p>
-			<p class='calendar-details'><span class='calendar-details-title'>$details_string: </span>$event_details</p>
-			<p class='calendar-returnlink'>$link.</p>
-			
-			</div>
-EOT;
 
 		}
 		else 
