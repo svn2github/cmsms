@@ -21,11 +21,11 @@
 $module_name = "Bookmarks";
 
 // Defines
-define('BOOKMARKS_MODULE_VERSION', '0.9.1');
+define('BOOKMARKS_MODULE_VERSION', '1.0');
 
 define('BOOKMARKS_MODULE_COMMONCODE_FILE', dirname(__FILE__).'/../CommonCode/modulefunctions.php');
 define('BOOKMARKS_MODULE_COMMONCODE_CATEGORY_FILE', dirname(__FILE__).'/../CommonCode/categories.inc.php');
-define('BOOKMARKS_MODULE_MIN_COMMONCODE_VERSION', 1.0);
+define('BOOKMARKS_MODULE_MIN_COMMONCODE_VERSION', 1.1);
 
 // Load functions
 require_once(dirname(__FILE__).'/modulefunctions.php');
