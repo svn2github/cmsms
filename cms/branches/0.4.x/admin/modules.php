@@ -16,27 +16,48 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-require_once("config.php");
+require_once("../include.php");
 
-function smarty_function_bulletmenu($params, &$smarty) {
+check_login($config);
 
-	$menu = "";
+include_once("header.php");
 
-	$sections = db_get_menu_items($smarty->configCMS, "basic");
+if (count($cmsmodules) > 0) {
 
-	foreach ($sections as $onesection) {
+?>
 
-		$menu .= "<p class=\"sectionname\">".$onesection->name."</p>";
-		$menu .= "<ul>";
-		foreach ($onesection->items as $oneitem) {
-			$menu .= "<li><a href=\"".$oneitem->url."\">".$oneitem->menu_text."</a></li>";
-		}
-		$menu .= "</ul>";
+	<div class="content">
+
+	<h3>Module Admin</h3>
+
+	<table cellspacing="0" class="admintable">
+		<tr>
+			<td>Module Name</td>
+		</tr>
+
+<?
+
+	$curclass = "row1";
+
+	foreach($cmsmodules as $key=>$value) {
+
+		echo "<tr class=\"$curclass\">\n";
+		echo "<td>$key</td>\n";
+		echo "</tr>\n";
+
+		($curclass=="row1"?$curclass="row2":$curclass="row1");
 	}
 
-	return $menu;
+?>
+
+	</table>
+
+	</div>
+
+<?
 
 }
 
-# vim:ts=4 sw=4 noet
+include_once("footer.php");
+
 ?>

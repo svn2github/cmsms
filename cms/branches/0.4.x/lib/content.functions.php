@@ -253,9 +253,6 @@ function db_get_menu_items(&$config, $style) {
 				$current_section->items = array();
 			} ## if
 
-			if (isset($line["page_title"])) {
-				echo "section (".$current_section->section_name.") -> (".$line["page_title"].")<br />\n";
-			} ## if
 		} ## while
 
 		if (isset($current_section)) {
@@ -274,6 +271,8 @@ function db_get_menu_items(&$config, $style) {
 			} ## if
 			array_push($sorted, $children);
 		} ## foreach
+
+		echo "<p>".var_dump($sections)."</p>\n";
 		
 		return $sorted;
 
@@ -296,7 +295,7 @@ function db_get_menu_items(&$config, $style) {
 			}
 
 			$menu_item = new MenuItem;
-			$menu_item->section_name = $line["menu_text"];
+			$menu_item->menu_text = $line["menu_text"];
 			if ($line['page_type'] == "link") {
 				$menu_item->url = $line["page_url"];
 			}

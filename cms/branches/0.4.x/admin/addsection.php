@@ -111,7 +111,8 @@ else {
 <?php
 	$sections = db_get_menu_items($config,"subs");
   	foreach ($sections as $onesection) {
-		echo "<option value=\"".$onesection->section_id."\">".$onesection->section_name."</option>\n";
+		echo "<p>".var_dump($onesection)."</p>\n";
+		echo "<option value=\"".$onesection->section_id."\">".$onesection->display_name."</option>\n";
     }
 
 ?>

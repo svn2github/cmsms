@@ -10,7 +10,7 @@ class cmsmodule {
 		//This function should uninstall database tables and generally cleanup.
 	}
 
-	function execute() {
+	function execute($cms, $id) {
 		//This is the entryway into the module.  All requests from CMS will come through here.
 		die("cmsmodule::execute() not implemented!");
 	}

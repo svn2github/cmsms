@@ -323,7 +323,7 @@ else {
 		<td><?=$gettext->gettext("Section")?>:</td>
 		<td><?=$dropdown?><input type="hidden" name="orig_section_id" value="<?=$orig_section_id?>" /></td>
 	</tr>
-<?php if ($content_type == "content") { ?>
+<?php if ($content_type != "link") { ?>
 	<tr>
 		<td><?=$gettext->gettext("Template")?>:</td>
 		<td><?=$dropdown2?></td>
