@@ -53,7 +53,13 @@ function tinymce_module_header_function(&$cms)
 				echo 'content_css : "' . $css . "\",\n";
 			}
 			?>
-			theme : "advanced"
+			theme : "advanced",
+			theme_advanced_toolbar_location: "top",
+			plugins : "advhr,advimage,advlink,emotions,iespell,insertdatetime,preview,zoom,flash,ibrowser",
+			theme_advanced_buttons1_add : "fontselect,fontsizeselect,forecolor",
+			theme_advanced_buttons2_add_before: "cut,copy,paste,separator",
+			theme_advanced_buttons2_add : "separator,insertdate,inserttime,preview,zoom",
+			theme_advanced_buttons3_add : "emotions,iespell,flash,advhr,ibrowser"
 		});
 	</script>
 
