@@ -51,7 +51,7 @@ if ($access)
 			$result = $modinstance->Install();
 
 			#now insert a record
-			if ($result === FALSE)
+			if (!isset($result) || $result === FALSE)
 			{
 				$query = "INSERT INTO ".cms_db_prefix()."modules (module_name, version, status, active) VALUES (".$db->qstr($module).",".$db->qstr($modinstance->GetVersion()).",'installed',1)";
 				$db->Execute($query);
@@ -84,7 +84,8 @@ if ($access)
 			$result = $modinstance->Upgrade($_GET['oldversion'], $_GET['newversion']);
 
 			#now insert a record
-			if ($result === FALSE)
+
+			if (!isset($result) || $result === FALSE)
 			{
 				$query = "UPDATE ".cms_db_prefix()."modules SET version = ? WHERE module_name = ?";
 				$db->Execute($query,array($_GET['newversion'],$module));
@@ -106,7 +107,7 @@ if ($access)
 			$result = $modinstance->Uninstall();
 
 			#now insert a record
-			if ($result === FALSE)
+			if (!isset($result) || $result === FALSE)
 			{
 				#now delete the record
 				$query = "DELETE FROM ".cms_db_prefix()."modules WHERE module_name = ?";
@@ -179,7 +180,11 @@ else if ($action == "showmodulehelp")
 	{
 		echo "<div class=\"moduleabout\">";
 		echo "<h2>".lang('modulehelp', array($module))."</h2>";
+		@ob_start();
 		echo $gCms->modules[$module]['object']->GetHelp();
+		$content = @ob_get_contents();
+		@ob_end_clean();
+		echo $content;
 		?>
 		<FORM ACTION="plugins.php" METHOD="get">
 		<P><INPUT TYPE="submit" VALUE="<?php echo lang('backtoplugins')?>" CLASS="button" onMouseOver="this.className='buttonHover'" onMouseOut="this.className='button'"></P>

@@ -20,8 +20,8 @@
 
 $error = "";
 $hiddenfields = "";
-$db = $cms->db;
-$config = $cms->config;
+$db = $this->cms->db;
+$config = $this->cms->config;
 
 $news_cat = "";
 if( isset($_POST[$id."news_cat"])) $news_cat = $_POST[$id."news_cat"];
@@ -286,7 +286,7 @@ switch( $moduleaction )
     break;
 
   default:
-    echo "ERROR! Unknown action!<BR>";
+    echo "ERROR! Unknown action!<br />";
     return;
     break;
 }

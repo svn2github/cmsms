@@ -615,6 +615,84 @@ class CMSModule extends ModuleOperations
 	}
 
 	/**
+	 * Returns the start of a module form
+	 *
+	 * @param string The id given to the module on execution
+	 * @param string Method to use for the form tag.  Defaults to 'post'
+	 * @param string Optional enctype to use, Good for situations where files are being uploaded
+	 */
+	function CreateFormStart($id, $action='default', $method='post', $enctype='')
+	{
+		$text = '<form name="'.$id.'moduleform" method="'.$method.'" action="moduleinterface.php"';
+		if ($enctype != '')
+		{
+			$text .= ' enctype="'.$enctype.'"';
+		}
+		$text .= '><input type="hidden" name="module" value="'.$this->GetName().'" />';
+		if ($action != '')
+		{
+			$text .= '<input type="hidden" name="'.$id.'action" value="'.$action.'" />';
+		}
+		$text .= "\n";
+		return $text;
+	}
+
+	function CreateFormEnd()
+	{
+		return '</form>'."\n";
+	}
+
+	function CreateInputText($id, $name, $value='', $size='10', $maxlength='255', $extratext='')
+	{
+		$text = '<input type="text" name="'.$id.$name.'" value="'.$value.'" size="'.$size.'" maxlength="'.$maxlength.'"';
+		if ($extratext != '')
+		{
+			$text .= ' ' . $extratext;
+		}
+		$text .= " />\n";
+		return $text;
+	}
+
+	function CreateInputHidden($id, $name, $value='')
+	{
+		$text = '<input type="hidden" name="'.$id.$name.'" value="'.$value.'"';
+		$text .= " />\n";
+		return $text;
+	}
+
+	function CreateInputSubmit($id, $name, $value='', $addttext='')
+	{
+		$text = '<input type="submit" name="'.$id.$name.'" value="'.$value.'"';
+		if ($addttext != '')
+		{
+			$text .= $addttext;
+		}
+		$text .= ' />';
+		return $text . "\n";
+	}
+
+	function CreateTextArea($enablewysiwyg, $text, $name, $classname, $id='', $encoding='', $stylesheet='')
+	{
+		return create_textarea($enablewysiwyg, $text, $name, $classname, $id, $encoding, $stylesheet);
+	}
+
+	function CreateLink($action, $id, $return_id, $params, $contents, $warn_message='')
+	{
+		$text = '<a href="moduleinterface.php?module='.$this->GetName().'&amp;return_id='.$page_id.'&amp;id='.$id.'&amp;action='.$action;
+		foreach ($params as $key=>$value)
+		{
+			$text .= '&amp;'.$id.$key.'='.$value;
+		}
+		$text .= "\"";
+		if ($warn_message !== '')
+		{
+			$text .= ' onclick="return confirm(\''.$warn_message.'\');"';
+		}
+		$text .= '>'.$text.'</a>';
+		return $text;
+	}
+
+	/**
 	 * ------------------------------------------------------------------
 	 * Internal Functions
 	 * ------------------------------------------------------------------
@@ -714,9 +792,18 @@ class ModuleOperations
 										{
 											$newmodule = new $modulename;
 											$name = $newmodule->GetName();
-											$cmsmodules[$name]['object'] = $newmodule;
-											$cmsmodules[$name]['installed'] = true;
-											$cmsmodules[$name]['active'] = ($row['active']=='1'?true:false);
+
+											#Check to see if version in db matchs file version
+											if ($row['version'] == $newmodule->GetVersion())
+											{
+												$cmsmodules[$name]['object'] = $newmodule;
+												$cmsmodules[$name]['installed'] = true;
+												$cmsmodules[$name]['active'] = ($row['active']=='1'?true:false);
+											}
+											else
+											{
+												unset($cmsmodules[$name]);
+											}
 										}
 										else //No point in doing anything with it
 										{
@@ -773,6 +860,7 @@ class ModuleOperations
 		$cmsmodules = &$gCms->modules;
 		return $cmsmodules;
 	}
+
 }
 
 # vim:ts=4 sw=4 noet
