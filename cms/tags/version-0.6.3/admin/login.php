@@ -40,7 +40,7 @@ if (isset($_POST["username"]) && isset($_POST["password"])) {
 	#$line = $result->FetchRow();
 
 	#if ($username != "" && $password != "" && isset($line["user_id"])) {
-	if ($oneuser)
+	if ($username != "" && $password != "" && $oneuser)
 	{
 		generate_user_object($oneuser->id);
 		setcookie("cms_admin_user_id", $oneuser->id);
