@@ -885,9 +885,119 @@ class CMSModule extends ModuleOperations
 
 	/**
 	 * ------------------------------------------------------------------
-	 * Internal Functions
+	 * Intermodule Functions
 	 * ------------------------------------------------------------------
 	 */
+	
+	function GetMoudleInstance($module)
+	{
+		global $gCms;
+
+		if (isset($gCms->modules[$module])) &&
+			$gCms->modules[$module]['installed'] == true &&
+			$gCms->modules[$module]['active'] == true)
+		{
+			return $gCms->modules[$module]['object'];
+		}
+
+		return FALSE;
+	}
+
+	/**
+	 * ------------------------------------------------------------------
+	 * Other Functions
+	 * ------------------------------------------------------------------
+	 */
+
+	/**
+	 * Put an event into the audit (admin) log.  This should be
+	 * done on most admin events for consistency.
+	 */
+	function Audit($itemid, $itemname, $action)
+	{
+		$userid = get_userid();
+		$username = $_SESSION["cms_admin_username"];
+		audit($userid, $username, $itemid, $itemname, $action);
+	}
+
+	/**
+	 * Create's a new permission for use by the module.
+	 *
+	 * @param string Name of the permission to create
+	 * @param string Description of the permission
+	 */
+	function CreatePermission($permission_name, $permission_text)
+	{
+		$db = $cms->db;
+
+		$query = "SELECT permission_id FROM ".cms_db_prefix()."permissions WHERE permission_name =" . $db->qstr($permission_name); 
+		$result = $db->Execute($query);
+
+		if ($result && $result->RowCount() < 1)
+		{
+			$new_id = $db->GenID(cms_db_prefix()."permissions_seq");
+			$query = "INSERT INTO ".cms_db_prefix()."permissions (permission_id, permission_name, permission_text, create_date, modified_date) VALUES ($new_id, ".$db->qstr($permission_name).",".$db->qstr($permission_text).",'".$db->DBTimeStamp(time())."','".$db->DBTimeStamp(time())."')";
+			$db->Execute($query);
+		}
+	}
+
+	/**
+	 * Checks a permission against the currently logged in user.
+	 *
+	 * @param string The name of the permission to check against the current user
+	 */
+	function CheckPermission($permission_name)
+	{
+		$userid = get_userid();
+		return check_permission($userid, $permission_name);
+	}
+
+	/** 
+	 * Removes a permission from the system.  If recreated, the
+	 * permission would have to be set to all groups again.
+	 *
+	 * @param string The name of the permission to remove
+	 */
+	function RemovePermission($permission_name)
+	{
+		$db = $cms->db;
+
+		$query = "SELECT permission_id FROM ".cms_db_prefix()."permissions WHERE permission_name = " . $db->qstr($permission_name); 
+		$result = $db->Execute($query);
+
+		if ($result && $result->RowCount() > 0)
+		{
+			$row = $result->FetchRow();
+			$id = $row["permission_id"];
+
+			$query = "DELETE FROM ".cms_db_prefix()."group_perms WHERE permission_id = $id";
+			$db->Execute($query);
+
+			$query = "DELETE FROM ".cms_db_prefix()."permissions WHERE permission_id = $id";
+			$db->Execute($query);
+		}
+	}
+
+	/**
+	 * Returns a module preference if it exists.
+	 *
+	 * @param string The name of the preference to check
+	 * @param string The default value, just in case it doesn't exist
+	 */
+	function GetPreference($preference_name, $defaultvalue='')
+	{
+		return get_site_preference($this->GetName() . "_mapi_pref_" . $preference_name, $defaultvalue);
+	}
+
+	/**
+	 * Sets a module preference.
+	 *
+	 * @param string The name of the preference to check
+	 */
+	function SetPreference($preference_name, $value)
+	{
+		return set_site_preference($this->GetName() . "_mapi_pref_" . $preference_name, $value);
+	}
 }
 
 /**
