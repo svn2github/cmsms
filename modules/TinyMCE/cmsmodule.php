@@ -28,6 +28,7 @@ cms_mapi_register_module($module_name, "Ted Kulp <tedkulp@users.sf.net>", "1.0")
 //Registers module with WYSIWYG
 cms_mapi_register_wysiwyg_module($module_name);
 cms_mapi_register_wysiwyg_page_header_function($module_name, 'tinymce_module_header_function');
+cms_mapi_register_wysiwyg_page_form_submit_function($module_name, 'tinymce_module_form_submit_function');
 cms_mapi_register_wysiwyg_page_textbox_function($module_name, 'tinymce_module_textbox_function');
 
 //Register callback help function
