@@ -876,41 +876,46 @@ class ContentProperties
 
 	function GetValue($name)
 	{
-		if (isset($this->mPropertyValues[$name]))
+		if (count($this->mPropertyValues) > 0)
 		{
-			return $this->mPropertyValues[$name];
+			if (isset($this->mPropertyValues[$name]))
+			{
+				return $this->mPropertyValues[$name];
+			}
 		}
 	}
 
 	function SetValue($name, $value)
 	{
-		if (isset($this->mPropertyValues[$name]))
+		if (count($this->mPropertyValues) > 0)
 		{
-			$this->mPropertyValues[$name] = $value;
+			if (isset($this->mPropertyValues[$name]))
+			{
+				$this->mPropertyValues[$name] = $value;
+			}
 		}
-	}
-
-	function Show()
-	{
 	}
 
 	function Load($content_id)
 	{
-		global $gCms, $config, $sql_queries, $debug_errors;
-		$db = &$gCms->db;
-
-		$query		= "SELECT * FROM ".cms_db_prefix()."content_props WHERE content_id = ?";
-		$dbresult	= $db->Execute($query, array($content_id));
-
-		if ($dbresult && $dbresult->RowCount() > 0)
+		if (count($this->mPropertyValues) > 0)
 		{
-			while ($row = $dbresult->FetchRow())
+			global $gCms, $config, $sql_queries, $debug_errors;
+			$db = &$gCms->db;
+
+			$query		= "SELECT * FROM ".cms_db_prefix()."content_props WHERE content_id = ?";
+			$dbresult	= $db->Execute($query, array($content_id));
+
+			if ($dbresult && $dbresult->RowCount() > 0)
 			{
-				$prop_name = $row['prop_name'];
-				if (isset($this->mPropertyValues[$prop_name]))
+				while ($row = $dbresult->FetchRow())
 				{
-					$this->mPropertyTypes[$prop_name] = $row['type'];
-					$this->mPropertyValues[$prop_name] = $row['content'];
+					$prop_name = $row['prop_name'];
+					if (isset($this->mPropertyValues[$prop_name]))
+					{
+						$this->mPropertyTypes[$prop_name] = $row['type'];
+						$this->mPropertyValues[$prop_name] = $row['content'];
+					}
 				}
 			}
 		}
@@ -918,38 +923,41 @@ class ContentProperties
 
 	function Save($content_id)
 	{
-		global $gCms, $config, $sql_queries, $debug_errors;
-		$db = &$gCms->db;
-
-		$query = "DELETE FROM ".cms_db_prefix()."content_props WHERE content_id = ?";
-		$dbresult = $db->Execute($query, array($content_id));
-
-		foreach ($this->mPropertyValues as $key=>$value)
+		if (count($this->mPropertyValues) > 0)
 		{
-			$query = "INSERT INTO ".cms_db_prefix()."content_props (content_id, type, prop_name, param1, param2, param3, content) VALUES (?,?,?,?,?,?,?)";
+			global $gCms, $config, $sql_queries, $debug_errors;
+			$db = &$gCms->db;
 
-			$dbresult = $db->Execute($query, array(
-				$content_id,
-				$this->mPropertyTypes[$key],
-				$key,
-				'',
-				'',
-				'',
-				$this->mPropertyValues[$key],
-				));
+			$query = "DELETE FROM ".cms_db_prefix()."content_props WHERE content_id = ?";
+			$dbresult = $db->Execute($query, array($content_id));
 
-			# debug mode
-			if (true == $config["debug"])
+			foreach ($this->mPropertyValues as $key=>$value)
 			{
-				$sql_queries .= "<p>$query</p>\n";
-			}
+				$query = "INSERT INTO ".cms_db_prefix()."content_props (content_id, type, prop_name, param1, param2, param3, content) VALUES (?,?,?,?,?,?,?)";
 
-			if (! $dbresult)
-			{
+				$dbresult = $db->Execute($query, array(
+					$content_id,
+					$this->mPropertyTypes[$key],
+					$key,
+					'',
+					'',
+					'',
+					$this->mPropertyValues[$key],
+					));
+
+				# debug mode
 				if (true == $config["debug"])
 				{
-					# :TODO: Translate the error message
-					$debug_errors .= "<p>Error updating content property</p>\n";
+					$sql_queries .= "<p>$query</p>\n";
+				}
+
+				if (! $dbresult)
+				{
+					if (true == $config["debug"])
+					{
+						# :TODO: Translate the error message
+						$debug_errors .= "<p>Error updating content property</p>\n";
+					}
 				}
 			}
 		}
@@ -957,11 +965,14 @@ class ContentProperties
 
 	function Delete($content_id)
 	{
-		global $gCms, $config, $sql_queries, $debug_errors;
-		$db = &$gCms->db;
+		if (count($this->mPropertyValues) > 0)
+		{
+			global $gCms, $config, $sql_queries, $debug_errors;
+			$db = &$gCms->db;
 
-		$query = "DELETE FROM ".cms_db_prefix()."content_props WHERE content_id = ?";
-		$db->Execute($query, array($content_id));
+			$query = "DELETE FROM ".cms_db_prefix()."content_props WHERE content_id = ?";
+			$db->Execute($query, array($content_id));
+		}
 	}
 }
 
