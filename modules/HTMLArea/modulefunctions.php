@@ -16,21 +16,20 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-function htmlarea_module_header_function($cms)
+function htmlarea_module_header_function(&$cms)
 {
 	$nls = $cms->nls;
 	$config = $cms->config;
+	$variables = $cms->variables;
+
+	if (array_key_exists('htmlarea_textareas', $cms->variables))
+	{
 
 	?>
-	<script type="text/javascript" src="<?php echo $config["root_url"]?>/modules/HTMLArea/htmlarea/htmlarea.js"></script>
-
 	<script type="text/javascript">
 		<!--
-
 		_editor_url = "<?php echo $config["root_url"]?>/modules/HTMLArea/htmlarea/";
-		<?php #echo "_editor_lang = \"".$nls['htmlarea'][$current_language]."\";" ?>
-		_editor_lang = "en";
-
+		<?php echo "_editor_lang = \"".$nls['htmlarea'][$cms->current_language]."\";\n" ?>
 		-->
 	</script>
 
@@ -38,16 +37,7 @@ function htmlarea_module_header_function($cms)
 
 	<script type="text/javascript" defer>
 		<!--
-		var editor = null;
-		function initHtmlArea()
-		{
-			HTMLArea.replaceAll();
-		}
-		-->
-	</script>
 
-	<script type="text/javascript">
-		<!--
 		HTMLArea.loadPlugin("ImageManager");
 		HTMLArea.loadPlugin("InsertFile");
 		HTMLArea.loadPlugin("TableOperations");
@@ -58,16 +48,23 @@ function htmlarea_module_header_function($cms)
 		<?php if ($config["use_Indite"] == true) { ?>	
 			HTMLArea.loadPlugin("Indite");	
 		<?php } ?>
-		var editor = null;
+
 		function initHtmlArea()
 		{
-			editor = new HTMLArea("content");
-			editor.registerPlugin(ImageManager);
+			var config = new HTMLArea.Config();
+			<?php
+				$count = 1;
+				foreach ($cms->variables['htmlarea_textareas'] as $onearea)
+				{
+			?>
+
+			var editor<?php echo $count?> = new HTMLArea("<?php echo $onearea?>", config);
+			editor<?php echo $count?>.registerPlugin(ImageManager);
 			<?php 
 				// Ugly Hack alert! making setting session var to send language setting to insertFile
 				if ($config["disable_htmlarea_translation"] != true)
 				{
-					$_SESSION['InsertFileLang'] = $nls['htmlarea'][$current_language];
+					$_SESSION['InsertFileLang'] = $cms->nls['htmlarea'][$cms->current_language];
 				}
 				else
 				{
@@ -77,16 +74,17 @@ function htmlarea_module_header_function($cms)
 					}
 				}
 		 	?>
-			editor.registerPlugin(InsertFile);
-			editor.registerPlugin(TableOperations);
-			editor.registerPlugin(ContextMenu);
-			editor.registerPlugin(CharacterMap);
-			editor.registerPlugin(FindReplace);
-			editor.registerPlugin(InvertBackground);
+
+			editor<?php echo $count?>.registerPlugin(InsertFile);
+			editor<?php echo $count?>.registerPlugin(TableOperations);
+			editor<?php echo $count?>.registerPlugin(ContextMenu);
+			editor<?php echo $count?>.registerPlugin(CharacterMap);
+			editor<?php echo $count?>.registerPlugin(FindReplace);
+			editor<?php echo $count?>.registerPlugin(InvertBackground);
 
 			<?php
 				if ($config["use_Indite"] == true)
-					echo "editor.registerPlugin(Indite);";
+					echo "editor".$count.".registerPlugin(Indite);";
 
 				$template_id = -1;
 				if (isset($_POST["template_id"])) 
@@ -98,9 +96,22 @@ function htmlarea_module_header_function($cms)
 					$query = "SELECT template_id FROM ".cms_db_prefix()."pages WHERE ".$_GET['page_id']." = page_id";
 					$template_id = $db->GetOne($query);
 				}
+
+				if (array_key_exists('htmlarea_stylesheet', $cms->variables))
+				{
 			?>	
-			editor.config.pageStyle = editor.config.pageStyle+'<?php echo str_replace("'", "\\'", get_stylesheet($template_id))?>';
-			editor.generate();
+
+			editor<?php echo $count?>.config.pageStyle = "@import url('<?php echo str_replace('..', '', $config['root_url'] . $cms->variables['htmlarea_stylesheet'])?>')";
+			<?php
+				}
+			?>
+
+			editor<?php echo $count?>.generate();
+			<?php
+					$count++;
+				}
+			?>
+
 		}
 		-->
 	</script>
@@ -126,11 +137,27 @@ function htmlarea_module_header_function($cms)
 	</script>
 
 	<?php
+	}
 }
 
-function htmlarea_module_textbox_function($cms, $name='textbox', $columns='80', $rows='8', $content)
+function htmlarea_module_body_function($cms)
 {
-	return '<textbox name="'.$name.'" columns="'.$columns.'" rows="'.$rows.'">'.$content.'</textbox>';
+	echo "onload='page_load();'";
+}
+
+function htmlarea_module_textbox_function(&$cms, $name='textbox', $columns='80', $rows='8', $encoding='', $content='', $stylesheet='')
+{
+	$variables = &$cms->variables;
+	if ($stylesheet != '')
+	{
+		$variables['htmlarea_stylesheet'] = $stylesheet;
+	}
+	if (!array_key_exists('htmlarea_textareas', $variables))
+	{
+		$variables['htmlarea_textareas'] = array();
+	}
+	array_push($variables['htmlarea_textareas'], $name);
+	return '<textarea id="'.$name.'" name="'.$name.'" columns="'.$columns.'" rows="'.$rows.'">'.cms_htmlentities($content,ENT_NOQUOTES,get_encoding($encoding)).'</textarea>';
 }
 
 function htmlarea_module_help($cms)

@@ -31,6 +31,7 @@ cms_mapi_register_plugin_module($module_name);
 //Registers module with WYSIWYG
 cms_mapi_register_wysiwyg_module($module_name);
 cms_mapi_register_wysiwyg_page_header_function($module_name, 'htmlarea_module_header_function');
+cms_mapi_register_wysiwyg_page_body_function($module_name, 'htmlarea_module_body_function');
 cms_mapi_register_wysiwyg_page_textbox_function($module_name, 'htmlarea_module_textbox_function');
 
 //Register callback help function
