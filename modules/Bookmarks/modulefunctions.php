@@ -420,7 +420,7 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 						$col_number++;
 						if($col_number >= $number_of_columns)
 							$col_number = 0;
-						ob_start();
+					ob_start();
 					}
 
 					// start new column
@@ -448,7 +448,7 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 			$columns[$col_number] .= $string;
 
 			// display in a table
-			echo "<!-- Bookmarks Module: number of bookmarks: $num_rows, number of bookmarks per column: $rows_per_column -->\n";
+			echo "<!-- Bookmarks Module: number of bookmarks: $num_rows -->\n";
 			echo "<table id='cms-module-bookmarks' border='0' cellpadding='0' cellspacing='0'>\n<tr>\n";
 
 			foreach($columns as $col)
