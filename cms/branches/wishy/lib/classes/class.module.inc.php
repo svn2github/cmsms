@@ -893,7 +893,7 @@ class CMSModule extends ModuleOperations
 	{
 		global $gCms;
 
-		if (isset($gCms->modules[$module])) &&
+		if (isset($gCms->modules[$module]) &&
 			$gCms->modules[$module]['installed'] == true &&
 			$gCms->modules[$module]['active'] == true)
 		{
