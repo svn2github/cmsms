@@ -1097,8 +1097,9 @@ EOT;
 						$event_date_string = strftime($datetime_format, $event_date_time);
 						
 		
-		
-					$link = $this->CreateReturnLink($id, $returnid, 'Return');
+					
+					
+					
 					
 								
 					echo <<<EOT
@@ -1112,9 +1113,15 @@ EOT;
 
 					
 				}
-				echo <<<EOT
+				
+				if(strstr(basename($_SERVER ['SCRIPT_NAME']), 'index') === false)
+				{
+					$link = $this->CreateReturnLink($id, $returnid, 'Return');
+				
+					echo <<<EOT
 				<p class='calendar-returnlink'>$link.</p>
 EOT;
+				}
 			}		
 
 		}
