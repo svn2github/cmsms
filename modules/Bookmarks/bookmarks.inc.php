@@ -159,9 +159,9 @@ EOT;
 				,$categories_table_name.category_name
 				,$bookmarks_table_name.*
 		FROM $bookmarks_table_name
-		INNER JOIN $bookmarks_to_categories_table_name
+		LEFT JOIN $bookmarks_to_categories_table_name
 		   ON $bookmarks_table_name.bookmark_id = $bookmarks_to_categories_table_name.bookmark_id
-		INNER JOIN $categories_table_name
+		LEFT JOIN $categories_table_name
 		   ON $bookmarks_to_categories_table_name.category_id = $categories_table_name.category_id
 	";
 
@@ -198,7 +198,7 @@ EOT;
 		$rows_per_column = intval($num_rows / $number_of_columns) + 0; /* 10 is a fudge factor to make it look better! */
 
 
-		$current_category_name = '';
+		$current_category_name = 'unknown'; 
 		$row_count = 0;
 
 		$edit_url = $_SERVER['PHP_SELF'] . '?module=Bookmarks&amp;'.$module_id.'action=edit_bookmark&amp;'.$module_id.'bookmark_id';
@@ -226,6 +226,8 @@ EOT;
 			if($current_category_name != $category_name)
 			{
 				// new category
+				if($category_name == '')
+					$category_name = '== None ==';
 				$current_category_name = $category_name;
 
 				if($row_count > 1)
