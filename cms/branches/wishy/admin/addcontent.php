@@ -33,6 +33,10 @@ $error = "";
 $submit = false;
 if (isset($_POST["submitbutton"])) $submit = true;
 
+#Get current userid and make sure they have permission to add something
+$userid = get_userid();
+$access = check_permission($userid, 'Add Content');
+
 #Get a list of content types and pick a default if necessary
 $existingtypes = ContentManager::ListContentTypes();
 $content_type = "";
@@ -77,13 +81,9 @@ if (isset($_POST["serialized_content"]))
 else
 {
 	$contentobj = new $content_type;
+	$contentobj->mOwner = $userid;
 	$contentobj->mActive = true;
 }
-
-
-#Get current userid and make sure they have permission to add something
-$userid = get_userid();
-$access = check_permission($userid, 'Add Content');
 
 if ($access)
 {
@@ -146,6 +146,7 @@ $typesdropdown .= "</select>";
 </div> <!--end adminform-->
 
 <input type="hidden" name="serialized_content" value="<?php echo base64_encode(serialize($contentobj)) ?>">
+<input type="hidden" name="content_type" value="<?php echo $content_type ?>">
 
 </form>
 

@@ -114,6 +114,11 @@ class ContentBase
 	var $mPreview;
 
 	/**
+	 * Should it show up in the menu?
+	 */
+	var $mShowInMenu;
+
+	/**
 	 * Is this page the default?
 	 */
 	var $mDefaultContent;
@@ -160,6 +165,7 @@ class ContentBase
 		$this->mHierarchy		= "" ;
 		$this->mActive			= false ;
 		$this->mDefaultContent	= false ;
+		$this->mShowInMenu		= false ;
 		$this->mMenuText		= "" ;
 		$this->mCreationDate	= "" ;
 		$this->mModifiedDate	= "" ;
@@ -256,6 +262,14 @@ class ContentBase
 	}
 
 	/**
+	 * Returns whether it should show in the menu
+	 */
+	function ShowInMenu()
+	{
+		return $this->mShowInMenu;
+	}
+
+	/**
 	 * Returns if the page is the default
 	 */
 	function DefaultContent()
@@ -318,7 +332,7 @@ class ContentBase
 				$this->mAlias			= $row["content_alias"];
 				$this->mType			= $row["type"];
 				$this->mOwner			= $row["owner_id"];
-				$this->mProperties		= new ContentProperties();
+				#$this->mProperties		= new ContentProperties();
 				$this->mParentId		= $row["parent_id"];
 				$this->mTemplateId		= $row["template_id"];
 				$this->mItemOrder		= $row["item_order"];
@@ -326,6 +340,7 @@ class ContentBase
 				$this->mMenuText		= $row['menu_text'];
 				$this->mActive			= ($row["active"] == 1?true:false);
 				$this->mDefaultContent	= ($row["default_content"] == 1?true:false);
+				$this->mShowInMenu		= ($row["show_in_menu"] == 1?true:false);
 				$this->mCreationDate	= $row["create_date"];
 				$this->mModifiedDate	= $row["modified_date"];
 
@@ -395,7 +410,7 @@ class ContentBase
 		$this->mAlias			= $data["content_alias"];
 		$this->mType			= $data["type"];
 		$this->mOwner			= $data["owner_id"];
-		$this->mProperties		= new ContentProperties(); 
+		#$this->mProperties		= new ContentProperties(); 
 		$this->mParentId		= $data["parent_id"];
 		$this->mTemplateId		= $data["template_id"];
 		$this->mItemOrder		= $data["item_order"];
@@ -403,6 +418,7 @@ class ContentBase
 		$this->mMenuText		= $data['menu_text'];
 		$this->mDefaultContent	= ($data["default_content"] == 1?true:false);
 		$this->mActive			= ($data["active"] == 1?true:false);
+		$this->mShowInMenu		= ($data["show_in_menu"] == 1?true:false);
 		$this->mCreationDate	= $data["create_date"];
 		$this->mModifiedDate	= $data["modified_date"];
 
@@ -464,15 +480,17 @@ class ContentBase
 		
 		$result = false;
 
-		$query = "UPDATE ".cms_db_prefix()."content SET content_name = ?, owner_id = ?, template_id = ?, parent_id = ?, active = ?, default_content = ?, menu_text = ?, content_alias = ?, modified_date = ? WHERE content_id = ?";
+		$query = "UPDATE ".cms_db_prefix()."content SET content_name = ?, owner_id = ?, type = ?, template_id = ?, parent_id = ?, active = ?, default_content = ?, show_in_menu = ?, menu_text = ?, content_alias = ?, modified_date = ? WHERE content_id = ?";
 
 		$dbresult = $db->Execute($query, array(
 			$this->mName,
 			$this->mOwner,
+			$this->mType,
 			$this->mTemplateId,
 			$this->mParentId,
 			($this->mActive==true?1:0),
 			($this->mDefaultContent==true?1:0),
+			($this->mShowInMenu==true?1:0),
 			$this->mMenuText,
 			$this->mAlias,
 			$db->DBTimeStamp(time()),
@@ -539,7 +557,7 @@ class ContentBase
 		$newid = $db->GenID(cms_db_prefix()."content_seq");
 		$this->mId = $newid;
 
-		$query = "INSERT INTO ".$config["db_prefix"]."content (content_id, content_name, content_alias, type, owner_id, parent_id, template_id, item_order, hierarchy, active, default_content, menu_text, create_date, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		$query = "INSERT INTO ".$config["db_prefix"]."content (content_id, content_name, content_alias, type, owner_id, parent_id, template_id, item_order, hierarchy, active, default_content, show_in_menu, menu_text, create_date, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		$dbresult = $db->Execute($query, array(
 			$newid,
@@ -553,6 +571,7 @@ class ContentBase
 			$this->mHierarchy,
 			($this->mActive==true?1:0),
 			($this->mDefaultContent==true?1:0),
+			($this->mShowInMenu==true?1:0),
 			$this->mMenuText,
 			$db->DBTimeStamp(time()),
 			$db->DBTimeStamp(time())
@@ -793,8 +812,11 @@ class ContentProperties
 
 	function Add($type, $name)
 	{
-		$this->mPropertyTypes[$name] = $type;
-		$this->mPropertyValues[$name] = "";
+		if (!isset($this->mPropertyValues[$name]))
+		{
+			$this->mPropertyTypes[$name] = $type;
+			$this->mPropertyValues[$name] = "";
+		}
 	}
 
 	function GetValue($name)
@@ -830,8 +852,11 @@ class ContentProperties
 			while ($row = $dbresult->FetchRow())
 			{
 				$prop_name = $row['prop_name'];
-				$this->mPropertyTypes[$prop_name] = $row['type'];
-				$this->mPropertyValues[$prop_name] = $row['content'];
+				if (isset($this->mPropertyValues[$prop_name]))
+				{
+					$this->mPropertyTypes[$prop_name] = $row['type'];
+					$this->mPropertyValues[$prop_name] = $row['content'];
+				}
 			}
 		}
 	}

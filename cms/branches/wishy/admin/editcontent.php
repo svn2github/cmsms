@@ -20,6 +20,11 @@ $CMS_ADMIN_PAGE=1;
 
 require_once("../include.php");
 
+if (isset($_POST["cancel"]))
+{
+	redirect("listcontent.php");
+}
+
 check_login();
 
 $error = "";
@@ -76,15 +81,6 @@ if (isset($_POST["serialized_content"]))
 		$contentobj = $tmpobj;
 	}
 }
-else
-{
-	$contentobj = new $content_type;
-}
-
-if (isset($_POST["cancel"])) {
-	redirect("listcontent.php");
-	return;
-}
 
 #Get current userid and make sure they have permission to add something
 $userid = get_userid();
@@ -106,12 +102,11 @@ if ($access)
 		ContentManager::SetAllHierarchyPositions();
 		audit($contentobj->Id(), $contentobj->Name(), 'Added Content');
 		redirect("listcontent.php");
-		return;
 	}
-	#else if ($content_id != -1 && !$preview && !$content_change)
 	else if ($content_id != -1 && !$preview)
 	{
 		$contentobj = ContentManager::LoadContentFromId($content_id);
+		$content_type = $contentobj->Type();
 	}
 	else
 	{
@@ -167,6 +162,7 @@ $typesdropdown .= "</select>";
 </div> <!--end adminform-->
 
 <input type="hidden" name="serialized_content" value="<?php echo base64_encode(serialize($contentobj)) ?>">
+<input type="hidden" name="content_type" value="<?php echo $content_type ?>">
 <input type="hidden" name="content_id" value="<?php echo $content_id?>">
 
 </form>

@@ -65,6 +65,11 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 			}
 		}
 
+		if (!$onecontent->Active() || !$onecontent->ShowInMenu())
+		{
+			continue;
+		}
+
 		if ($onecontent->Type() == 'sectionheader')
 		{
 			if ($in_hr == 1)
