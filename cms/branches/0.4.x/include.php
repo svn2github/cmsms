@@ -135,52 +135,55 @@ load_modules();
 #	}
 #}
 
-#Check to see if there is already a language in use...
-if (isset($_POST["change_cms_lang"])) {
-	$err = $gettext->setLanguage($_POST["change_cms_lang"]);
-	if (PEAR::isError($err))
-	{
-		echo $err->toString(), "\n";
+#Only do language stuff for admin pages
+if (isset($CMS_ADMIN_PAGE)) {
+	#Check to see if there is already a language in use...
+	if (isset($_POST["change_cms_lang"])) {
+		$err = $gettext->setLanguage($_POST["change_cms_lang"]);
+		if (PEAR::isError($err))
+		{
+			echo $err->toString(), "\n";
+		}
+		setcookie("cms_language", $_POST["change_cms_lang"]);
 	}
-	setcookie("cms_language", $_POST["change_cms_lang"]);
-}
-else if (isset($_COOKIE["cms_language"])) {
-	$err = $gettext->setLanguage($_COOKIE["cms_language"]);
-	if (PEAR::isError($err))
-	{
-		echo $err->toString(), "\n";
-	}
-} else {
+	else if (isset($_COOKIE["cms_language"])) {
+		$err = $gettext->setLanguage($_COOKIE["cms_language"]);
+		if (PEAR::isError($err))
+		{
+			echo $err->toString(), "\n";
+		}
+	} else {
 
-	#No, take a stab at figuring out the default language...
-	#Figure out default language and set it if it exists
-	if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
-		$svrstring = $_SERVER["HTTP_ACCEPT_LANGUAGE"];
-		$alllang = substr($svrstring,0,strpos($svrstring, ";"));
-		$langs = explode(",", $alllang);
+		#No, take a stab at figuring out the default language...
+		#Figure out default language and set it if it exists
+		if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])) {
+			$svrstring = $_SERVER["HTTP_ACCEPT_LANGUAGE"];
+			$alllang = substr($svrstring,0,strpos($svrstring, ";"));
+			$langs = explode(",", $alllang);
 
-		foreach ($langs as $onelang) {
-			#Check to see if lang exists...
-			if (isset($nls['language'][$onelang])) {
-				$err = $gettext->setLanguage($onelang);
-				if (PEAR::isError($err))
-				{
-					echo $err->toString(), "\n";
-				}
-				setcookie("cms_language", $onelang);
-				break;
-			}
-			#Check to see if alias exists...
-			if (isset($nls['alias'][$onelang])) {
-				$alias = $nls['alias'][$onelang];
-				if (isset($nls['language'][$alias])) {
-					$err = $gettext->setLanguage($alias);
+			foreach ($langs as $onelang) {
+				#Check to see if lang exists...
+				if (isset($nls['language'][$onelang])) {
+					$err = $gettext->setLanguage($onelang);
 					if (PEAR::isError($err))
 					{
 						echo $err->toString(), "\n";
 					}
-					setcookie("cms_language", $alias);
+					setcookie("cms_language", $onelang);
 					break;
+				}
+				#Check to see if alias exists...
+				if (isset($nls['alias'][$onelang])) {
+					$alias = $nls['alias'][$onelang];
+					if (isset($nls['language'][$alias])) {
+						$err = $gettext->setLanguage($alias);
+						if (PEAR::isError($err))
+						{
+							echo $err->toString(), "\n";
+						}
+						setcookie("cms_language", $alias);
+						break;
+					}
 				}
 			}
 		}
