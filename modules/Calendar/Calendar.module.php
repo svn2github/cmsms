@@ -133,6 +133,10 @@ class Calendar extends CMSModule
 			<td>datetime_format</td>
 			<td>Format to display the event's date if there is a time as well (as used in strftime()). Default is "%d/%b/%Y %H:%M". <em>(optional)</em></td>
 		</tr>
+		<tr>
+			<td>use_session</td>
+			<td>Use a session variable to store the current month of the calendar. Default is ture. <em>(optional)</em></td>
+		</tr>
 		</table>
 
 EOT;
@@ -903,8 +907,17 @@ EOT;
 		
 		$display = get_parameter_value($parameters, 'display', 'calendar');
 		$category = get_parameter_value($parameters, 'category', '');
-		$month = get_parameter_value($parameters, 'month', date('n'), 'calendar-month'.$id.$returnid);
-		$year = get_parameter_value($parameters, 'year', date('Y'), 'calendar-year'.$id.$returnid);
+		$use_session = get_parameter_value($parameters, 'use_session', true);
+		if($use_session)
+		{
+			$month = get_parameter_value($parameters, 'month', date('n'), 'calendar-month'.$id.$returnid);
+			$year = get_parameter_value($parameters, 'year', date('Y'), 'calendar-year'.$id.$returnid);
+		}
+		else 
+		{
+			$month = get_parameter_value($parameters, 'month', date('n'));
+			$year = get_parameter_value($parameters, 'year', date('Y'));
+		}
 		$limit = get_parameter_value($parameters, 'limit', -1);
 		$summaries = get_parameter_value($parameters, 'summaries', true);
 		$first_day_of_week = get_parameter_value($parameters, 'first_day_of_week', 1);
