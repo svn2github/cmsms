@@ -1,0 +1,267 @@
+/* Stylesheet by Christian Page for CMS: CMS Made Simple, June, July 2004
+	this is freesoftware as defined by the GPL version 2 or later
+	christian at localdesert.com
+	http://www.localdesert.com/christian
+	modified on August 16, 2004 by Shawn Pata
+	http://www.bewbs.com/V2
+*/
+
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	margin: 0;
+	padding: 0;
+	background: #fff;
+	color: #64879d;
+	font-size : 12px;
+}
+
+a:link, a:active, a:visited {
+	color : #64879d;
+	text-decoration : none;
+}
+
+a:hover {
+	font-weight: 300;
+	color: red;
+	text-decoration: none;
+}
+
+	
+h1, h2, h5, p {
+	font-size: 12px;
+	font-weight: bold;
+	color: #000;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}			       	       
+
+h3 {
+	font-size: 16px;
+	font-weight: bold;
+	color: #000;
+	padding-left: 190px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+
+h4 {
+	font-size: 12px;
+	font-weight: bold;
+	color: #000;
+	padding-left: 190px;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+}
+/* start navigation style */
+
+div.nav {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	vertical-align: top;
+	float: left;
+	width: 175px;
+	background: #F6F6F6;
+	padding: 0;
+/*	margin: 1em;  */
+	margin-right: 0px;
+/*	border: 1px solid #64879d; */
+	border-bottom: 1px solid #8C8A8C;
+/*	border-top: 0px solid #000; */
+/*	border-left: 1px solid #8C8A8C; */
+	border-right: 1px solid #8C8A8C;
+}
+
+div.nav h5 {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	margin: 0;
+	background: #F6F6F6;
+	color: #000;
+	font-size : 12px;
+/*	font-weight: bold; */
+	padding: 0;
+	margin: 0.3em; 
+	text-align: left;
+}
+
+div.nav a {
+	display: block;
+	margin: 0;
+	width: auto;
+	padding: 0.3em; 
+	border-top: 1px solid #f6f6f6;
+	border-bottom: 1px solid #f6f6f6;
+	color: #265980;
+	
+	text-decoration: none;
+}
+
+div.nav a:hover {
+	background: #FFF;
+	border-top: 1px solid #8C8A8C;
+	border-bottom: 1px solid #8C8A8C;
+	color: #265980;
+}
+
+div.nav form {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+	padding-bottom: 2px;
+	margin-bottom: 4px;
+}
+
+/* end navigation style */
+
+/* start content style */
+
+#header	{
+	background: #BFDAEF;
+	color: #265980;
+	padding: 8px;
+	border-bottom: 1px solid #8C8A8C;
+	height: 100px;
+}
+
+#logo {
+	position: absolute;
+	left: 10px;
+	top: 10px;
+}
+
+/*#footer	{
+	background: #BFDAEF;
+	color: #265980;
+	padding: 8px;
+	border: 1px solid #8C8A8C;
+	vertical-align: bottom;
+} */
+			
+#login	{
+	background: #EDF2F5;
+	color: #64879d;
+	width: 320px;
+	height: 120px;
+	padding: 10px;
+	border: 2px solid #64879d;
+	margin-top: 10px;
+	position: absolute;
+	left: 100px;
+	top: 50px;
+}
+
+#table { margin-top: 20px; }
+
+#loginlogo { float: right; }
+
+div.content {
+	height: 100%;
+	color: #000;
+}
+
+.moduleabout {
+	margin-right: 150px;
+	margin-left: 200px;
+}
+
+.moduleabout p {
+	font-style: normal;
+	color: #666;
+}
+
+.moduleabout h2 {
+	font-size: 20px;
+}
+
+.moduleabout h3 {
+	font-size: 16px;
+	color: #333;
+	border-bottom: 1px solid #000;
+	padding-left: 0;
+}
+
+.moduleabout h4 {
+	font-size: 14px;
+	color: #333;
+	padding-left: 0;
+}
+
+/* end content style */
+
+/* start table style */
+
+table.admintable {
+	background: #8ABEE5;
+	color: #FFF;
+	border: 1px solid #8C8A8C;
+	font-weight: bold;
+	text-align: left;
+	border-collapse: collapse;
+	border-spacing: 0px;
+	margin-bottom: 15px;
+	width: 75%;
+	margin-left: 10px;
+}
+
+table.admintable td {
+	padding: 4px;
+}
+
+.row1, .row2 {
+	color: #265980;
+	border: #8C8A8C;
+	font-weight: normal;
+}
+
+.row1 {	background: #F6F6F6 }
+.row2 {	background: #FFF; }
+
+.button a, .button a:link, .button a:active, .button a:visited {
+	background: #F6F6F6;
+	color: #265980;
+	padding: 4px;
+	border: 1px solid #8C8A8C;
+	margin-left: 20px;
+}
+
+.button a:hover {
+	background: #FFF;
+	color: #64879d;
+	padding: 4px;
+	border: 1px solid #64879d;
+	font-weight: normal;
+}
+
+.smallselect {
+	font-size: 12px;
+}
+
+/* end table style */
+
+/* start form style */
+
+div.adminform
+{
+	background: #e8e8e8; /* EDF2F5 */
+	color: #265980;
+	border: 1px solid #8C8A8C; 
+	/*
+	border-bottom: 1px solid #8C8A8C;
+	border-right: 1px solid #8C8A8C;
+	border-left: 1px solid #8C8A8C;
+	*/
+	padding: 8px;
+	margin-top: 10px; 
+	margin-right: 10px;
+	margin-left: 0;
+	position: absolute;
+	left: 185px;
+}
+
+div.adminform h3
+{
+	padding-left: 10px;
+}
+
+/* end form style */
+
+.error { 
+	color: #F00;
+	padding-left: 200px;
+}

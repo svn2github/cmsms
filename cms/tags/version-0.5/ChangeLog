@@ -1,0 +1,151 @@
+Version 0.5 -- Fri Aug 22 2004
+-----------------
+
+* Added page aliases
+* Added htaccess file to make pretty page aliases 
+* Added new admin stylesheet (Bewbs)
+* Added new admin icons (Graeme)
+* Added file manager
+* Added LinkBlog module
+* Added RSS module
+* Added PostgreSQL 7 support
+* Added phpdoc strings to many files and functions
+* Added module and tag self-documentation hooks
+* Added ability for module's adminexecute function to use the wysiwyg
+* Added more options to dhtmlmenu and bulletmenu
+* Changed modules page to be called plugins.  Added tags to same page.
+* Changed config file to a new format.  Upgrade script will take care
+up upgrading it automatically.
+* Changed inner workings so that code is easier to 
+understand.  We now pass one global object around and put important 
+variables and objects inside it.  Makes the code very consistent.
+* Changed inner working of the content hierarchy to allow for more
+custom menus.
+* Fixed modules to respect the installed and active flags
+* Lots of little bug fixes and changes
+* Removed lots of NOTICE level errors
+* Updated adodb to 4.5.2
+
+Version 0.4.1 -- Fri Aug 13 2004
+-----------------
+
+* Added template copying functionality (Fixes #39)
+* Added checks to make sure Template titles can't be reused
+* Added function to set template to every page (Fixes #42)
+* Added config flag for turning on smarty's {php} tags (Fixes #47)
+* Added config flag for setting preview tmp file location (Fixes #36)
+* Fixed redirection bugs in the news module
+* Fixed a bug in adding a group
+* Fixed a bug where mysql imports would not work because of spaces at the
+end of lines (Knaldgas)
+* Fixed another bug with mysql import...  this time with magic_quotes_runtime
+* Fixed several warnings and notices in later php versions
+* Fixed all call_user_func_array calls to pass by value, ref is deprecated
+in later php versions
+* Removed the section permissions in new installs (Fixes #41)
+* Removed all instances of the now() function -- for sql independence
+
+Version 0.4 -- Tue Aug 10 2004
+-----------------
+
+* Added module API
+* Added news module
+* Added comments module
+* Added copyright notice to bottom on all generated pages in a comment
+* Added dhtml menu plugin using phplayers
+* Added hierarchical content
+* Fixed modified_date plugin
+* Fixed several bugs with permissions
+* Removed sections.  Instead we have content be children of other content
+* Rewrote plugin loading so that plugins do not cache, even thought static
+content does
+* Rewrote install script to be more cross-database (even though other db
+systems are not supported yet)
+* Switched WYSIWYGs from tinymce to htmlarea
+
+Version 0.3.2 -- Thu Jul 29 2004
+-----------------
+
+* Added version check to install.php
+* Added check to make sure bbcode exists before using it
+* Fixed link to cmsmadesimple in footer
+* Fixed bug in displaying 404 pages
+* Fixed a nasty bug where link pages would file to show in the content list
+* Fixed addcontent so it sets showinmenu correctly
+
+Version 0.3.1 -- Tue Jul 27 2004
+-----------------
+
+* Added ownership change to editcontent
+* Added {title} tag (Fixes #23)
+* Added adodb for database connectivity.  Will be a good thing for down the
+road in supporting multiple databases
+* Added template name to content list page  (Fixes #28)
+* Added check to make sure users don't still own pages before the user is
+deleted
+* Added French translation (calexico@ifrance.com)
+* Fixed so that if no default page is set, system grabs first page it can find
+(Fixes #22)
+* Fixed redirection. (pdj@txnt.com) (Fixes #27)
+* Fixed nasty bug with changeperm and changeassign (fcardone@wp.pl) (Fixes
+#29, #30)
+
+Version 0.3 -- Wed Jul 21 2004
+-----------------
+
+* Added PEAR.php to the lib directory for hosts that may not have it (Fixes #13)
+* Added section reordering (Fixes #4)
+* Added index to tables to make querying faster on the frontend (Fixes #1)
+* Added password hashing for insecure hosts  (Fixes #11)
+* Added content types to content creation and editing (Fixes #5)
+* Added the link content type
+* Added proper 404 error for pages that are not found or active (Fixes #18)
+* Added admin logging and a simple report (Fixes #21)
+* Added TinyMCE WYSIWYG editor for content (Fixes #10)
+* Added user preferences page
+* Added option to turn on/off wysiwyg in user preferences
+* Changed database abstraction so that it will be able to use other db
+backends in the future (Fixes #19)
+* Fixed the install script (again) to work on Win32 (Fixes #12)
+* Fixed the css for admin site to be a little more streamlined
+
+Version 0.2.1 -- Tue Jul 13 2004
+-----------------
+
+* Added GetText.php to work with systems even without gettext support in php
+* Added gettext functionality to all admin pages
+* Added some missing mysql_free_result functions
+* Added preview functionality for adding and editing content and templates
+* Changed content url entries to automatically be lowercase with no odd chars
+* Changed admin login page so username field gets focus on load
+* Changed install.php so that it removes the test files created on page 1
+* Fixed editing content so that changing sections does not mess up ordering
+* Fixed the install script so that it works correctly on Win32 platforms
+* Moved stylesheets to display inline instead of from separate script
+* Moved menu generation code out of the bulletmenu plugin
+
+Version 0.2 -- Mon Jul 05 2004
+-----------------
+
+* Added content reordering
+* Added ability to let additional users modify content on a particular page
+* Added note to show if a template or section is still being used before it is
+deleted
+* Added a cms_version plugin
+* Added an upgrade.php
+* Added a title to the admin pages
+* Added an UPGRADE document
+* Fixed a security hole where incactive pages can still be called by URL
+* Fixed a bug in show in menu in both admin and bulletmenu
+* Fixed up install.php to fit the look of the admin seciton
+* Fixed the footer plugin to not have multiple divs
+* Fixed the wording of INSTALL to match the text in install.php
+* Fixed it so users can change their own password
+* Fixed it so textareas are filled proeperly with html encoded characters
+* Upgraded schema to version 2
+* Removed some code from install.php that was breaking on non-posix systems
+
+Version 0.1 -- Thu Jul 01 2004
+-----------------
+
+* Initial Release
