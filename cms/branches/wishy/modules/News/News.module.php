@@ -803,31 +803,35 @@ class News extends CMSModule
 				{
 					$query = "UPDATE ".cms_db_prefix()."module_news SET news_cat = ?, news_title = ?, news_data = ?, modified_date = ?";
 					$params = array($newscat, $title, $data, $db->DBTimeStamp(time()));
+
 					if ($start_date != "")
 					{
 						$query .= ", start_time = ?";
-						array_push($params, $db->DBTimeStamp($start_date));
+						array_push($params, rtrim(ltrim($db->DBTimeStamp($start_date), "'"), "'"));
 					}
 					else
 					{
 						$query .= ", start_time = ?";
 						array_push($params, NULL);
 					}
+
 					if ($end_date != "")
 					{
 						$query .= ", end_time = ?";
-						array_push($params, $db->DBTimeStamp($end_date));
+						array_push($params, rtrim(ltrim($db->DBTimeStamp($end_date), "'"), "'"));
 					}
 					else
 					{
 						$query .= ", end_time = ?";
 						array_push($params, NULL);
 					}
+
 					if ($post_date != "")
 					{
 						$query .= ", news_date = ?";
-						array_push($params, $db->DBTimeStamp($post_date));
+						array_push($params, rtrim(ltrim($db->DBTimeStamp($post_date), "'"), "'"));
 					}
+
 					$query .= " WHERE news_id = ?";
 					array_push($params, $newsid);
 					$dbresult = $db->Execute($query, $params);
