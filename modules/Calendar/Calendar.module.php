@@ -67,7 +67,7 @@ class Calendar extends CMSModule
 
 	function GetVersion()
 	{
-		return '0.4';
+		return '0.5';
 	}
 
 	function GetDescription($lang = 'en_GB')
@@ -207,6 +207,9 @@ EOT;
 		return <<<EOT
 			<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
 			<dl>
+				<dt>Version: 0.5</dt>
+					<dd>Fix the drop down list for end date year. Fix DE translation of "Return" (thanks Piratos!).
+					 Fix spacing around "to" (thanks Greg!). Add Danish and Dutch translations courtesy of board members esmann and dont.</dd>
 				<dt>Version: 0.4</dt>
 					<dd>Support for language translations. Default to a NULL end date. Improved the help information.
 					Display upcoming events in the correct order! Other minor bug fixes.</dd>
@@ -605,10 +608,11 @@ EOT;
 			$event_date_end_month = 0;
 			$event_date_end_year = 0;
 		}	    
-		
 		echo $this->CreateInputDropdown($id, 'event_date_end_day', array_merge(array(''=>0), $day_array), -1, $event_date_end_day);
 		echo $this->CreateInputDropdown($id, 'event_date_end_month', array_merge(array(''=>0), $month_array), -1, $event_date_end_month);
-		echo $this->CreateInputDropdown($id, 'event_date_end_year', array_merge(array(''=>0), $year_array), -1, $event_date_end_year);
+		$year_array[''] =0;
+		asort($year_array);
+		echo $this->CreateInputDropdown($id, 'event_date_end_year', $year_array, -1, $event_date_end_year);
 		echo '&nbsp;at&nbsp;';
 		echo $this->CreateInputDropdown($id, 'event_date_end_hour', $hour_array, -1, $event_date_end_hour);
 		echo ':';
