@@ -575,6 +575,22 @@ class CMSModule extends ModuleOperations
 	 {
 	 	return '';
 	 }
+	 
+	 /**
+	  * Returns header code specific to this WYSIWYG
+	  */
+	  function WYSIWYGGenerateHeader()
+	  {
+	  	return '';
+	  }
+
+	 /**
+	  * Returns body code specific to this WYSIWYG
+	  */
+	  function WYSIWYGGenerateBody()
+	  {
+	  	return '';
+	  }
 	
 	/**
 	 * Returns the textarea specific for this WYSIWYG.
