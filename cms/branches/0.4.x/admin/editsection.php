@@ -136,7 +136,6 @@ else {
         <td><?=$gettext->gettext("Parent section")?>:</td>
         <td>
         <select name="parent_id" size="1">
-            <option selected value="0">[None]</option>
 <?php
 	if ($parent_id == 0) {
 		echo "<option selected value=\"0\">[None]</option>\n";
