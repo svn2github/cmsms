@@ -208,10 +208,8 @@ if (isset($_GET["message"])) {
 				{
 					#Figure out some variables real quick
 					$depth = count(split('\.', $one->Hierarchy()));
-					echo "depth: " . $depth;
 
 					$item_order = substr($one->Hierarchy(), -1, 1);
-					echo "item_order: " . $item_order;
 
 					$num_same_level = 0;
 
@@ -238,8 +236,6 @@ if (isset($_GET["message"])) {
 						}
 					}
 					
-					echo "num_same_level: " . $num_same_level;
-
 					echo "<td align=\"center\">";
 					if ($num_same_level > 1)
 					{
