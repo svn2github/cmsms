@@ -106,6 +106,7 @@ require_once(dirname(__FILE__)."/lib/misc.functions.php");
 require_once(dirname(__FILE__)."/lib/page.functions.php");
 require_once(dirname(__FILE__)."/lib/content.functions.php");
 require_once(dirname(__FILE__)."/lib/module.functions.php");
+require_once(dirname(__FILE__)."/lib/classes/class.module.inc.php");
 require_once(dirname(__FILE__)."/lib/translation.functions.php");
 
 #Load content types

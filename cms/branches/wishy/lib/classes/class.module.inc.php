@@ -26,7 +26,7 @@
  * @since		0.9
  * @package		CMS
  */
-class CMSModule
+class CMSModule extends ModuleOperations
 {
 	/**
 	 * ------------------------------------------------------------------
@@ -151,6 +151,33 @@ class CMSModule
 	}
 
 	/**
+	 * Return true if there is an admin for the module.  Returns false by
+	 * default.
+	 */
+	function HasAdmin()
+	{
+		return false;
+	}
+
+	/**
+	 * Returns true if the module should be treated as a content module.
+	 * Returns false by default.
+	 */
+	function IsContentModule()
+	{
+		return false;
+	}
+
+	/**
+	 * Returns true if the module should be treated as a plugin module (like
+	 * {cms_module module='name'}.  Returns false by default.
+	 */
+	function IsPluginModule()
+	{
+		return false;
+	}
+
+	/**
 	 * ------------------------------------------------------------------
 	 * Login Related Functions
 	 * ------------------------------------------------------------------
@@ -173,10 +200,335 @@ class CMSModule
 	function LogoutPost(&$user)
 	{
 	}
+
+	/**
+	 * ------------------------------------------------------------------
+	 * User Related Functions
+	 * ------------------------------------------------------------------
+	 */
+	
+	/**
+	 * Called before a user is added to the database.  Sends the user object.
+	 *
+	 * @param User The user that was just created
+	 */
+	function AddUserPre(&$user)
+	{
+	}
+
+	/**
+	 * Called after a user is added to the database.  Sends the user object.
+	 *
+	 * @param User The user that was just created
+	 */
+	function AddUserPost(&$user)
+	{
+	}
+
+	/**
+	 * Called before a user is saved to the database.  Sends the user object.
+	 *
+	 * @param User The user that was just edited
+	 */
+	function EditUserPre(&$user)
+	{
+	}
+
+	/**
+	 * Called after a user is saved to the database.  Sends the user object.
+	 *
+	 * @param User The user that was just edited 
+	 */
+	function EditUserPost(&$user)
+	{
+	}
+
+	/**
+	 * ------------------------------------------------------------------
+	 * Group Related Functions
+	 * ------------------------------------------------------------------
+	 */
+
+	/**
+	 * Called before a group is added to the database.  Sends the group object.
+	 *
+	 * @param Group The group that was just created
+	 */
+	function AddGroupPre(&$group)
+	{
+	}
+
+	/**
+	 * Called after a group is added to the database.  Sends the group object.
+	 *
+	 * @param Group The group that was just created
+	 */
+	function AddGroupPost(&$group)
+	{
+	}
+
+	/**
+	 * Called before a group is saved to the database.  Sends the group object.
+	 *
+	 * @param Group The group that was just edited
+	 */
+	function EditGroupPre(&$group)
+	{
+	}
+
+	/**
+	 * Called after a group is saved to the database.  Sends the group object.
+	 *
+	 * @param Group The group that was just edited 
+	 */
+	function EditGroupPost(&$group)
+	{
+	}
+
+	/**
+	 * ------------------------------------------------------------------
+	 * Template Related Functions
+	 * ------------------------------------------------------------------
+	 */
+
+	/**
+	 * Called before a template is added to the database.  Sends the template
+	 * object.
+	 *
+	 * @param Template The template that was just created
+	 */
+	function AddTemplatePre(&$template)
+	{
+	}
+
+	/**
+	 * Called after a template is added to the database.  Sends the template
+	 * object.
+	 *
+	 * @param Template The template that was just created
+	 */
+	function AddTemplatePost(&$template)
+	{
+	}
+
+	/**
+	 * Called before a template is saved to the database.  Sends the template
+	 * object.
+	 *
+	 * @param Template The template that was just edited
+	 */
+	function EditTemplatePre(&$template)
+	{
+	}
+
+	/**
+	 * Called after a template is saved to the database.  Sends the template
+	 * object.
+	 *
+	 * @param Template The template that was just edited 
+	 */
+	function EditTemplatePost(&$template)
+	{
+	}
+
+	/**
+	 * ------------------------------------------------------------------
+	 * HTML Blob Related Functions
+	 * ------------------------------------------------------------------
+	 */
+
+	/**
+	 * Called before an HTML blob is added to the database.  Sends the html blob
+	 * object.
+	 *
+	 * @param HtmlBlob The HTML blob that was just created
+	 */
+	function AddHtmlBlobPre(&$htmlblob)
+	{
+	}
+
+	/**
+	 * Called after an HTML blob is added to the database.  Sends the html blob
+	 * object.
+	 *
+	 * @param HtmlBlob The HTML blob that was just created
+	 */
+	function AddHtmlBlobPost(&$htmlblob)
+	{
+	}
+
+	/**
+	 * Called before an HTML blob is saved to the database.  Sends the html blob
+	 * object.
+	 *
+	 * @param HtmlBlob The HTML blob that was just edited
+	 */
+	function EditHtmlBlobPre(&$htmlblob)
+	{
+	}
+
+	/**
+	 * Called after an HTML blob is saved to the database.  Sends the html blob
+	 * object.
+	 *
+	 * @param HtmlBlob The HTML blob that was just edited 
+	 */
+	function EditHtmlBlobPost(&$htmlblob)
+	{
+	}
+
+	/**
+	 * ------------------------------------------------------------------
+	 * Content Related Functions
+	 * ------------------------------------------------------------------
+	 */
+	
+	/**
+	 * Called with the content of the template before content, html blobs, etc
+	 * are pasted in.
+	 *
+	 * @param string The template text
+	 */
+	function ContentTemplate(&$template)
+	{
+	}
+
+	/**
+	 * Called with the content of the stylesheet before it is pasted into the
+	 * template.
+	 *
+	 * @param string The stylesheet text
+	 */
+	function ContentStylesheet(&$stylesheet)
+	{
+	}
+
+	/**
+	 * Called with the title before it is pasted into the template.
+	 *
+	 * @param string The title text
+	 */
+	function ContentTitle(&$title)
+	{
+	}
+
+	/**
+	 * Called with the content data before it is pasted into the template.
+	 *
+	 * @param string The content text
+	 */
+	function ContentData(&$content)
+	{
+	}
+
+	/**
+	 * Called with the content of the html blob before it is pasted into the
+	 * template (but after content is pasted in)
+	 *
+	 * @param string The html blob text
+	 */
+	function ContentHtmlBlob(&$htmlblob)
+	{
+	}
+
+	/**
+	 * Called before the pasted together template/content/html blobs/etc are
+	 * sent to smarty for processing.
+	 *
+	 * @param string The prerendered text
+	 */
+	function ContentPreRender(&$content)
+	{
+	}
+
+	/**
+	 * Called after content is sent to smarty for processing and right before
+	 * display.  Cached content will still call this function before display.
+	 *
+	 * @param string The postrendered text
+	 */
+	function ContentPostRender(&$content)
+	{
+	}
+
+	/**
+	 * ------------------------------------------------------------------
+	 * WYSIWYG Related Functions
+	 * ------------------------------------------------------------------
+	 */
+
+	/**
+	 * Returns true if this module should be treated as a WYSIWYG module. It
+	 * returns false be default.
+	 */
+	function IsWYSIWYG()
+	{
+		return false;
+	}
+
+	/**
+	 * Returns content destined for the <form> tag.  It's useful if javascript is
+	 * needed for the onsubmit of the form.
+	 */
+	function WYSIWYGPageForm()
+	{
+		return '';
+	}
+
+	/**
+	 * This is a function that would be called before a form is submitted.
+	 * Generally, a dropdown box or something similar that would force a submit
+	 * of the form via javascript should put this in their onchange line as well
+	 * so that the WYSIWYG can do any cleanups before the actual form submission
+	 * takes place.
+	 */
+	 function WYSIWYGPageFormSubmit()
+	 {
+	 	return '';
+	 }
+	
+	/**
+	 * Returns the textarea specific for this WYSIWYG.
+	 *
+	 * @param string HTML name of the textarea
+	 * @param int Number of columns wide that the textarea should be
+	 * @param int Number of rows long that the textarea should be
+	 * @param string Encoding of the content
+	 * @param string Content to show in the textarea
+	 * @param string Stylesheet for content, if available
+	 */
+	function WYSIWYGTextarea($name='textarea',$columns='80',$rows='15',$encoding='',$content='',$stylesheet='')
+	{
+		return '<textarea name="'.$name.'" cols="'.$columns.'" rows="'.$rows.'">'.$content.'</textarea>';
+	}
+
+	/**
+	 * ------------------------------------------------------------------
+	 * Navigation Related Functions
+	 * ------------------------------------------------------------------
+	 */
+
+	/**
+	 * Used for navigation between "pages" of a module.  Forms and links should
+	 * pass an action with them so that the module will know what to do next.
+	 * By default, DoAction will be passed 'default' and 'defaultadmin',
+	 * depending on where the module was called from.  If being used as a module
+	 * or content type, 'default' will be passed.  If the module was selected
+	 * from the list on the admin menu, then 'defaultadmin' will be passed.
+	 *
+	 * @param string Name of the action to perform
+	 * @param string The ID of the module
+	 * @param string The parameters targeted for this module
+	 */
+	function DoAction($name, $id, $parameters)
+	{
+		return '';
+	}
 }
 
 /**
- * "Static" module functions for internal use and module development.
+ * "Static" module functions for internal use and module development.  CMSModule
+ * extends this so that it has internal access to the functions.
  *
  * @since		0.9
  * @package		CMS
