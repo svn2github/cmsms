@@ -544,6 +544,8 @@ function bookmarks_module_help(/*$cms*/)
 	<li><em>(optional)</em> addform - set to "true" to display a form allowing users to submit bookmarks</li>
 	<li><em>(optional)</em> include_back_button - used with addform=true. When set, will include a back button on the form</li>
 	<li><em>(optional)</em> email_to - used with addform=true. Set to the email address to which email notifications of new bookmarks will be sent</li>
+	<li><em>(optional)</em> email_from - used with addform=true. Set to the email address to be used in the "from" field for email notifications</li>
+
 
 	</ul>
 	</p>

@@ -486,6 +486,15 @@ function bookmarks_module_frontend_display_form($cms, $module_id, $return_id, $p
 		$email_to = $params[$id.'email_to'];
 	}
 
+	$email_from = '';
+	if(isset($params[$id.'email_from']))
+	{
+		$email_from = $params[$id.'email_from'];
+	}
+	else if(isset($params['email_from']))
+	{
+		$email_from = $params[$id.'email_from'];
+	}
 
 	$button_text = 'Add';
 	if($bookmark_id > 0)
@@ -499,6 +508,11 @@ function bookmarks_module_frontend_display_form($cms, $module_id, $return_id, $p
 	{
 		echo "<input type='hidden' name='{$module_id}email_to' value='$email_to'>\n";
 	}
+	if($email_from != '')
+	{
+		echo "<input type='hidden' name='{$module_id}email_from' value='$email_from'>\n";
+	}
+
 	echo <<<EOT
 
 <input type='hidden' name='{$module_id}action' value='bookmarks_useradd'>
@@ -590,11 +604,16 @@ function bookmarks_module_frontend_add($cms, $module_id, $return_id, $params)
 	if($email_to != '')
 	{
 		// get admin email address.
-		$from_email_addr = 'bookmarksmodule@example.com';
-		$sql = 'SELECT email FROM ' .cms_db_prefix().'users WHERE user_id = 1';
-		$rs = $cms->db->Execute($sql);
-		if($rs)
-			$from_email_addr = $rs->fields['email'];
+		$email_from = getRequestValue($module_id.'email_from', '');
+		if($email_from == '')
+		{
+			// guess an email addresss!
+			$email_from = 'bookmarksmodule@example.com';
+			$sql = 'SELECT email FROM ' .cms_db_prefix().'users ORDER BY user_id ASC';
+			$rs = $cms->db->SelectLimit($sql, 1);
+			if($rs)
+				$email_from = $rs->fields['email'];
+		}
 
 		$subject = 'New Bookmark Submitted';
 		$body = "A new bookmark has been submitted.\n\n";
@@ -602,19 +621,13 @@ function bookmarks_module_frontend_add($cms, $module_id, $return_id, $params)
 		$body .= "Url: {$params[$module_id.'url']}\n";
 		$body .= "Summary: {$params[$module_id.'summary']}\n";
 
-	    $result = @mail($email_to, $subject, $body,
-	        "From:$from_email_addr\r\n"
-    	    ."Return-Path: <$from_email_addr>\r\n"
-        	."Reply-To: <$from_email_addr>\r\n"
-	        ."X-Mailer: PHP/" . phpversion());
-
+		$headers = "From: \"CMS Boomarks Module\" <$email_from>\r\n"
+    	    ."Return-Path: \"CMS Boomarks Module\" <$email_from>\r\n"
+	        ."X-Mailer: PHP/" . phpversion();
+	    $result = @mail($email_to, $subject, $body, $headers);
 	}
 
 	$link = cms_mapi_create_content_link_by_page_id($return_id, "Return");
-
-
 	echo "<p class='cms-module-bookmarks-submitted'>Thank you for your submission. $link.</p>";
-
-
 }
 ?>
