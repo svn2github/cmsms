@@ -64,8 +64,8 @@ function tinymce_module_header_function(&$cms)
 			document_base_url : "<?php echo $cms->config['root_url']?>/",
 			relative_urls : "false",
 			plugin_insertdate_dateFormat : "%Y-%m-%d",
-			extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],font[face|size|color],hr[class|width|size|noshade],form[name|id|action]"
 			plugin_insertdate_timeFormat : "%H:%M:%S",
+			extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],font[face|size|color],hr[class|width|size|noshade],form[name|id|action]"
 		});
 	</script>
 
