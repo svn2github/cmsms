@@ -39,6 +39,7 @@ $gettext->reset();
 <h4>Content</h4>
 <a href="listcontent.php"><?=$gettext->gettext("Content Management")?></a>
 <a href="listtemplates.php"><?=$gettext->gettext("Template Management")?></a>
+<a href="listcss.php"><?=$gettext->gettext("CSS Management")?></a>
 <!--<a href="tools.php"><?=$gettext->gettext("Tools")?></a>-->
 <a href="listgroups.php"><?=$gettext->gettext("Group Management")?></a>
 <a href="listusers.php"><?=$gettext->gettext("User Management")?></a>
