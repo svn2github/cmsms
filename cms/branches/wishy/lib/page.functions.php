@@ -483,9 +483,12 @@ function create_textarea($enablewysiwyg, $text, $name, $classname, $id='', $enco
 	
 	foreach($gCms->modules as $key=>$value)
 	{
-		if (get_preference(get_userid(), 'wysiwyg')!="" && $gCms->modules[$key]['installed'] == true &&
+		if (get_preference(get_userid(), 'wysiwyg')!="" &&
+			$gCms->modules[$key]['installed'] == true &&
 			$gCms->modules[$key]['active'] == true &&
-			$gCms->modules[$key]['object']->IsWYSIWYG() && $enablewysiwyg)
+			$gCms->modules[$key]['object']->IsWYSIWYG() &&
+			$gCms->modules[$key]['object']->GetName()==get_preference(get_userid(), 'wysiwyg') &&
+			$enablewysiwyg)
 		{
 			$result = '';
 			ob_start();
