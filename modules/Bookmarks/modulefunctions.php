@@ -181,7 +181,19 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 		}
 		if($category)
 		{
-			$sql .= "$where $categories_table_name.category_name = '$category' ";
+			$cats = explode(',', $category);
+			$sql .= $where . ' (';
+			$count = 0;
+			foreach($cats as $cat)
+			{
+				if($count != 0)
+				{
+					$sql .= ' OR ';
+				}
+				$count++;
+				$sql .= "$categories_table_name.category_name LIKE '$cat' ";
+			}
+			$sql .=	') ';
 		}
 
 		if($order_by_date)
@@ -214,12 +226,23 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 
 		if($category)
 		{
-			$sql .= "$where $categories_table_name.category_name = '$category' ";
+			$cats = explode(',', $category);
+			$sql .= $where . ' (';
+			$count = 0;
+			foreach($cats as $cat)
+			{
+				if($count != 0)
+				{
+					$sql .= ' OR ';
+				}
+				$count++;
+				$sql .= "$categories_table_name.category_name LIKE '$cat' ";
+			}
+			$sql .=	') ';
 		}
 
 		$sql .= "ORDER BY $bookmarks_table_name.bookmark_modified_date DESC";
 	}
-
 
 	if($number)
 	{
@@ -440,7 +463,8 @@ and display bookmarks.  The code would look something like:
 </tr>
 <tr>
 	<td>category</td>
-	<td>Only display items for that category. Leaving unset, will show all categories. <em>(optional)</em></td>
+	<td>Only display items for that category. Leaving unset, will show all categories. Note that
+	you can limit to muliple categories by separating each one with a comman.<em>(optional)</em></td>
 </tr>
 <tr>
 	<td>show_category_with_title</td>
