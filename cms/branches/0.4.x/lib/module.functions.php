@@ -15,6 +15,10 @@ class cmsmodule {
 		die("cmsmodule::execute() not implemented!");
 	}
 
+	function upgrade($cms, $oldversion, $newversion) {
+		//This function will be run for upgrading
+	}
+
 }
 
 function load_modules() {
@@ -28,6 +32,23 @@ function load_modules() {
 			}
 		}
 	}
+}
+
+function create_permission($cms, $permission_name, $permission_text) {
+
+	$db = $cms->db;
+
+	$new_id = $db->GenID($cms->config->db_prefix."permissions_seq");
+	$query = "INSERT INTO ".$cms->config->db_prefix."permissions (permission_id, permission_name, permission_text, create_date, modified_date) VALUES ($new_id, ".$db->qstr($permission_name).",".$db->qstr($permission_text).",".$db->DBTimeStamp(time()).",".$db->DBTimeStamp(time()).")";
+	$db->Execute($query);
+}
+
+function remove_permission($cms, $permission_name) {
+
+	$db = $cms->db;
+
+	$query = "DELETE FROM ".$cms->config->db_prefix."permissions WHERE permission_name = " . $db->qstr($permission_name);
+	$db->Execute($query);
 }
 
 ?>

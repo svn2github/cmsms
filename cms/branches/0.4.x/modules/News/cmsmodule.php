@@ -6,6 +6,8 @@ define("MODULE_NAME", "News");
 //Define module variables
 $cmsmodules[MODULE_NAME]['Author'] = "Ted Kulp <tedkulp@users.sf.net>";
 $cmsmodules[MODULE_NAME]['Version'] = "1.0";
+$cmsmodules[MODULE_NAME]['ContentModule'] = "1";
+$cmsmodules[MODULE_NAME]['PluginModule'] = "1";
 
 class News extends cmsmodule {
 
@@ -27,6 +29,8 @@ class News extends cmsmodule {
 
 		$db->CreateSequence($cms->config->db_prefix."module_news_seq");
 
+		create_permission($cms, 'Modify News', 'Modify News');
+
 		#Throw in a test for now
 		$new_id = $db->GenID($cms->config->db_prefix."module_news_seq");
 		$query = "INSERT INTO ".$cms->config->db_prefix."module_news (news_id, news_title, news_data, news_date, create_date, modified_date) VALUES ($new_id, 'News Module Installed', 'The news module was installed.  Exciting.', ".$db->DBTimeStamp(time()).", ".$db->DBTimeStamp(time()).", ".$db->DBTimeStamp(time()).")";
@@ -41,9 +45,11 @@ class News extends cmsmodule {
 		$dict->ExecuteSQLArray($sqlarray);
 
 		$db->DropSequence($cms->config->db_prefix."module_news_seq");
+
+		remove_permission($cms, 'Modify News');
 	}
 
-	function execute($cms, $id) {
+	function execute($cms, $id, $params) {
 		//This is the entryway into the module.  All requests from CMS will come through here.
 		$db = $cms->db;
 		$query = "SELECT news_id, news_title, news_data, news_date FROM ".$cms->config->db_prefix."module_news ORDER BY news_date desc";

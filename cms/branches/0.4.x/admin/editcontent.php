@@ -137,7 +137,8 @@ if ($access) {
 					$dbnew->Execute($query);
 					if (isset($_POST["additional_editors"])) {
 						foreach ($_POST["additional_editors"] as $addt_user_id) {
-							$query = "INSERT INTO ".$config->db_prefix."additional_users (user_id, page_id) VALUES (".$addt_user_id.", ".$page_id.")";
+							$new_addt_id = $dbnew->GenID($config->db_prefix."additional_users_seq");
+							$query = "INSERT INTO ".$config->db_prefix."additional_users (additional_user_id, user_id, page_id) VALUES ($new_addt_id, ".$addt_user_id.", ".$new_page_id.")";
 							$dbnew->Execute($query);
 						}
 					}
