@@ -28,6 +28,17 @@
  */
 class CMSModule extends ModuleOperations
 {
+
+	/**
+	 * Flag to tell if the module is installed.
+	 */
+	var $_installed = false;
+
+	/**
+	 * Flag to tell if the module is active;
+	 */
+	var $_active = false;
+
 	/**
 	 * ------------------------------------------------------------------
 	 * Basic Functions.  Name and Version MUST be overridden.
@@ -600,6 +611,29 @@ class CMSModule extends ModuleOperations
 	{
 		return '';
 	}
+
+	/**
+	 * ------------------------------------------------------------------
+	 * Internal Functions
+	 * ------------------------------------------------------------------
+	 */
+	
+	/**
+	 * Tells whether the module is marked as installed in the database
+	 */
+	function IsInstalled()
+	{
+		return $this->_installed;
+	}
+
+	/**
+	 * Tells whether the module is marked as active in the database
+	 */
+	function IsActive()
+	{
+		return $this->_active;
+	}
+
 }
 
 /**
@@ -611,6 +645,113 @@ class CMSModule extends ModuleOperations
  */
 class ModuleOperations
 {
+	function LoadModules()
+	{
+		global $gCms;
+		$db = $gCms->db;
+		$cmsmodules = &$gCms->modules;
+
+		$dir = dirname(dirname(dirname(__FILE__)))."/modules";
+		$ls = dir($dir);
+		while (($file = $ls->read()) != "") {
+			if (is_dir("$dir/$file") && (strpos($file, ".") === false || strpos($file, ".") != 0)) {
+				if (is_file("$dir/$file/cmsmodule.php")) {
+					include_once("$dir/$file/cmsmodule.php");
+				}
+			}
+		}
+
+		//Find modules and instantiate them
+		$allmodules = FindModules();
+		foreach ($allmodules as $onemodule)
+		{
+			$newmodule = new $onemodule;
+			$cmsmodules[$onemodule] = $newmodule;
+		}
+
+		#Figger out what modules are active and/or installed
+		if (isset($db))
+		{
+			$query = "SELECT * FROM ".cms_db_prefix()."modules";
+			$result = $db->Execute($query);
+			if ($result)
+			{
+				while ($row = $result->FetchRow())
+				{
+					if (isset($row['module_name']))
+					{
+						$modulename = $row['module_name'];
+						if (isset($modulename) && isset($cmsmodules[$modulename]))
+						{
+							$cmsmodules[$modulename]->_installed = true;
+							$cmsmodules[$modulename]->_active = true;
+
+							//TODO: Fix me
+							#$cmsmodules[$modulename]->_active = $row['active'];
+							/*
+							if ($row['active'] == '1')
+							{
+								#Try generating a content class for this module
+								cms_mapi_create_module_content_class($modulename);
+							}
+							*/
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Finds all classes extending cmsmodule for loading
+	 */
+	function FindModules()
+	{
+		$result = array();
+
+		foreach (get_declared_classes() as $oneclass)
+		{
+			if (strtolower(get_parent_class($oneclass)) == 'cmsmodule')
+			{
+				array_push($result, strtolower($oneclass));
+			}
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Returns a hash (name, instantiation) of all loaded modules, installed,
+	 * active or not.
+	 */
+	function GetAllModules()
+	{
+		global $gCms;
+		$cmsmodules = &$gCms->modules;
+
+		return $cmsmodules;
+	}
+
+	/**
+	 * Returns a hash (name, instantiation) of all loaded modules that are
+	 * installed and active.
+	 */
+	function GetAllUsableModules()
+	{
+		$allmodules = GetAllModules();
+
+		$result = array();
+
+		foreach ($allmodules as $name=>$value)
+		{
+			if ($value->IsInstalled() && $value->IsActive())
+			{
+				$result[$name] = $value;
+			}
+		}
+
+		return $result;
+	}
 }
 
 # vim:ts=4 sw=4 noet
