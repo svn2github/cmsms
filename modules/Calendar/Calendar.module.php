@@ -190,6 +190,10 @@ class Calendar extends CMSModule
 			<td>Format to display the event's date if there is a time as well (as used in <a href='http://www.php.net/manual/en/function.strftime.php' target='_blank'>strftime()</a>). Default is "%d/%b/%Y %H:%M". <em>(optional)</em></td>
 		</tr>
 		<tr>
+			<td>time_format</td>
+			<td>Format to display the event's time when the event has different start and stop times on the same day. (as used in <a href='http://www.php.net/manual/en/function.strftime.php' target='_blank'>strftime()</a>). Default is "%H:%M". <em>(optional)</em></td>
+		</tr>
+		<tr>
 			<td>list_title_format</td>
 			<td>Format to display the title of a list. This is a date as used in <a href='http://www.php.net/manual/en/function.strftime.php' target='_blank'>strftime()</a>. Default is "%b %Y". <em>(optional)</em></td>
 		</tr>
@@ -208,7 +212,8 @@ EOT;
 			<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
 			<dl>
 				<dt>Version: 0.6+</dt>
-					<dd>More fixes for multi-day event on calendar</dd>
+					<dd>More fixes for multi-day event on calendar. Added new parameter "time_format" so we can make
+					the display of a single day event with a start and stop time look better.</dd>
 				<dt>Version: 0.6</dt>
 					<dd>Fix event display so that if the end date is not set, we don't display "to". 
 					Filter by category when displaying an upcominglist.
@@ -1185,6 +1190,7 @@ EOT;
 		$event_id = get_parameter_value($parameters, 'event_id', -1);
 		$date_format = get_parameter_value($parameters, 'date_format', '%d/%b/%Y');
 		$datetime_format = get_parameter_value($parameters, 'datetime_format', '%d/%b/%Y %H:%M');
+		$time_format = get_parameter_value($parameters, 'time_format', '%H:%M');
 		$list_title_format = get_parameter_value($parameters, 'list_title_format', '%b %Y');
 
 		// get the events
@@ -1197,9 +1203,7 @@ EOT;
 		
 		$db = $this->cms->db;
 
-		$sql = "SELECT $events_to_categories_table_name.category_id
-						,$categories_table_name.category_name
-						,$events_table_name.*
+		$sql = "SELECT DISTINCT $events_table_name.*
 				FROM $events_table_name
 				INNER JOIN $events_to_categories_table_name
 				   ON $events_table_name.event_id = $events_to_categories_table_name.event_id
@@ -1347,28 +1351,34 @@ EOT;
 							$event_date_end_month = date('n', $event_date_end_in_seconds);
 							$event_date_end_year = date('Y', $event_date_end_in_seconds);
 							
-							if($event_date_end_month != $event_date_start_month)
+							$event_date_start_no_time = date('Ymd', $event_date_start_in_seconds);
+							$event_date_end_no_time = date('Ymd', $event_date_end_in_seconds);
+							if($event_date_start_no_time != $event_date_end_no_time)
 							{
-								// dates up to $day_of_month are in "next month"
-								for($i = 1; $i < $day_of_month; $i++)
+								
+								if($event_date_end_month != $event_date_start_month)
 								{
-									if($event_date_end_month == $month)
+									// dates up to $day_of_month are in "next month"
+									for($i = 1; $i < $day_of_month; $i++)
+									{
+										if($event_date_end_month == $month)
+										{
+											$content[$i] .= "<li><a href='$url' title='$label' alt='$label' >$title</a></li>"; 
+										}
+										if($i == $event_date_end_day)
+											break;
+									}
+								}
+								// dates after $day_of_month are in "this month"
+								for($i = $day_of_month+1; $i < 32; $i++)
+								{
+									if($event_date_start_month == $month)
 									{
 										$content[$i] .= "<li><a href='$url' title='$label' alt='$label' >$title</a></li>"; 
 									}
 									if($i == $event_date_end_day)
 										break;
 								}
-							}
-							// dates after $day_of_month are in "this month"
-							for($i = $day_of_month+1; $i < 32; $i++)
-							{
-								if($event_date_start_month == $month)
-								{
-									$content[$i] .= "<li><a href='$url' title='$label' alt='$label' >$title</a></li>"; 
-								}
-								if($i == $event_date_end_day)
-									break;
 							}
 						}
 					}
@@ -1390,12 +1400,30 @@ EOT;
 							$event_date_end_month = date('n', $event_date_end_in_seconds);
 							$event_date_end_year = date('Y', $event_date_end_in_seconds);
 							
-							if($event_date_end_month != $event_date_start_month)
+							$event_date_start_no_time = date('Ymd', $event_date_start_in_seconds);
+							$event_date_end_no_time = date('Ymd', $event_date_end_in_seconds);
+							
+							if($event_date_start_no_time != $event_date_end_no_time)
 							{
-								// dates up to $day_of_month are in "next month"
-								for($i = 1; $i < $day_of_month; $i++)
+								if($event_date_end_month != $event_date_start_month)
 								{
-									if($event_date_end_month == $month)
+									// dates up to $day_of_month are in "next month"
+									for($i = 1; $i < $day_of_month; $i++)
+									{
+										if($event_date_end_month == $month)
+										{
+											$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'day'=>$i, 'display'=>'list', 'summaries'=>true), '', true);
+											$url = str_replace('&amp;', '&', $url);
+											$days[$i][0] = $url;
+										}
+										if($i == $event_date_end_day)
+											break;
+									}
+								}
+								// dates after $day_of_month are in "this month"
+								for($i = $day_of_month+1; $i < 32; $i++)
+								{	
+									if($event_date_start_month == $month)
 									{
 										$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'day'=>$i, 'display'=>'list', 'summaries'=>true), '', true);
 										$url = str_replace('&amp;', '&', $url);
@@ -1404,18 +1432,6 @@ EOT;
 									if($i == $event_date_end_day)
 										break;
 								}
-							}
-							// dates after $day_of_month are in "this month"
-							for($i = $day_of_month+1; $i < 32; $i++)
-							{	
-								if($event_date_start_month == $month)
-								{
-									$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'day'=>$i, 'display'=>'list', 'summaries'=>true), '', true);
-									$url = str_replace('&amp;', '&', $url);
-									$days[$i][0] = $url;
-								}
-								if($i == $event_date_end_day)
-									break;
 							}
 						}
 						
@@ -1520,7 +1536,19 @@ EOT;
 					}
 					else 
 					{
-						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string to $event_date_end_string</div>\n";
+						$event_date_start_no_time = date('Ymd', $event_date_start_time);
+						$event_date_end_no_time = date('Ymd', $event_date_end_time);
+						if($event_date_start_no_time == $event_date_end_no_time)
+						{
+							$event_date_start_string = strftime($date_format, $event_date_start_time);
+							$event_date_start_time_string = strftime($time_format, $event_date_start_time);
+							$event_date_end_time_string = strftime($time_format, $event_date_end_time);
+							echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string $event_date_start_time_string " . $this->lang('to') . " $event_date_end_time_string</div>\n";
+						}
+						else
+						{
+							echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string " . $this->lang('to') . " $event_date_end_string</div>\n";
+						}
 					}
 					
 					$details_string =  $this->lang('Details');
@@ -1590,7 +1618,19 @@ EOT;
 					}
 					else 
 					{
-						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string to $event_date_end_string</div>\n";
+						$event_date_start_no_time = date('Ymd', $event_date_start_time);
+						$event_date_end_no_time = date('Ymd', $event_date_end_time);
+						if($event_date_start_no_time == $event_date_end_no_time)
+						{
+							$event_date_start_string = strftime($date_format, $event_date_start_time);
+							$event_date_start_time_string = strftime($time_format, $event_date_start_time);
+							$event_date_end_time_string = strftime($time_format, $event_date_end_time);
+							echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string $event_date_start_time_string " . $this->lang('to') . " $event_date_end_time_string</div>\n";
+						}
+						else
+						{
+							echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string " . $this->lang('to') . " $event_date_end_string</div>\n";
+						}
 					}
 					
 					echo <<<EOT
@@ -1640,7 +1680,19 @@ EOT;
 					}
 					else 
 					{
-						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string " . $this->lang('to') . " $event_date_end_string</div>\n";
+						$event_date_start_no_time = date('Ymd', $event_date_start_time);
+						$event_date_end_no_time = date('Ymd', $event_date_end_time);
+						if($event_date_start_no_time == $event_date_end_no_time)
+						{
+							$event_date_start_string = strftime($date_format, $event_date_start_time);
+							$event_date_start_time_string = strftime($time_format, $event_date_start_time);
+							$event_date_end_time_string = strftime($time_format, $event_date_end_time);
+							echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string $event_date_start_time_string " . $this->lang('to') . " $event_date_end_time_string</div>\n";
+						}
+						else
+						{
+							echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string " . $this->lang('to') . " $event_date_end_string</div>\n";
+						}
 					}
 					
 					$summary_string = $this->lang('Summary');
