@@ -458,6 +458,7 @@ class ADODB_mysql extends ADOConnection {
 	{
 	//global $ADODB_COUNTRECS;
 		//if($ADODB_COUNTRECS) 
+		#echo "<p>".$sql."</p>";
 		return mysql_query($sql,$this->_connectionID);
 		//else return @mysql_unbuffered_query($sql,$this->_connectionID); // requires PHP >= 4.0.6
 	}

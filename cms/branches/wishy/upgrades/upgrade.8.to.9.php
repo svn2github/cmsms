@@ -15,10 +15,31 @@ $flds = "
 	modified_date T
 ";
 $taboptarray = array('mysql' => 'TYPE=MyISAM');
-$sqlarray = $dbdict->CreateTableSQL($db_prefix."content", $flds, $taboptarray);
+$sqlarray = $dbdict->CreateTableSQL(cms_db_prefix()."content", $flds, $taboptarray);
 $dbdict->ExecuteSQLArray($sqlarray);
 
-$db->CreateSequence($db_prefix."content_seq");
+$db->CreateSequence(cms_db_prefix()."content_seq");
+
+echo "[done]</p>";
+
+echo "<p>Adding content_props table...";
+
+$dbdict = NewDataDictionary($db);
+$flds = "
+	content_prop_id I,
+	content_id I,
+	type C(25),
+	prop_name C(255),
+	param1 C(255),
+	content X,
+	create_date T,
+	modified_date T
+";
+$taboptarray = array('mysql' => 'TYPE=MyISAM');
+$sqlarray = $dbdict->CreateTableSQL(cms_db_prefix()."content_props", $flds, $taboptarray);
+$dbdict->ExecuteSQLArray($sqlarray);
+
+$db->CreateSequence(cms_db_prefix()."content_props_seq");
 
 echo "[done]</p>";
 

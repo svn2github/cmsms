@@ -37,7 +37,7 @@
  * @since		svn
  * @package		CMS
  */
-class Content
+class ContentBase
 {
 	/**
 	 * The unique ID identifier of the element
@@ -94,6 +94,11 @@ class Content
 	var $mActive;
 
 	/**
+	 * Does this content have a preview function?
+	 */
+	var $mPreview;
+
+	/**
 	 * Creation date
 	 * Date
 	 */
@@ -115,6 +120,7 @@ class Content
 	function Content()
 	{
 		$this->SetInitialValues();
+		$this->SetProperties();
 	}
 
 	/**
@@ -124,7 +130,7 @@ class Content
 	{
 		$this->mId				= -1 ;
 		$this->mName			= "" ;
-		$this->mType			= "" ;
+		$this->mType			= get_class($this) ;
 		$this->mOwner			= -1 ;
 		$this->mProperties		= new ContentProperties();
 		$this->mParentId		= -1 ;
@@ -133,6 +139,7 @@ class Content
 		$this->mActive			= false ;
 		$this->mCreationDate	= "" ;
 		$this->mModifiedDate	= "" ;
+		$this->mPreview         = false ;
 	}
 
 	/**
@@ -233,29 +240,23 @@ class Content
 
 		if (-1 < $id)
 		{
-			$query		= "SELECT * FROM ".cms_db_prefix()."contents WHERE id = ?";
+			$query		= "SELECT * FROM ".cms_db_prefix()."content WHERE content_id = ?";
 			$dbresult	= $db->Execute($query, array($id));
-
-			# debug mode
-			if (true == $config["debug"])
-			{
-				$sql_queries .= "<p>$query</p>\n";
-			}
 
 			if ($dbresult && (1 == $dbresult->RowCount()))
 			{
 				$row = $dbresult->FetchRow();
 
-				$this->mId				= $row["id"];
-				$this->mName			= $row["name"];
+				$this->mId				= $row["content_id"];
+				$this->mName			= $row["content_name"];
 				$this->mType			= $row["type"];
-				$this->mOwner			= $row["owner"];
-				$this->mProperties		= NULL;
+				$this->mOwner			= $row["owner_id"];
+				$this->mProperties		= new ContentProperties();
 				$this->mParentId		= $row["parent_id"];
 				$this->mItemOrder		= $row["item_order"];
 				$this->mHierarchy		= $row["hierarchy"];
 				$this->mActive			= $row["active"];
-				$this->mCreationDate	= $row["creation_date"];
+				$this->mCreationDate	= $row["create_date"];
 				$this->mModifiedDate	= $row["modified_date"];
 
 				$result = true;
@@ -271,7 +272,7 @@ class Content
 
 			if ($result && $loadProperties)
 			{
-				$this->mProperties = ContentOperations::LoadPropertiesFromId($this->mType, $this->mId);
+				$this->mProperties->Load($this->mId);
 
 				if (NULL == $this->mProperties)
 				{
@@ -327,7 +328,7 @@ class Content
 		$this->mParentId		= $data["parent_id"];
 		$this->mItemOrder		= $data["item_order"];
 		$this->mHierarchy		= $data["hierarchy"];
-		$this->mActive			= $data["active"];
+		$this->mActive			= ($data["active"] == 1?true:false);
 		$this->mCreationDate	= $data["creation_date"];
 		$this->mModifiedDate	= $data["modified_date"];
 
@@ -388,16 +389,12 @@ class Content
 		
 		$result = false;
 
-		$query		= "UPDATE ".$config["db_prefix"]."contents SET
-			name			= ?,
-			owner			= ?,
-			active			= ?,
-			modified_date	= ?
-			WHERE id = ?";
-		$dbresult	= $db->Execute($query, array(
+		$query = "UPDATE ".cms_db_prefix()."content SET content_name = ?, owner_id = ?, active = ?, modified_date = ? WHERE content_id = ?";
+
+		$dbresult = $db->Execute($query, array(
 			$this->mName,
 			$this->mOwner,
-			$this->mActive,
+			($this->mActive==true?1:0),
 			$db->DBTimeStamp(time()),
 			$this->mId
 			));
@@ -420,7 +417,7 @@ class Content
 		if (NULL != $this->mProperties)
 		{
 			# :TODO: There might be some error checking there
-			$this->mProperties.Update();
+			$this->mProperties.Save($this->mId);
 		}
 		else
 		{
@@ -444,22 +441,12 @@ class Content
 		
 		$result = false;
 
-		$newid = $db->GenID(cms_db_prefix()."contents_seq");
+		$newid = $db->GenID(cms_db_prefix()."content_seq");
+		$this->mId = $newid;
 
-		$query	= "INSERT INTO".$config["db_prefix"]."contents (
-			id,
-			name,
-			type,
-			owner,
-			parent_id,
-			item_order,
-			hierarchy,
-			active,
-			creation_date,
-			modified_date
-			)
-			VALUES (?,?,?,?,?,?,?,?,?,?)";
-		$dbresult	= $db->Execute($query, array(
+		$query = "INSERT INTO ".$config["db_prefix"]."content (content_id, content_name, type, owner_id, parent_id, item_order, hierarchy, active, create_date, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?)";
+
+		$dbresult = $db->Execute($query, array(
 			$newid,
 			$this->mName,
 			$this->mType,
@@ -467,9 +454,9 @@ class Content
 			$this->mParentId,
 			$this->mItemOrder,
 			$this->mHierarchy,
-			$this->mActive,
+			($this->mActive==true?1:0),
 			$db->DBTimeStamp(time()),
-			$db->DBTimeStamp(time()),
+			$db->DBTimeStamp(time())
 			));
 
 		# debug mode
@@ -490,7 +477,7 @@ class Content
 		if (NULL != $this->mProperties)
 		{
 			# :TODO: There might be some error checking there
-			$this->mProperties.Insert($newid);
+			$this->mProperties->Save($newid);
 		}
 		else
 		{
@@ -585,7 +572,7 @@ class Content
 		}
 		else
 		{
-			$query		= "DELETE FROM ".$config["db_prefix"]."contents WHERE id = ?";
+			$query		= "DELETE FROM ".$config["db_prefix"]."content WHERE id = ?";
 			$dbresult	= $db->Execute($query, array($this->mId));
 
 			# debug mode
@@ -620,24 +607,19 @@ class Content
 	}
 
 	/**
+	 * Function for the subclass to parse out data for it's parameters (usually from $_POST)
+	 */
+	function FillParams($params)
+	{
+	}
+
+	/**
 	 * Show the content
 	 */
 	function Show()
 	{
 		# :TODO:
-		# This is the responsibility of the subclass, no?
-		if (NULL != $this->mProperties)
-		{
-			$this->mProperties.Show();
-		}
-		else
-		{
-			if (true == $config["debug"])
-			{
-				# :TODO: Translate the error message
-				$debug_errors .= "<p>Error the content has no properties</p>\n";
-			}
-		}
+		return "<tr><td>Show Not Defined</td></tr>";
 	}
 
 	/**
@@ -646,7 +628,7 @@ class Content
 	function Edit()
 	{
 		# :TODO:
-		echo "Edit";
+		return "<tr><td>Edit Not Defined</td></tr>";
 	}
 
 	/**
@@ -655,7 +637,7 @@ class Content
 	function AdvancedEdit()
 	{
 		# :TODO:
-		echo "Advanced edit";
+		return "<tr><td>Advanced Edit Not Defined</td></tr>";
 	}
 
 	/**
@@ -664,59 +646,7 @@ class Content
 	function Help()
 	{
 		# :TODO:
-		echo "Help";
-	}
-}
-
-/**
- * Class for doing content related functions. Many of the content object functions
- * are just wrappers around these.
- *
- * @since svn
- * @package CMS
- */
-class ContentOperations
-{
-	/**
-	 * This function create an object of type $type and loads its content
-	 * from the db.
-	 */
-	function LoadPropertiesFromId($type, $id)
-	{
-	}
-
-	function LoadPropertiesFromData($type, $data)
-	{
-	}
-
-	function CheckType($type)
-	{
-	}
-}
-
-class ContentManager
-{
-	/**
-	 * Determine proper type of object, load it and return it
-	 */
-	function LoadContentFromId($id)
-	{
-	}
-
-	/**
-	 * Display content
-	 */
-	funciton DisplayContent($content)
-	{
-		//This should be straight forward, since the content will pretty much determine how it is displayed
-		$content->Show();
-	}
-
-	/**
-	 * Determine if content should be loaded from cache
-	 */
-	function IsCached($id)
-	{
+		return "<tr><td>Help Not Defined</td></tr>";
 	}
 }
 
@@ -738,8 +668,8 @@ class ContentProperties
 	 */
 	function SetInitialValues()
 	{
-		$this->mPropertyTypes = {}; 
-		$this->mPropertyValues = {}; 
+		$this->mPropertyTypes = array(); 
+		$this->mPropertyValues = array(); 
 	}
 
 	function Add($type, $name)
@@ -748,24 +678,164 @@ class ContentProperties
 		$this->mPropertyValues[$name] = "";
 	}
 
+	function GetValue($name)
+	{
+		if (isset($this->mPropertyValues[$name]))
+		{
+			return $this->mPropertyValues[$name];
+		}
+	}
+
+	function SetValue($name, $value)
+	{
+		if (isset($this->mPropertyValues[$name]))
+		{
+			$this->mPropertyValues[$name] = $value;
+		}
+	}
+
 	function Show()
 	{
 	}
 
-	function Update()
+	function Load($content_id)
 	{
+		global $gCms, $config, $sql_queries, $debug_errors;
+		$db = &$gCms->db;
+
+		$query		= "SELECT * FROM ".cms_db_prefix()."content_props WHERE content_id = ?";
+		$dbresult	= $db->Execute($query, array($content_id));
+
+		# debug mode
+		if (true == $config["debug"])
+		{
+			$sql_queries .= "<p>$query</p>\n";
+		}
+
+		if ($dbresult && $dbresult->RowCount() > 0)
+		{
+			while ($row = $dbresult->FetchRow())
+			{
+				$prop_name = $row['prop_name'];
+				$this->mPropertyTypes[$prop_name] = $row['type'];
+				$this->mPropertyValues[$prop_name] = $row['content'];
+			}
+		}
 	}
 
-	function Insert()
+	function Save($content_id)
 	{
-	}
+		global $gCms, $config, $sql_queries, $debug_errors;
+		$db = &$gCms->db;
 
-	function ValidateData()
-	{
+		$query = "DELETE FROM ".cms_db_prefix()."content_props WHERE content_id = ?";
+		$dbresult = $db->Execute($query, array($content_id));
+
+		foreach ($this->mPropertyValues as $key=>$value)
+		{
+			$query = "INSERT INTO ".cms_db_prefix()."content_props (content_id, type, prop_name, param1, param2, param3, content) VALUES (?,?,?,?,?,?,?)";
+
+			$dbresult = $db->Execute($query, array(
+				$content_id,
+				$this->mPropertyTypes[$key],
+				$key,
+				'',
+				'',
+				'',
+				$this->mPropertyValues[$key],
+				));
+
+			# debug mode
+			if (true == $config["debug"])
+			{
+				$sql_queries .= "<p>$query</p>\n";
+			}
+
+			if (! $dbresult)
+			{
+				if (true == $config["debug"])
+				{
+					# :TODO: Translate the error message
+					$debug_errors .= "<p>Error updating content property</p>\n";
+				}
+			}
+		}
 	}
 
 	function Delete()
 	{
+	}
+}
+
+class ContentManager
+{
+	/**
+	 * Determine proper type of object, load it and return it
+	 */
+	function LoadContentFromId($id)
+	{
+		global $gCms, $config, $sql_queries, $debug_errors;
+		$db = &$gCms->db;
+
+		$query = "SELECT type FROM ".cms_db_prefix()."content WHERE content_id = ?";
+		$dbresult = $db->Execute($query, array($id));
+		#var_dump($dbresult);
+		if ($dbresult && $dbresult->RowCount() > 0)
+		{
+			#echo "blah";
+			$row = $dbresult->FetchRow();
+
+			#Make sure the type exists.  If so, instantiate and load
+			if (in_array($row['type'], ContentManager::ListContentTypes()))
+			{
+				$contentobj = new $row['type'];
+				$contentobj->LoadFromId($id,true);
+				return $contentobj;
+			}
+			else
+			{
+				return FALSE;
+			}
+		}
+		else
+		{
+			#echo "other blah";
+		}
+		return FALSE;
+	}
+
+	/**
+	 * Display content
+	 */
+	function DisplayContent($content)
+	{
+		//This should be straight forward, since the content will pretty much determine how it is displayed
+		$content->Show();
+	}
+
+	/**
+	 * Determine if content should be loaded from cache
+	 */
+	function IsCached($id)
+	{
+	}
+
+	/**
+	 * Returns a list of valid content types (classes that extend ContentBase)
+	 */
+	function ListContentTypes()
+	{
+		$result = array();
+
+		foreach (get_declared_classes() as $oneclass)
+		{
+			if (get_parent_class($oneclass) == 'contentbase')
+			{
+				array_push($result, $oneclass);
+			}
+		}
+
+		return $result;
 	}
 }
 

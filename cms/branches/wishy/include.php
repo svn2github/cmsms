@@ -103,6 +103,9 @@ require_once(dirname(__FILE__)."/lib/content.functions.php");
 require_once(dirname(__FILE__)."/lib/module.functions.php");
 require_once(dirname(__FILE__)."/lib/translation.functions.php");
 
+require_once(dirname(__FILE__)."/lib/classes/class.content.inc.php");
+require_once(dirname(__FILE__)."/lib/classes/class.contenttypes.inc.php");
+
 if (!defined('SMARTY_DIR')) {
 	define('SMARTY_DIR', dirname(__FILE__).'/smarty/');
 }
