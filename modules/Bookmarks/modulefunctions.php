@@ -186,6 +186,7 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 			$count = 0;
 			foreach($cats as $cat)
 			{
+				$cat = trim($cat);
 				if($count != 0)
 				{
 					$sql .= ' OR ';
@@ -231,6 +232,7 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 			$count = 0;
 			foreach($cats as $cat)
 			{
+				$cat = trim($cat);
 				if($count != 0)
 				{
 					$sql .= ' OR ';
