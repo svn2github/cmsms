@@ -17,6 +17,7 @@
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 require_once(dirname(dirname(__FILE__)).'/smarty/Smarty.class.php');
+$sorted_sections = array();
 
 class Smarty_CMS extends Smarty {
 
@@ -179,8 +180,7 @@ class Section {
 
 	function get_child_sections($section_id, $sections, $level) {
 
-## 		echo "get_child_sections: level: ($level) section_id: ($section_id)<br />\n";
-		echo "<p>Level: $level Searching parent: $section_id\n--------------------------------------------------\n";
+		global $sorted_sections;
 		reset($sections);
 		$child_sections = array();
 		foreach ($sections as $one) {
@@ -190,24 +190,11 @@ class Section {
 
 				$one->display_name = $prefix.$one->section_name;
 				$one->level = $level;
-				array_push($child_sections, $one);
+				array_push($sorted_sections, $one);
 				$children = $one->get_child_sections($one->section_id, $sections, $level +1);
-				if (count($children)) {
-					foreach ($children as $child) {  array_push($child_sections, $child); } ## foreach
-				}
 			} ## if
 		} ## foreach
 
-		if (count($child_sections)) {
-			echo "Level: $level -> ============================================================\n";
-			echo var_dump($child_sections);
-			echo "Level: $level -> ============================================================\n";
-
-			return $child_sections;
-		} else {
-			echo "Level: $level -> No children found\n";
-			return;
-		}
 	} ## function
 } ## class
 
@@ -229,6 +216,7 @@ class Page {
 
 function db_get_menu_items(&$config, $style) {
 
+	global $sorted_sections;
 	$db = $config->db;
 
 	$sections = array();
@@ -236,8 +224,7 @@ function db_get_menu_items(&$config, $style) {
 
 ## 	echo "style: ($style)";
 	if ($style === "subs") { ## shows all sections and subsections, no pages
-		## $query = "SELECT p.*, s.section_name, s.parent_id, s.section_id FROM ".$config->db_prefix."sections s LEFT OUTER JOIN ".$config->db_prefix."pages p ON s.section_id = p.section_id order by section_name";
-		$query = "SELECT s.section_name, s.parent_id, s.section_id FROM ".$config->db_prefix."sections s order by parent_id, item_order";
+		$query = "SELECT s.section_name, s.parent_id, s.section_id, s.active FROM ".$config->db_prefix."sections s order by parent_id, item_order";
 		$result = $db->Execute($query);
 
 		$pages = array();
@@ -255,6 +242,7 @@ function db_get_menu_items(&$config, $style) {
 				$current_section->display_name = $line["section_name"];
 				$current_section->parent_id = $line["parent_id"];
 				$current_section->level = 0;
+				$current_section->active = $line["active"];
 				$current_section->items = array();
 			} ## if
 
@@ -264,25 +252,17 @@ function db_get_menu_items(&$config, $style) {
 			array_push($sections, $current_section);
 		} ## if
 
-		## warning, ugly code follows		
-		$sorted = array();
 
 		reset($sections);
 		$children = array();
 		foreach($sections as $one_section) {
 			if ($one_section->parent_id == 0) {
-				array_push($sorted, $one_section);
+				array_push($sorted_sections, $one_section);
 				$children = $one_section->get_child_sections($one_section->section_id, $sections, 1);
 			} ## if
-			if (count($children)) {
-				foreach ($children as $child) { array_push($sorted, $child); }
-			} ## if
 		} ## foreach
-
-## 		echo "<p>".var_dump($sections)."</p>\n";
 		
-		return $sorted;
-
+		return $sorted_sections;
 
 	} elseif ($style === "basic") {
 		$query = "SELECT p.*, s.section_name, s.parent_id FROM ".$config->db_prefix."pages p INNER JOIN ".$config->db_prefix."sections s ON s.section_id = p.section_id WHERE p.show_in_menu = 1 AND p.active = 1 ORDER BY s.item_order, p.item_order, p.menu_text";
