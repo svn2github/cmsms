@@ -9,5 +9,5 @@ $calendar_language_strings['Date'] = 'Datum';
 $calendar_language_strings['Details'] = 'Details';
 $calendar_language_strings['Summary'] = 'Zusammenfassung'; // depends on the meaning
 $calendar_language_strings['Return'] = 'Zur&uuml;ck';
-$calendar_language_strings['to'] = 'zu';
+$calendar_language_strings['to'] = 'bis';
 ?> 
