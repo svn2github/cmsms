@@ -33,7 +33,7 @@ if (isset($_GET["group_id"])) {
 		$query = "SELECT group_name FROM ".$config->db_prefix."groups WHERE group_id = ".$group_id;
 		$result = $dbnew->Execute($query);
 
-		if ($result) {
+		if ($result && $result->RowCount()) {
 			$row = $result->FetchRow();
 			$group_name = $row[group_name];
 		}

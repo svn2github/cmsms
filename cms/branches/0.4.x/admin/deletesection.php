@@ -36,7 +36,7 @@ if (isset($_GET["section_id"])) {
 		$query = "SELECT section_name, item_order FROM ".$config->db_prefix."sections WHERE section_id = ".$section_id;
 		$result = $dbnew->Execute($query);
 
-		if ($result) {
+		if ($result && $result->RowCount()) {
 			$row = $result->FetchRow();
 			$section_name = $row[section_name];
 			$order = $row[item_order];

@@ -78,6 +78,7 @@ require_once(dirname(__FILE__)."/lib/db.functions.php");
 require_once(dirname(__FILE__)."/lib/misc.functions.php");
 require_once(dirname(__FILE__)."/lib/page.functions.php");
 require_once(dirname(__FILE__)."/lib/content.functions.php");
+require_once(dirname(__FILE__)."/lib/module.functions.php");
 
 define('SMARTY_DIR', dirname(__FILE__).'/smarty/');
 
@@ -99,6 +100,7 @@ if(get_magic_quotes_gpc())
 	strip_slashes($_SESSIONS);
 }
 
+#Setup defaults
 $nls['language']['en_US'] = "English";
 $nls['alias']['en_CA'] = "en_US";
 $nls['alias']['en_GB'] = "en_US";
@@ -113,6 +115,24 @@ while (($file = $ls->read()) != "") {
 		}
 	}
 }
+
+#Setup the object sent to modules
+$modulecmsobj->db = &$newdb;
+$modulecmsobj->config = &$config;
+
+#Setup hash for storing all modules
+$cmsmodules;
+
+#Load all installed module code
+load_modules();
+
+#Debug
+#foreach ($cmsmodules as $key=>$val) {
+#	echo "$key - $val<br />";
+#	foreach ($val as $key2=>$val2) {
+#		echo "$key2 - $val2<br />";
+#	}
+#}
 
 #Check to see if there is already a language in use...
 if (isset($_POST["change_cms_lang"])) {

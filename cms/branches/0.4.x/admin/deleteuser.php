@@ -35,7 +35,7 @@ if (isset($_GET["user_id"])) {
 		$query = "SELECT username FROM ".$config->db_prefix."users WHERE user_id = ".$user_id;
 		$result = $dbnew->Execute($query);
 
-		if ($result) {
+		if ($result && $result->RowCount()) {
 			$row = $result->FetchRow();
 			$user_name = $row[username];
 		}

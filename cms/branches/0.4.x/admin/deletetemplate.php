@@ -34,7 +34,7 @@ if (isset($_GET["template_id"])) {
 		$query = "SELECT template_name FROM ".$config->db_prefix."templates WHERE template_id = ".$template_id;
 		$result = $dbnew->Execute($query);
 
-		if ($result) {
+		if ($result && $result->RowCount()) {
 			$row = $result->FetchRow();
 			$template_name = $row[template_name];
 		}
