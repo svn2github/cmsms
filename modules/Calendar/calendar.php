@@ -38,6 +38,7 @@ class AkraCalendar
 		$this->return_id = $return_id;
 		
 		$this->commonCodeModuleName = 'CommonCode';
+		$this->moduleName = 'Calendar';
 	}
 	
 	/**
@@ -84,6 +85,10 @@ EOT;
 
 	}
 	
+	/**
+	* @return void
+	* @desc Installation routine. Creates databases etc.
+	*/
 	function Install()
 	{
 		$db = $this->cms->db; 				/* @var $db ADOConnection */
@@ -136,11 +141,19 @@ EOT;
 		cms_mapi_create_permission($this->cms, 'Modify Calendar', 'Modify Calendar');
 	}
 
+	/**
+	* @return void
+	* @desc Handle version upgrades
+	*/
 	function Upgrade()
 	{
 		// Nothing to upgrade yet!
 	}
 	
+	/**
+	* @return void
+	* @desc Uninstallation: remove databases etc.
+	*/
 	function Uninstall()
 	{
 		$db = $this->cms->db; 				/* @var $db ADOConnection */
@@ -160,18 +173,56 @@ EOT;
 	
 		cms_mapi_remove_permission($this->cms, 'Modify Calendar');
 	}
+
+	/**
+	* @return void
+	* @desc Called when the user clicks on the the menu in the admin menu
+	*/
+	function ExecuteAdmin()
+	{
+		$access = cms_mapi_check_permission($this->cms, "Modify Calendar");
+		if (!$access)  {
+			echo "<p class='error'>You need the 'Modify Calendar' permission to perform that function.</p>";
+			return;
+		}
+		
+		$action = $this->GetRequestValue('action', '');
+		switch($action)
+		{
+			case 'main':
+				$this->DisplayAdminHeader($action);
+				break;
+			
+			case 'add_event':
+				$this->DisplayAdminHeader($action);
+				break;
+				
+			case 'categories':
+				$this->DisplayAdminHeader($action);
+				break;
+				
+			default:
+				echo "oops";
+				exit;
+		}
+	}
 	
+	/**
+	* @return void
+	* @desc Enter description here...
+	*/
 	function Execute()
 	{
 	}
 	
+	/**
+	* @return void
+	* @desc Enter description here...
+	*/
 	function ExecuteUser()
 	{
 	}
 	
-	function ExecuteAdmin()
-	{
-	}
 	
 	/* Private variables */
 	var $minCommonCodeVersion;
@@ -180,11 +231,62 @@ EOT;
 	var $params;
 	var $return_id;	
 	var $commonCodeModuleName;
+	var $moduleName;
 	
 	/*  Private functions */
+
 	function DB($var, $title='')
 	{
 		cms_mapi_call_intermodule_function($this->commonCodeModuleName, 'DB', array($title=>$var));
+	}
+	
+	function GetRequestValue($value, $default = '', $session_key = '')
+	{
+		$function_parameters = array($this->id.$value, $default, $session_key);
+		return cms_mapi_call_intermodule_function($this->commonCodeModuleName, 'GetRequestValue', $function_parameters);
+	}
+	
+	function GetParamValue($value, $default = '')
+	{
+		$function_parameters = array($this->id, $value, $this->params, $default);
+		return cms_mapi_call_intermodule_function($this->commonCodeModuleName, 'GetParamValue', $function_parameters);
+	}
+	
+	function DisplayAdminHeader($current_action)
+	{
+		$title = '';
+
+		if($this->DisplayAdminMenuItem('Manage Events', 'main', $current_action))
+		{
+			$title = 'Manage Events';
+		}
+		echo ' | ';
+		if($this->DisplayAdminMenuItem('Add Event', 'add_event', $current_action))
+		{
+			$title = 'Add Event';
+		}
+		echo ' | ';
+		if($this->DisplayAdminMenuItem('Manage Categories', 'categories', $current_action))
+		{
+			$title = 'Manage Categories';
+		}
+		echo "\n<h4 class='admintitle'>$title</h4>\n";
+		
+	}
+	function DisplayAdminMenuItem($title, $action, $current_action)
+	{
+	
+		if($action != $current_action)
+		{
+			echo "<a href='moduleinterface.php?module={$this->moduleName}&amp;{$this->id}action=$action'>$title</a>";
+			$selected = false;
+		}
+		else
+		{
+			echo $title;
+			$selected = true;
+		}
+		return $selected;
 	}
 };
 
