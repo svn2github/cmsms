@@ -76,6 +76,11 @@ class ContentBase
 	var $mParentId;
 
 	/**
+	 * This is used too often to not be part of the base class
+	 */
+	var $mTemplateId;
+
+	/**
 	 * The item order of the content in his level
 	 * Integer
 	 */
@@ -92,6 +97,11 @@ class ContentBase
 	 * Integer : 0 / 1
 	 */
 	var $mActive;
+
+	/**
+	 * Alias of the content
+	 */
+	var $mAlias;
 
 	/**
 	 * Does this content have a preview function?
@@ -135,10 +145,12 @@ class ContentBase
 	{
 		$this->mId				= -1 ;
 		$this->mName			= "" ;
+		$this->mAlias			= "" ;
 		$this->mType			= get_class($this) ;
 		$this->mOwner			= -1 ;
 		$this->mProperties		= new ContentProperties();
 		$this->mParentId		= -1 ;
+		$this->mTemplateId		= -1 ;
 		$this->mItemOrder		= -1 ;
 		$this->mHierarchy		= "" ;
 		$this->mActive			= false ;
@@ -177,6 +189,14 @@ class ContentBase
 	}
 
 	/**
+	 * Returns the Alias
+	 */
+	function Alias()
+	{
+		return $this->mAlias;
+	}
+
+	/**
 	 * Returns the Type
 	 */
 	function Type()
@@ -198,6 +218,11 @@ class ContentBase
 	function ParentId()
 	{
 		return $this->mParentId;
+	}
+
+	function TemplateId()
+	{
+		return $this->mTemplateId;
 	}
 
 	/**
@@ -276,10 +301,12 @@ class ContentBase
 
 				$this->mId				= $row["content_id"];
 				$this->mName			= $row["content_name"];
+				$this->mAlias			= $row["content_alias"];
 				$this->mType			= $row["type"];
 				$this->mOwner			= $row["owner_id"];
 				$this->mProperties		= new ContentProperties();
 				$this->mParentId		= $row["parent_id"];
+				$this->mTemplateId		= $row["template_id"];
 				$this->mItemOrder		= $row["item_order"];
 				$this->mHierarchy		= $row["hierarchy"];
 				$this->mActive			= ($row["active"] == 1?true:false);
@@ -350,10 +377,12 @@ class ContentBase
 
 		$this->mId				= $data["id"];
 		$this->mName			= $data["name"];
+		$this->mAlias			= $data["alias"];
 		$this->mType			= $data["type"];
 		$this->mOwner			= $data["owner"];
 		$this->mProperties		= NULL;
 		$this->mParentId		= $data["parent_id"];
+		$this->mTemplateId		= $data["template_id"];
 		$this->mItemOrder		= $data["item_order"];
 		$this->mHierarchy		= $data["hierarchy"];
 		$this->mDefaultContent	= ($data["default_content"] == 1?true:false);
@@ -418,13 +447,14 @@ class ContentBase
 		
 		$result = false;
 
-		$query = "UPDATE ".cms_db_prefix()."content SET content_name = ?, owner_id = ?, active = ?, default_content = ?, modified_date = ? WHERE content_id = ?";
+		$query = "UPDATE ".cms_db_prefix()."content SET content_name = ?, owner_id = ?, template_id = ?, parent_id = ?, active = ?, default_content = ?, content_alias = ?, modified_date = ? WHERE content_id = ?";
 
 		$dbresult = $db->Execute($query, array(
 			$this->mName,
 			$this->mOwner,
 			($this->mActive==true?1:0),
 			($this->mDefaultContent==true?1:0),
+			$this->mAlias,
 			$db->DBTimeStamp(time()),
 			$this->mId
 			));
@@ -474,14 +504,16 @@ class ContentBase
 		$newid = $db->GenID(cms_db_prefix()."content_seq");
 		$this->mId = $newid;
 
-		$query = "INSERT INTO ".$config["db_prefix"]."content (content_id, content_name, type, owner_id, parent_id, item_order, hierarchy, active, default_content, create_date, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+		$query = "INSERT INTO ".$config["db_prefix"]."content (content_id, content_name, content_alias, type, owner_id, parent_id, template_id, item_order, hierarchy, active, default_content, create_date, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
 		$dbresult = $db->Execute($query, array(
 			$newid,
 			$this->mName,
+			$this->mAlias,
 			$this->mType,
 			$this->mOwner,
 			$this->mParentId,
+			$this->mTemplateId,
 			$this->mItemOrder,
 			$this->mHierarchy,
 			($this->mActive==true?1:0),
@@ -799,15 +831,13 @@ class ContentManager
 	 */
 	function LoadContentFromId($id)
 	{
-		global $gCms, $config, $sql_queries, $debug_errors;
+		global $gCms;
 		$db = &$gCms->db;
 
 		$query = "SELECT type FROM ".cms_db_prefix()."content WHERE content_id = ?";
 		$dbresult = $db->Execute($query, array($id));
-		#var_dump($dbresult);
 		if ($dbresult && $dbresult->RowCount() > 0)
 		{
-			#echo "blah";
 			$row = $dbresult->FetchRow();
 
 			#Make sure the type exists.  If so, instantiate and load
@@ -824,9 +854,48 @@ class ContentManager
 		}
 		else
 		{
-			#echo "other blah";
+			return FALSE;
 		}
-		return FALSE;
+	}
+
+	function LoadContentFromAlias($alias)
+	{
+		global $gCms;
+		$db = &$gCms->db;
+
+		$dbresult;
+
+		if (is_numeric($tpl_name) && strpos($tpl_name,'.') === FALSE && strpos($tpl_name,',') === FALSE) //Fix for postgres
+		{
+			$query = "SELECT type, content_id FROM ".cms_db_prefix()."content WHERE content_id = ? OR content_alias = ?";
+			$dbresult = $db->Execute($query, array($alias,$alias));
+		}
+		else
+		{
+			$query = "SELECT type, content_id FROM ".cms_db_prefix()."content WHERE content_id = ?";
+			$dbresult = $db->Execute($query, array($alias));
+		}
+
+		if ($dbresult && $dbresult->RowCount() > 0)
+		{
+			$row = $dbresult->FetchRow();
+
+			#Make sure the type exists.  If so, instantiate and load
+			if (in_array($row['type'], ContentManager::ListContentTypes()))
+			{
+				$contentobj = new $row['type'];
+				$contentobj->LoadFromId($row['content_id'],true);
+				return $contentobj;
+			}
+			else
+			{
+				return FALSE;
+			}
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
 
 	/**

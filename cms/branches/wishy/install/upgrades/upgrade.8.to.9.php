@@ -9,6 +9,7 @@ $flds = "
 	type C(25),
 	owner_id I,
 	parent_id I,
+	template_id I,
 	item_order I,
 	hierarchy C(255),
 	default_content I1,

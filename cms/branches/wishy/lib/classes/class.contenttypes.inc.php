@@ -31,10 +31,8 @@ class Content extends ContentBase
 {
 	function SetProperties()
 	{
-		$this->mProperties->Add("int", "template_id");
 		$this->mProperties->Add("string", "title");
 		$this->mProperties->Add("string", "menutext");
-		$this->mProperties->Add("string", "alias");
 		$this->mProperties->Add("string", "content_en"); //For later language support
 		$this->mProperties->Add("string", "headtags");
 
@@ -46,7 +44,7 @@ class Content extends ContentBase
 	{
 		if (isset($params))
 		{
-			$parameters = array('template_id', 'title', 'menutext', 'alias', 'content_en', 'headtags');
+			$parameters = array('title', 'menutext', 'content_en', 'headtags');
 			foreach ($parameters as $oneparam)
 			{
 				if (isset($params[$oneparam]))
@@ -60,7 +58,20 @@ class Content extends ContentBase
 					$this->mName = $params[$oneparam];
 				}
 			}
+			if (isset($params['template_id']))
+			{
+				$this->mTemplateId = $params['template_id'];
+			}
+			if (isset($params['alias']))
+			{
+				$this->mAlias = $params['alias'];
+			}
 		}
+	}
+
+	function Show()
+	{
+		return $this->mProperties->GetValue('content_en');
 	}
 
 	function Edit()
@@ -69,7 +80,7 @@ class Content extends ContentBase
 
 		$text .= '<tr><td>'.lang('title').':</td><td><input type="text" name="title" value="'.$this->mProperties->GetValue('title').'"></td></tr>';
 		$text .= '<tr><td>'.lang('menutext').':</td><td><input type="text" name="menutext" value="'.$this->mProperties->GetValue('menutext').'"></td></tr>';
-		$text .= '<tr><td>'.lang('template').':</td><td><input type="text" name="template_id" value="'.$this->mProperties->GetValue('template_id').'"></td></tr>';
+		$text .= '<tr><td>'.lang('template').':</td><td><input type="text" name="template_id" value="'.$this->mTemplateId.'"></td></tr>';
 		$text .= '<tr><td>'.lang('content').':</td><td>'.textarea_highlight((isset($use_javasyntax)?$use_javasyntax:false), $this->mProperties->GetValue('content_en'), "content_en", "syntaxHighlight", "HTML (Complex)", "content_en") . '</td></tr>';
 		$text .= '<tr><td>'.lang('headtags').':</td><td>'.textarea_highlight((isset($use_javasyntax)?$use_javasyntax:false), $this->mProperties->GetValue('headtags'), "headtags").'</td></tr>';
 
