@@ -27,14 +27,14 @@ $starttime = microtime();
 
 if (!file_exists("config.php") || filesize("config.php") == 0) {
     require_once("lib/misc.functions.php");
-    redirect("install.php");
+    redirect("install/install.php");
     exit;
 } ## if
 if (isset($_GET["deleteinstall"]) && $_GET["deleteinstall"] == "true") {
-    @unlink("install.php");
+    @unlink("install/install.php");
 } ## if
 
-if (file_exists("config.php") && file_exists("install.php")) {
+if (file_exists("config.php") && file_exists("install/install.php")) {
     echo "You cannot start CMS until you remove the install.php<br>\n";
     if (isset($_GET["deleteinstall"]) && $_GET["deleteinstall"] == "true") {
         echo "Looks like you tried to have CMS delete the install file but that was not sucessful.  You will have to remove it manually before you can continue<br>\n";
