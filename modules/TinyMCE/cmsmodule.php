@@ -31,6 +31,9 @@ cms_mapi_register_wysiwyg_page_header_function($module_name, 'tinymce_module_hea
 cms_mapi_register_wysiwyg_page_form_submit_function($module_name, 'tinymce_module_form_submit_function');
 cms_mapi_register_wysiwyg_page_textbox_function($module_name, 'tinymce_module_textbox_function');
 
+//Register executeadmin for setting preferences
+cms_mapi_register_executeadmin_function($module_name, 'tinymce_module_executeadmin');
+
 //Register callback help function
 cms_mapi_register_help_function($module_name, 'tinymce_module_help');
 cms_mapi_register_about_function($module_name, 'tinymce_module_about');

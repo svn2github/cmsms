@@ -41,7 +41,8 @@ function tinymce_module_header_function(&$cms)
 			<?php
 			if (isset($cms->variables['tinymce_stylesheet']))
 			{
-				echo 'content_css : "' . $cms->variables['tinymce_stylesheet'] . "\",\n";
+				$css = $cms->variables['tinymce_stylesheet'];
+				echo 'content_css : "' . $css . "\",\n";
 			}
 			?>
 			theme : "advanced"
@@ -70,6 +71,51 @@ function tinymce_module_textbox_function(&$cms, $name='textbox', $columns='80', 
 	}
 	array_push($variables['tinymce_textareas'], $name);
 	return '<textarea name="'.$name.'" cols="80" rows="15">'.cms_htmlentities($content,ENT_NOQUOTES,get_encoding($encoding)).'</textarea>';
+}
+
+function tinymce_module_executeadmin($cms, $id)
+{
+	$striptags = 'false';
+	if (isset($_REQUEST[$id.'submit']))
+	{
+		if (isset($_REQUEST[$id.'striptags']))
+		{
+			$striptags = $_REQUEST[$id.'striptags'];
+			cms_mapi_set_preference('TinyMCE', 'striptags', $striptags);
+		}
+	}
+	else
+	{
+		$striptags = cms_mapi_get_preference('TinyMCE', 'striptags', 'false');
+	}
+
+	echo cms_mapi_create_admin_form_start('TinyMCE', $id);
+
+	?>
+
+	<div class="adminform">
+
+	<table border="0">
+		<tr>
+			<td>Strip background tags from CSS:</td>
+			<td>
+				<select name="<?php echo $id?>striptags">
+					<option value="true"<?php echo ($striptags=='true'?' selected="selected"':'') ?>>True</option>
+					<option value="false"<?php echo ($striptags=='false'?' selected="selected"':'') ?>>False</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<td>&nbsp;</td>
+			<td><input type="submit" name="<?php echo $id?>submit" value="Submit" /></td>
+		</tr>
+	</table>
+
+	</div>
+
+	<?php
+
+	echo cms_mapi_create_admin_form_end();
 }
 
 function tinymce_module_help($cms)
