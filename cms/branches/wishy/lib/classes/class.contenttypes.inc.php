@@ -223,7 +223,7 @@ class Separator extends ContentBase
 	{
 		if (isset($params))
 		{
-			$this->mName = $params['title'];
+			$this->mName = '--------';
 			if (isset($params['parent_id']))
 			{
 				if ($this->mParentId != $params['parent_id'])
@@ -260,7 +260,6 @@ class Separator extends ContentBase
 	{
 		$text = "";
 
-		$text .= '<tr><td>'.lang('title').':</td><td><input type="text" name="title" value="'.$this->mName.'"></td></tr>';
 		$text .= '<tr><td>'.lang('active').':</td><td><input type="checkbox" name="active"'.($this->mActive?' checked="true"':'').'></td></tr>';
 		$text .= '<tr><td>'.lang('showinmenu').':</td><td><input type="checkbox" name="showinmenu"'.($this->mShowInMenu?' checked="true"':'').'></td></tr>';
 		$text .= '<tr><td>'.lang('parent').':</td><td>'.ContentManager::CreateHierarchyDropdown($this->mId, $this->mParentId).'</td></tr>';

@@ -318,6 +318,11 @@ class ContentBase
 		return $this->mProperties->GetValue($name);
 	}
 
+	function SetPropertyValue($name, $value)
+	{
+		$this->mProperties->SetValue($name, $value);
+	}
+
 	/************************************************************************/
 	/* The rest																*/
 	/************************************************************************/
@@ -671,50 +676,6 @@ class ContentBase
 		$result = true;
 		$errors = array();
 
-		# :TODO: translate all strings
-		
-		if (0 >= strlen($this->mName))
-		{
-			# :TODO: Translate the error message
-			array_push($errors, "Name not valid");
-			$result = false;
-		}
-		if (! ContentOperations::CheckType($this->mType))
-		{
-			# :TODO: Translate the error message
-			array_push($errors, "Type not valid");
-			$result = false;
-		}
-		if (0 >= $this->mOwner)
-		{
-			# :TODO: Translate the error message
-			array_push($errors, "Owner not valid");
-			$result = false;
-		}
-		if (0 > $this->mParentId)
-		{
-			# :TODO: Translate the error message
-			array_push($errors, "Parent not valid");
-			$result = false;
-		}
-		if (0 >= strlen($this->mHierarchy))
-		{
-			# :TODO: Translate the error message
-			array_push($errors, "Hierarchy not valid");
-			$result = false;
-		}
-		if (NULL == $this->mProperties)
-		{
-			# :TODO: Translate the error message
-			array_push($errors, "No properties !");
-			$result = false;
-		}
-		else
-		{
-			$resultprop = $this->mProperties.ValidateData();
-			$result = ($result) ? $resultprop : $result ;
-		}
-
 		return ($result) ? $result : $errors;
 	}
 
@@ -993,7 +954,7 @@ class ContentManager
 			$row = $dbresult->FetchRow();
 
 			#Make sure the type exists.  If so, instantiate and load
-			if (in_array($row['type'], ContentManager::ListContentTypes()))
+			if (in_array($row['type'], @ContentManager::ListContentTypes()))
 			{
 				$contentobj = new $row['type'];
 				$contentobj->LoadFromData($row,true);
@@ -1042,7 +1003,7 @@ class ContentManager
 			$row = $dbresult->FetchRow();
 
 			#Make sure the type exists.  If so, instantiate and load
-			if (in_array($row['type'], ContentManager::ListContentTypes()))
+			if (in_array($row['type'], ListContentTypes()))
 			{
 				$contentobj = new $row['type'];
 				$contentobj->LoadFromData($row,true);

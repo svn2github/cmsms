@@ -17,7 +17,7 @@
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 $DONT_LOAD_DB=1;
-require_once(dirname(__FILE__)."/include.php");
+require_once(dirname(dirname(__FILE__))."/include.php");
 
 //Do module autoupgrades 
 function module_autoupgrade()
@@ -68,7 +68,7 @@ function module_autoupgrade()
 
 <div class="body">
 
-<img src="images/cms/cmsbanner.gif" width="449" height="114" alt="CMS Banner Logo" />
+<img src="../images/cms/cmsbanner.gif" width="449" height="114" alt="CMS Banner Logo" />
 
 <div class="headerish">
 
@@ -86,7 +86,7 @@ if (!isset($_GET["doupgrade"])) {
 	echo "<p>In order to upgrade properly, upgrade needs to have write access to your config.php file.  This is so any extra settings that have been introduced in this version can be set to their defaults.</p>";
 }
 
-if (!is_writable(dirname(__FILE__)."/config.php"))
+if (!is_writable(dirname(dirname(__FILE__))."/config.php"))
 {
 	?>
 	<p><strong>Problem:</strong> config.php is not writable by the web server.  Please fix the permissions and click the button below to check again.</p>
@@ -114,7 +114,7 @@ else
 	echo "<p>Clearning cache dirs...";
 
 	//Clear cache dirs
-	$cpath = dirname(__FILE__)."/smarty/cms/cache/";
+	$cpath = dirname(dirname(__FILE__))."/tmp/cache/";
 	$handle=opendir($cpath);
 	while ($cfile = readdir($handle)) {
 		if ($cfile != "." && $cfile != ".." && is_file($cpath.$cfile)) {
@@ -122,7 +122,7 @@ else
 			unlink($cpath.$cfile);
 		}
 	}
-	$cpath = dirname(__FILE__)."/smarty/cms/templates_c/";
+	$cpath = dirname(dirname(__FILE__))."/tmp/templates_c/";
 	$handle=opendir($cpath);
 	while ($cfile = readdir($handle)) {
 		if ($cfile != "." && $cfile != ".." && is_file($cpath.$cfile)) {
