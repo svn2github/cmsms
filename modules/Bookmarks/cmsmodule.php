@@ -21,11 +21,11 @@
 $module_name = "Bookmarks";
 
 // Defines
-define('BOOKMARKS_MODULE_VERSION', '1.0.1');
+define('BOOKMARKS_MODULE_VERSION', '1.0.2');
 
 define('BOOKMARKS_MODULE_COMMONCODE_FILE', dirname(__FILE__).'/../CommonCode/modulefunctions.php');
 define('BOOKMARKS_MODULE_COMMONCODE_CATEGORY_FILE', dirname(__FILE__).'/../CommonCode/categories.inc.php');
-define('BOOKMARKS_MODULE_MIN_COMMONCODE_VERSION', 1.1);
+define('BOOKMARKS_MODULE_MIN_COMMONCODE_VERSION', '1.1');
 
 // Load functions
 require_once(dirname(__FILE__).'/modulefunctions.php');
@@ -33,8 +33,8 @@ require_once(dirname(__FILE__).'/modulefunctions.php');
 // Register module
 cms_mapi_register_module($module_name, "Rob Allen <rob@akrabat.com>", BOOKMARKS_MODULE_VERSION);
 
-// Register module to work as a content type
-cms_mapi_register_content_module($module_name);
+//Register the dependency
+cms_mapi_register_dependency($module_name, 'CommonCode', BOOKMARKS_MODULE_MIN_COMMONCODE_VERSION);
 
 // Register module to work as a plugin (cms_module)
 cms_mapi_register_plugin_module($module_name);
@@ -67,10 +67,12 @@ function bookmarks_module_about()
 			<dd>Support email notifications from the submit bookmarks form. Addded delete option.
 			Admin list now displays bookmarks that are not attached to any category.<br />
 			Now required CommonCode 1.1<br />
-			Tidied up code.<br>
+			Tidied up code.<br />
 			</dd>
 		<dt>Version: 1.0.1</dt>
 			<dd>Bug fixes that prevented display of the user facing submit form.</dd>
+		<dt>Version: 1.0.2</dt>
+			<dd>Uses CMS functions for CommonCode dependency.</dd>
 	</dl>
 	<?php
 }
