@@ -1584,12 +1584,7 @@ class Smarty_ModuleInterface extends Smarty {
 			#Perform the content prerender callback
 			foreach($gCms->modules as $key=>$value)
 			{
-				if (isset($gCms->modules[$key]['content_prerender_function']) &&
-					$gCms->modules[$key]['Installed'] == true &&
-					$gCms->modules[$key]['Active'] == true)
-				{
-					call_user_func_array($gCms->modules[$key]['content_prerender_function'], array(&$gCms, &$tpl_source));
-				}
+				$gCms->modules[$key]['object']->ContentPreRender($tpl_source);
 			}
 
 			return true;

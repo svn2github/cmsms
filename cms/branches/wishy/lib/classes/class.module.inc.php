@@ -28,16 +28,18 @@
  */
 class CMSModule extends ModuleOperations
 {
-
 	/**
-	 * Flag to tell if the module is installed.
+	 * ------------------------------------------------------------------
+	 * Initialization Functions and parameters
+	 * ------------------------------------------------------------------
 	 */
-	var $_installed = false;
+	var $cms;
 
-	/**
-	 * Flag to tell if the module is active;
-	 */
-	var $_active = false;
+	function CMSModule()
+	{
+		global $gCms;
+		$this->cms = &$gCms;
+	}
 
 	/**
 	 * ------------------------------------------------------------------
@@ -617,22 +619,6 @@ class CMSModule extends ModuleOperations
 	 * Internal Functions
 	 * ------------------------------------------------------------------
 	 */
-	
-	/**
-	 * Tells whether the module is marked as installed in the database
-	 */
-	function IsInstalled()
-	{
-		return $this->_installed;
-	}
-
-	/**
-	 * Tells whether the module is marked as active in the database
-	 */
-	function IsActive()
-	{
-		return $this->_active;
-	}
 
 }
 
@@ -645,31 +631,57 @@ class CMSModule extends ModuleOperations
  */
 class ModuleOperations
 {
-	function LoadModules()
+	/**
+	 * Loads modules from the filesystem.  If loadall is true, then it will load all
+	 * modules whether they're installed, or active.  If it is false, then it will
+	 * only load modules which are installed and active.
+	 */
+	function LoadModules($loadall = false)
 	{
 		global $gCms;
 		$db = $gCms->db;
 		$cmsmodules = &$gCms->modules;
 
 		$dir = dirname(dirname(dirname(__FILE__)))."/modules";
-		$ls = dir($dir);
-		while (($file = $ls->read()) != "") {
-			if (is_dir("$dir/$file") && (strpos($file, ".") === false || strpos($file, ".") != 0)) {
-				if (is_file("$dir/$file/cmsmodule.php")) {
-					include_once("$dir/$file/cmsmodule.php");
+
+		if ($loadall == true)
+		{
+			$ls = dir($dir);
+			while (($file = $ls->read()) != "")
+			{
+				if (is_dir("$dir/$file") && (strpos($file, ".") === false || strpos($file, ".") != 0))
+				{
+					if (is_file("$dir/$file/$file.module.php"))
+					{
+						include_once("$dir/$file/$file.module.php");
+					}
+					else
+					{
+						unset($cmsmodules[$file]);
+					}
+				}
+			}
+			//Find modules and instantiate them
+			$allmodules = @ModuleOperations::FindModules();
+			foreach ($allmodules as $onemodule)
+			{
+				if (class_exists($onemodule))
+				{
+					$newmodule = new $onemodule;
+					$name = $newmodule->GetName();
+					$cmsmodules[$name]['object'] = $newmodule;
+					$cmsmodules[$name]['installed'] = false;
+					$cmsmodules[$name]['active'] = false;
+				}
+				else
+				{
+					unset($cmsmodules[$name]);
 				}
 			}
 		}
 
-		//Find modules and instantiate them
-		$allmodules = FindModules();
-		foreach ($allmodules as $onemodule)
-		{
-			$newmodule = new $onemodule;
-			$cmsmodules[$onemodule] = $newmodule;
-		}
-
 		#Figger out what modules are active and/or installed
+		#Load them if loadall is false
 		if (isset($db))
 		{
 			$query = "SELECT * FROM ".cms_db_prefix()."modules";
@@ -681,13 +693,43 @@ class ModuleOperations
 					if (isset($row['module_name']))
 					{
 						$modulename = $row['module_name'];
-						if (isset($modulename) && isset($cmsmodules[$modulename]))
+						if (isset($modulename))
 						{
-							$cmsmodules[$modulename]->_installed = true;
-							$cmsmodules[$modulename]->_active = true;
+							if ($loadall == true)
+							{
+								if (isset($cmsmodules[$modulename]))
+								{
+									$cmsmodules[$modulename]['installed'] = true;
+									$cmsmodules[$modulename]['active'] = ($row['active']=='1'?true:false);
+								}
+							}
+							else
+							{
+								if ($row['active'] == '1')
+								{
+									if (is_file("$dir/$modulename/$modulename.module.php"))
+									{
+										include_once("$dir/$modulename/$modulename.module.php");
+										if (class_exists($modulename))
+										{
+											$newmodule = new $modulename;
+											$name = $newmodule->GetName();
+											$cmsmodules[$name]['object'] = $newmodule;
+											$cmsmodules[$name]['installed'] = true;
+											$cmsmodules[$name]['active'] = ($row['active']=='1'?true:false);
+										}
+										else //No point in doing anything with it
+										{
+											unset($cmsmodules[$name]);
+										}
+									}
+									else
+									{
+										unset($cmsmodules[$modulename]);
+									}
+								}
+							}
 
-							//TODO: Fix me
-							#$cmsmodules[$modulename]->_active = $row['active'];
 							/*
 							if ($row['active'] == '1')
 							{
@@ -721,36 +763,15 @@ class ModuleOperations
 	}
 
 	/**
-	 * Returns a hash (name, instantiation) of all loaded modules, installed,
-	 * active or not.
+	 * Returns a hash of all loaded modules.  This will either include all
+	 * modules loaded by LoadModules, which could either be all or them,
+	 * or just ones that are active and installed.
 	 */
 	function GetAllModules()
 	{
 		global $gCms;
 		$cmsmodules = &$gCms->modules;
-
 		return $cmsmodules;
-	}
-
-	/**
-	 * Returns a hash (name, instantiation) of all loaded modules that are
-	 * installed and active.
-	 */
-	function GetAllUsableModules()
-	{
-		$allmodules = GetAllModules();
-
-		$result = array();
-
-		foreach ($allmodules as $name=>$value)
-		{
-			if ($value->IsInstalled() && $value->IsActive())
-			{
-				$result[$name] = $value;
-			}
-		}
-
-		return $result;
 	}
 }
 

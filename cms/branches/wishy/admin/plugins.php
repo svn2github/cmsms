@@ -19,6 +19,7 @@
 #$Id$
 
 $CMS_ADMIN_PAGE=1;
+$LOAD_ALL_MODULES=1;
 
 require_once("../include.php");
 
@@ -44,67 +45,97 @@ if ($access)
 {
 	if ($action == "install")
 	{
-		#run install on it (if there is one)
-		if (isset($gCms->modules[$module]['install_function'])) {
-			call_user_func_array($gCms->modules[$module]['install_function'], array($gCms));
-		}
+		if (isset($gCms->modules[$module]))
+		{
+			$modinstance = $gCms->modules[$module]['object'];
+			$result = $modinstance->Install();
 
-		#now insert a record
-		$query = "INSERT INTO ".cms_db_prefix()."modules (module_name, version, status, active) VALUES (".$db->qstr($module).",".$db->qstr($gCms->modules[$module]['Version']).",'installed',1)";
-		$db->Execute($query);
-		
-		#and insert any dependancies
-        if (isset($gCms->modules[$module]['dependency'])) #Check for any deps
-        {
-            #Now check to see if we can satisfy any deps
-            foreach ($gCms->modules[$module]['dependency'] as $onedepkey=>$onedepvalue)
-            {
-				$query = "INSERT INTO ".cms_db_prefix()."module_deps (parent_module, child_module, minimum_version, create_date, modified_date) VALUES (?,?,?,?,?)";
-				$db->Execute($query, array($onedepkey, $module, $onedepvalue, $db->DBTimeStamp(time()), $db->DBTimeStamp(time())));
-            }
-        }
+			#now insert a record
+			if ($result === FALSE)
+			{
+				$query = "INSERT INTO ".cms_db_prefix()."modules (module_name, version, status, active) VALUES (".$db->qstr($module).",".$db->qstr($gCms->modules[$module]['Version']).",'installed',1)";
+				$db->Execute($query);
+				
+				#and insert any dependancies
+				if (isset($gCms->modules[$module]['dependency'])) #Check for any deps
+				{
+					#Now check to see if we can satisfy any deps
+					foreach ($gCms->modules[$module]['dependency'] as $onedepkey=>$onedepvalue)
+					{
+						$query = "INSERT INTO ".cms_db_prefix()."module_deps (parent_module, child_module, minimum_version, create_date, modified_date) VALUES (?,?,?,?,?)";
+						$db->Execute($query, array($onedepkey, $module, $onedepvalue, $db->DBTimeStamp(time()), $db->DBTimeStamp(time())));
+					}
+				}
+			}
+			else
+			{
+				//TODO: Echo error
+			}
+		}
 		
 		redirect("plugins.php");
 	}
 
 	if ($action == 'upgrade')
 	{
-		if (isset($gCms->modules[$module]['upgrade_function'])) {
-			call_user_func_array($gCms->modules[$module]['upgrade_function'], array($gCms, $_GET['oldversion'], $_GET['newversion']));
+		if (isset($gCms->modules[$module]))
+		{
+			$modinstance = $gCms->modules[$module]['object'];
+			$result = $modinstance->Upgrade($_GET['oldversion'], $_GET['newversion']);
+
+			#now insert a record
+			if ($result === FALSE)
+			{
+				$query = "UPDATE ".cms_db_prefix()."modules SET version = ? WHERE module_name = ?";
+				$db->Execute($query,array($_GET['newversion'],$module));
+			}
+			else
+			{
+				//TODO: Echo error
+			}
 		}
-		$query = "UPDATE ".cms_db_prefix()."modules SET version = ? WHERE module_name = ?";
-		$db->Execute($query,array($_GET['newversion'],$module));
+
 		redirect("plugins.php");
 	}
 
 	if ($action == "uninstall")
 	{
-		#run uninstall on it (if there is one)
-		if (isset($gCms->modules[$module]['uninstall_function']))
+		if (isset($gCms->modules[$module]))
 		{
-			call_user_func_array($gCms->modules[$module]['uninstall_function'], array($gCms));
+			$modinstance = $gCms->modules[$module]['object'];
+			$result = $modinstance->Uninstall();
+
+			#now insert a record
+			if ($result === FALSE)
+			{
+				#now delete the record
+				$query = "DELETE FROM ".cms_db_prefix()."modules WHERE module_name = ?";
+				$db->Execute($query, array($module));
+				
+				#delete any dependencies
+				$query = "DELETE FROM ".cms_db_prefix()."module_deps WHERE child_module = ?";
+				$db->Execute($query, array($module));
+			}
+			else
+			{
+				//TODO: Echo error
+			}
 		}
-
-		#now delete the record
-		$query = "DELETE FROM ".cms_db_prefix()."modules WHERE module_name = ?";
-		$db->Execute($query, array($module));
-		
-		#delete any dependencies
-		$query = "DELETE FROM ".cms_db_prefix()."module_deps WHERE child_module = ?";
-		$db->Execute($query, array($module));
 		
 		redirect("plugins.php");
 	}
 
-	if ($action == "settrue") {
-		$query = "UPDATE ".cms_db_prefix()."modules SET active = 1 WHERE module_name = ".$db->qstr($module);
-		$db->Execute($query);
+	if ($action == "settrue")
+	{
+		$query = "UPDATE ".cms_db_prefix()."modules SET active = 1 WHERE module_name = ?";
+		$db->Execute($query, array($module));
 		redirect("plugins.php");
 	}
 
-	if ($action == "setfalse") {
-		$query = "UPDATE ".cms_db_prefix()."modules SET active = 0 WHERE module_name = ".$db->qstr($module);
-		$db->Execute($query);
+	if ($action == "setfalse")
+	{
+		$query = "UPDATE ".cms_db_prefix()."modules SET active = 0 WHERE module_name = ?";
+		$db->Execute($query, array($module));
 		redirect("plugins.php");
 	}
 }
@@ -296,20 +327,22 @@ else
 		
 		foreach($gCms->modules as $key=>$value)
 		{
+			$modinstance = $value['object'];
+
 			echo "<tr class=\"$curclass\">\n";
 			echo "<td>$key</td>\n";
             if (!isset($dbm[$key])) #Not installed, lets put up the install button
             {
                 $havedep = false;
 
-                if (isset($gCms->modules[$key]['dependency'])) #Check for any deps
+                if (count($modinstance->GetDependencies()) > 0) #Check for any deps
                 {
                     #Now check to see if we can satisfy any deps
                     foreach ($gCms->modules[$key]['dependency'] as $onedepkey=>$onedepvalue)
                     {
                     	if (isset($gCms->modules[$onedepkey]) && 
-                    		$gCms->modules[$onedepkey]['Installed'] == true &&
-                    		$gCms->modules[$onedepkey]['Active'] == true &&
+                    		$gCms->modules[$onedepkey]['installed'] == true &&
+                    		$gCms->modules[$onedepkey]['active'] == true &&
                     		version_compare($gCms->modules[$onedepkey]['Version'], $onedepvalue) > -1)
                     	{
                     		$havedep = true;
@@ -321,7 +354,7 @@ else
                     $havedep = true;
                 }
 
-                echo "<td>".$gCms->modules[$key]['Version']."</td>";
+                echo "<td>".$modinstance->GetVersion()."</td>";
 				echo "<td>".lang('notinstalled')."</td>";
 
                 if ($havedep)
@@ -335,12 +368,12 @@ else
                 	echo '<td><a href="plugins.php?action=missingdeps&amp;module='.$key.'">'.lang('missingdependency').'</a></td>';
                 }
             }
-			else if (version_compare($gCms->modules[$key]['Version'], $dbm[$key]['Version']) == 1) #Check for an upgrade
+			else if (version_compare($modinstance->GetVersion(), $dbm[$key]['Version']) == 1) #Check for an upgrade
 			{
 				echo "<td>".$dbm[$key]['Version']."</td>";
 				echo "<td>".lang('needupgrade')."</td>";
 				echo "<td>".($dbm[$key]['Active']==="1"?"<a href='plugins.php?action=setfalse&amp;module=".$key."'>".$image_true."</a>":"<a href='plugins.php?action=settrue&amp;module=".$key."'>".$image_false."</a>")."</td>";
-				echo "<td><a href=\"plugins.php?action=upgrade&amp;module=".$key."&amp;oldversion=".$dbm[$key]['Version']."&amp;newversion=".$gCms->modules[$key]['Version']."\" onclick=\"return confirm('".lang('upgradeconfirm')."');\">".lang('upgrade')."</a></td>";
+				echo "<td><a href=\"plugins.php?action=upgrade&amp;module=".$key."&amp;oldversion=".$dbm[$key]['Version']."&amp;newversion=".$modinstance->GetVersion()."\" onclick=\"return confirm('".lang('upgradeconfirm')."');\">".lang('upgrade')."</a></td>";
 			}
 			else #Must be installed
 			{
@@ -359,7 +392,9 @@ else
 					echo "<td>".lang('hasdependents')."</td>";
 				}
 			}
-			if (isset($gCms->modules[$key]['help_function']))
+
+			//Is there help?
+			if ($modinstance->GetHelp() != '')
 			{
 				echo "<td><a href=\"plugins.php?action=showmodulehelp&amp;module=".$key."\">".lang('help')."</a></td>";
 			}
@@ -367,14 +402,9 @@ else
 			{
 				echo "<td>&nbsp;</td>";
 			}
-			if (isset($gCms->modules[$key]['about_function']))
-			{
-				echo "<td><a href=\"plugins.php?action=showmoduleabout&amp;module=".$key."\">".lang('about')."</a></td>";
-			}
-			else
-			{
-				echo "<td>&nbsp;</td>";
-			}
+
+			//About is constructed from other details now
+			echo "<td><a href=\"plugins.php?action=showmoduleabout&amp;module=".$key."\">".lang('about')."</a></td>";
 		
 			echo "</tr>\n";
 

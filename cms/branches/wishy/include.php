@@ -153,7 +153,14 @@ $gCms->cmsplugins = array();
 $gCms->siteprefs = array();
 
 #Load all installed module code
-load_modules();
+if (isset($LOAD_ALL_MODULES))
+{
+	ModuleOperations::LoadModules(true);
+}
+else
+{
+	ModuleOperations::LoadModules(false);
+}
 
 #Load all site preferences
 load_site_preferences();
