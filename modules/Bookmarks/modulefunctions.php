@@ -189,12 +189,12 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 			return;
 		}
 	
-		$type = getParamValue('type', $params, 'text');
-		$display_approved = getParamValue('display_approved', $params, false);
-		$show_category_with_title = getParamValue('show_category_with_title', $params);
-		$category = getParamValue('category', $params);
-		$number = getParamValue('number', $params);
-		$order_by_date = getParamValue('order_by_date', $params, false);
+		$type = getParamValue($id, 'type', $params, 'text');
+		$display_approved = getParamValue($id, 'display_approved', $params, false);
+		$show_category_with_title = getParamValue($id, 'show_category_with_title', $params);
+		$category = getParamValue($id, 'category', $params);
+		$number = getParamValue($id, 'number', $params);
+		$order_by_date = getParamValue($id, 'order_by_date', $params, false);
 		if($order_by_date)
 		{
 			$show_category_with_title = false;
@@ -310,7 +310,7 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 			}
 			else
 			{
-				$number_of_columns = getParamValue('columns', $params, 3);
+				$number_of_columns = getParamValue($id, 'columns', $params, 3);
 	
 				$num_rows = $dbresult->RecordCount();
 				$rows_per_column = intval($num_rows / $number_of_columns) + 10; /* 10 is a fudge factor to make it look better! */
