@@ -57,10 +57,10 @@ if ($access)
 				$db->Execute($query);
 				
 				#and insert any dependancies
-				if (isset($gCms->modules[$module]['dependency'])) #Check for any deps
+				if (count($modinstance->GetDependencies()) > 0) #Check for any deps
 				{
 					#Now check to see if we can satisfy any deps
-					foreach ($gCms->modules[$module]['dependency'] as $onedepkey=>$onedepvalue)
+					foreach ($modinstance->GetDependencies() as $onedepkey=>$onedepvalue)
 					{
 						$query = "INSERT INTO ".cms_db_prefix()."module_deps (parent_module, child_module, minimum_version, create_date, modified_date) VALUES (?,?,?,?,?)";
 						$db->Execute($query, array($onedepkey, $module, $onedepvalue, $db->DBTimeStamp(time()), $db->DBTimeStamp(time())));
@@ -250,30 +250,32 @@ else if ($action == 'missingdeps')
 	echo '<table cellspacing="0" class="admintable">';
 	echo '<tr><td>'.lang('name').'</td><td>'.lang('minimumversion').'</td><td>'.lang('installed').'</td></tr>';
 
-	if (isset($gCms->modules[$module]['dependency']))
+	if (isset($gCms->modules[$module]))
 	{
-		$curclass = 'row1';
-		foreach ($gCms->modules[$module]['dependency'] as $key=>$value)
+		$modinstance = $gCms->modules[$module]['object'];
+		if (count($modinstance->GetDependencies()) > 0) #Check for any deps
 		{
-			echo '<tr class="'.$curclass.'"><td>'.$key.'</td><td>'.$value.'</td><td>';
-
-			$havedep = false;
-
+			$curclass = 'row1';
 			#Now check to see if we can satisfy any deps
-			foreach ($gCms->modules[$module]['dependency'] as $onedepkey=>$onedepvalue)
+			debug_buffer($modinstance->GetDependencies(), 'deps in module');
+			foreach ($modinstance->GetDependencies() as $onedepkey=>$onedepvalue)
 			{
+				echo '<tr class="'.$curclass.'"><td>'.$onedepkey.'</td><td>'.$onedepvalue.'</td><td>';
+
+				$havedep = false;
+
 				if (isset($gCms->modules[$onedepkey]) && 
-					$gCms->modules[$onedepkey]['Installed'] == true &&
-					$gCms->modules[$onedepkey]['Active'] == true &&
+					$gCms->modules[$onedepkey]['installed'] == true &&
+					$gCms->modules[$onedepkey]['active'] == true &&
 					version_compare($gCms->modules[$onedepkey]['Version'], $onedepvalue) > -1)
 				{
 					$havedep = true;
 				}
-			}
 
-			echo lang(($havedep?'true':'false'));
-			echo '</td></tr>';
-			($curclass=="row1"?$curclass="row2":$curclass="row1");
+				echo lang(($havedep?'true':'false'));
+				echo '</td></tr>';
+				($curclass=="row1"?$curclass="row2":$curclass="row1");
+			}
 		}
 	}
 
@@ -284,43 +286,43 @@ else if ($action == 'missingdeps')
 	<P><INPUT TYPE="submit" VALUE="<?php echo lang('backtoplugins')?>" CLASS="button" onMouseOver="this.className='buttonHover'" onMouseOut="this.className='button'"></P>
 	</FORM>
 	<?php
-}
-else
-{
-
-	if ($action != "" && !$access) {
-		echo "<p class=\"error\">".lang('needpermissionto', array('Modify Modules'))."</p>";
 	}
+	else
+	{
 
-	if (count($gCms->modules) > 0) {
-
-		$query = "SELECT * from ".cms_db_prefix()."modules";
-		$result = $db->Execute($query);
-		while ($row = $result->FetchRow()) {
-			$dbm[$row['module_name']]['Status'] = $row['status'];
-			$dbm[$row['module_name']]['Version'] = $row['version'];
-			$dbm[$row['module_name']]['Active'] = $row['active'];
+		if ($action != "" && !$access) {
+			echo "<p class=\"error\">".lang('needpermissionto', array('Modify Modules'))."</p>";
 		}
 
-?>
+		if (count($gCms->modules) > 0) {
+
+			$query = "SELECT * from ".cms_db_prefix()."modules";
+			$result = $db->Execute($query);
+			while ($row = $result->FetchRow()) {
+				$dbm[$row['module_name']]['Status'] = $row['status'];
+				$dbm[$row['module_name']]['Version'] = $row['version'];
+				$dbm[$row['module_name']]['Active'] = $row['active'];
+			}
+
+			?>
 
 
 	<h3><?php echo lang('modules')?></h3>
 
-	<?php
+		<?php
 
-	if (isset($_SESSION['modules_messages']) && count($_SESSION['modules_messages']) > 0)
-	{
-		echo '<ul class="messages">';
-		foreach ($_SESSION['modules_messages'] as $onemessage)
+		if (isset($_SESSION['modules_messages']) && count($_SESSION['modules_messages']) > 0)
 		{
-			echo "<li>" . $onemessage . "</li>";
+			echo '<ul class="messages">';
+			foreach ($_SESSION['modules_messages'] as $onemessage)
+			{
+				echo "<li>" . $onemessage . "</li>";
+			}
+			echo "</ul>";
+			unset($_SESSION['modules_messages']);
 		}
-		echo "</ul>";
-		unset($_SESSION['modules_messages']);
-	}
 
-	?>
+		?>
 
 	<table cellspacing="0" class="admintable">
 		<tr>
@@ -353,12 +355,12 @@ else
                 if (count($modinstance->GetDependencies()) > 0) #Check for any deps
                 {
                     #Now check to see if we can satisfy any deps
-                    foreach ($gCms->modules[$key]['dependency'] as $onedepkey=>$onedepvalue)
+                    foreach ($modinstance->GetDependencies() as $onedepkey=>$onedepvalue)
                     {
                     	if (isset($gCms->modules[$onedepkey]) && 
                     		$gCms->modules[$onedepkey]['installed'] == true &&
                     		$gCms->modules[$onedepkey]['active'] == true &&
-                    		version_compare($gCms->modules[$onedepkey]['Version'], $onedepvalue) > -1)
+                    		version_compare($modinstance->GetVersion(), $onedepvalue) > -1)
                     	{
                     		$havedep = true;
                     	}
@@ -392,13 +394,11 @@ else
 			}
 			else #Must be installed
 			{
-				#Can't be removed if it has a dependency...
-				$hasdeps = cms_mapi_check_for_dependents($key);
-				
 				echo "<td>".$dbm[$key]['Version']."</td>";
 				echo "<td>".lang('installed')."</td>";
 				echo "<td>".($dbm[$key]['Active']==="1"?"<a href='plugins.php?action=setfalse&amp;module=".$key."'>".$image_true."</a>":"<a href='plugins.php?action=settrue&amp;module=".$key."'>".$image_false."</a>")."</td>";
-				if (!$hasdeps)
+				#Can't be removed if it has a dependency...
+				if (!$modinstance->CheckForDependents())
 				{
 					echo "<td><a href=\"plugins.php?action=uninstall&amp;module=".$key."\" onclick=\"return confirm('".lang('uninstallconfirm')."');\">".lang('uninstall')."</a></td>";
 				}

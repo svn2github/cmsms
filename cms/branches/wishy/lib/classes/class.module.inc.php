@@ -162,6 +162,24 @@ class CMSModule extends ModuleOperations
 	{
 		return array();
 	}
+ 
+	function CheckForDependents()
+	{
+		global $gCms;
+		$db = $gCms->db;
+
+		$result = false;
+
+		$query = "SELECT * FROM ".cms_db_prefix()."module_deps WHERE parent_module = ?";
+		$dbresult = $db->Execute($query, array($this->GetName()));
+
+		if ($dbresult && $dbresult->RowCount() > 0)
+		{   
+			$result = true;
+		}
+
+		return $result;
+	}
 
 	/**
 	 * Return true if there is an admin for the module.  Returns false by
