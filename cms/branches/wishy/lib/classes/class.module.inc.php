@@ -625,7 +625,7 @@ class CMSModule extends ModuleOperations
 	 * @param string The ID of the module
 	 * @param string The parameters targeted for this module
 	 */
-	function DoAction($name, $id, $parameters)
+	function DoAction($name, $id, $parameters, $returnid='')
 	{
 		return '';
 	}
@@ -637,17 +637,21 @@ class CMSModule extends ModuleOperations
 	 * @param string Method to use for the form tag.  Defaults to 'post'
 	 * @param string Optional enctype to use, Good for situations where files are being uploaded
 	 */
-	function CreateFormStart($id, $action='default', $method='post', $enctype='')
+	function CreateFormStart($id, $action='default', $returnid='', $method='post', $enctype='')
 	{
 		$text = '<form name="'.$id.'moduleform" method="'.$method.'" action="moduleinterface.php"';
 		if ($enctype != '')
 		{
 			$text .= ' enctype="'.$enctype.'"';
 		}
-		$text .= '><input type="hidden" name="module" value="'.$this->GetName().'" />';
+		$text .= '><input type="hidden" name="module" value="'.$this->GetName().'" /><input type="hidden" name="id" value="'.$id.'" />';
 		if ($action != '')
 		{
 			$text .= '<input type="hidden" name="'.$id.'action" value="'.$action.'" />';
+		}
+		if ($returnid != '')
+		{
+			$text .= '<input type="hidden" name="'.$id.'returnid" value="'.$returnid.'" />';
 		}
 		$text .= "\n";
 		return $text;
@@ -658,20 +662,24 @@ class CMSModule extends ModuleOperations
 		return '</form>'."\n";
 	}
 
-	function CreateInputText($id, $name, $value='', $size='10', $maxlength='255', $extratext='')
+	function CreateInputText($id, $name, $value='', $size='10', $maxlength='255', $addttext='')
 	{
 		$text = '<input type="text" name="'.$id.$name.'" value="'.$value.'" size="'.$size.'" maxlength="'.$maxlength.'"';
-		if ($extratext != '')
+		if ($addttext != '')
 		{
-			$text .= ' ' . $extratext;
+			$text .= ' ' . $addttext;
 		}
 		$text .= " />\n";
 		return $text;
 	}
 
-	function CreateInputHidden($id, $name, $value='')
+	function CreateInputHidden($id, $name, $value='', $addttext='')
 	{
 		$text = '<input type="hidden" name="'.$id.$name.'" value="'.$value.'"';
+		if ($addttext != '')
+		{
+			$text .= ' '.$addttext;
+		}
 		$text .= " />\n";
 		return $text;
 	}
@@ -681,7 +689,7 @@ class CMSModule extends ModuleOperations
 		$text = '<input type="submit" name="'.$id.$name.'" value="'.$value.'"';
 		if ($addttext != '')
 		{
-			$text .= $addttext;
+			$text .= ' '.$addttext;
 		}
 		$text .= ' />';
 		return $text . "\n";
@@ -713,36 +721,57 @@ class CMSModule extends ModuleOperations
 		return $text;
 	}
 
-	function CreateTextArea($enablewysiwyg, $text, $name, $classname, $id='', $encoding='', $stylesheet='')
+	function CreateTextArea($enablewysiwyg, $id, $text, $name, $classname, $htmlid='', $encoding='', $stylesheet='')
 	{
-		return create_textarea($enablewysiwyg, $text, $name, $classname, $id, $encoding, $stylesheet);
+		return create_textarea($enablewysiwyg, $text, $id.$name, $classname, $htmlid, $encoding, $stylesheet);
 	}
 
-	function CreateLink($id, $action, $return_id, $params, $contents, $warn_message='')
+	function CreateLink($id, $action, $returnid, $contents, $params, $warn_message='')
 	{
-		$text = '<a href="moduleinterface.php?module='.$this->GetName().'&amp;return_id='.$page_id.'&amp;id='.$id.'&amp;action='.$action;
+		$text = '<a href="moduleinterface.php?module='.$this->GetName().'&amp;id='.$id.'&amp;'.$id.'action='.$action;
 		foreach ($params as $key=>$value)
 		{
 			$text .= '&amp;'.$id.$key.'='.$value;
+		}
+		if ($returnid != '')
+		{
+			$text .= '&amp;'.$id.'returnid='.$returnid;
 		}
 		$text .= "\"";
 		if ($warn_message !== '')
 		{
 			$text .= ' onclick="return confirm(\''.$warn_message.'\');"';
 		}
-		$text .= '>'.$text.'</a>';
+		$text .= '>'.$contents.'</a>';
 		return $text;
 	}
 
-	function Redirect($id, $action)
+	function Redirect($id, $action, $returnid='')
 	{
 		global $gCms;
 		$config = $gCms->config;
 
 		$name = $this->GetName();
-		redirect('moduleinterface.php?module='.$name.'&amp;'.$id.'action='.$action);
+
+		$text = 'moduleinterface.php?module='.$name.'&amp;'.$id.'action='.$action.'&amp;id='.$id;
+		if ($returnid != '')
+		{
+			$text .= '&amp;'.$id.'returnid='.$returnid;
+		}
+		redirect($text);
 	}
 
+	function RedirectContent($id)
+	{
+		$content = ContentManager::LoadContentFromId($id);
+		if (isset($content))
+		{
+			if ($content->GetUrl() != '')
+			{
+				redirect($content->GetUrl());
+			}
+		}
+	}
 
 	/**
 	 * ------------------------------------------------------------------
@@ -912,6 +941,21 @@ class ModuleOperations
 		return $cmsmodules;
 	}
 
+	function GetModuleParameters($id)
+	{
+		$params = array();
+
+		foreach ($_REQUEST as $key=>$value)
+		{
+			if (strpos($key, $id) !== FALSE && strpos($key, $id) == 0)
+			{
+				$key = str_replace($id, '', $key);
+				$params[$key] = $value;
+			}
+		}
+
+		return $params;
+	}
 }
 
 # vim:ts=4 sw=4 noet
