@@ -21,7 +21,7 @@
 $module_name = "Bookmarks";
 
 // Defines
-define('BOOKMARKS_MODULE_VERSION', '1.0');
+define('BOOKMARKS_MODULE_VERSION', '1.0.1');
 
 define('BOOKMARKS_MODULE_COMMONCODE_FILE', dirname(__FILE__).'/../CommonCode/modulefunctions.php');
 define('BOOKMARKS_MODULE_COMMONCODE_CATEGORY_FILE', dirname(__FILE__).'/../CommonCode/categories.inc.php');
@@ -69,6 +69,8 @@ function bookmarks_module_about()
 			Now required CommonCode 1.1<br />
 			Tidied up code.<br>
 			</dd>
+		<dt>Version: 1.0.1</dt>
+			<dd>Bug fixes that prevented display of the user facing submit form.</dd>
 	</dl>
 	<?php
 }
