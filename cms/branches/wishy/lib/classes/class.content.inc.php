@@ -837,6 +837,64 @@ class ContentManager
 
 		return $result;
 	}
+
+	/**
+	 * Updates the hierarchy position of one item
+	 */
+	function SetHierarchyPosition($contentid)
+	{
+		global $gCms;
+		$db = $gCms->db;
+
+		$current_hierarchy_position = "";
+		$current_parent_id = $contentid;
+		$count = 0;
+
+		while ($current_parent_id > -1)
+		{
+			$query = "SELECT item_order, parent_id FROM ".cms_db_prefix()."content WHERE content_id = ?";
+			$dbresult = $db->Execute($query, array($current_parent_id));
+			if ($dbresult && $dbresult->RowCount())
+			{
+				$row = $dbresult->FetchRow();
+				$current_hierarchy_position = $row['item_order'] . "." . $current_hierarchy_position;
+				$current_parent_id = $row['parent_id'];
+				$count++;
+			}
+			else
+			{
+				$current_parent_id = 0;
+			}
+		}
+
+		if (strlen($current_hierarchy_position) > 0)
+		{
+			$current_hierarchy_position = substr($current_hierarchy_position, 0, strlen($current_hierarchy_position) - 1);
+		}
+
+		$query = "UPDATE ".cms_db_prefix()."content SET hierarchy = ? WHERE content_id = ?";
+		$db->Execute($query, array($current_hierarchy_position, $contentid));
+	}
+
+	/**
+	 * Updates the hierarchy position of all items
+	 */
+	function SetAllHierarchyPositions()
+	{
+		global $gCms;
+		$db = $gCms->db;
+
+		$query = "SELECT content_id FROM ".cms_db_prefix()."content";
+		$dbresult = $db->Execute($query);
+
+		if ($dbresult && $dbresult->RowCount() > 0)
+		{
+			while ($row = $dbresult->FetchRow())
+			{
+				ContentManager::SetHierarchyPosition($row['content_id']);
+			}
+		}
+	}
 }
 
 # vim:ts=4 sw=4 noet

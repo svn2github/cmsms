@@ -85,6 +85,7 @@ if ($access)
 		$contentobj->FillParams($_POST);
 
 		$contentobj->Save();
+		ContentManager::SetAllHierarchyPositions();
 		audit($contentobj->id, $contentobj->name, 'Added Content');
 		redirect("listcontent.php");
 		return;
