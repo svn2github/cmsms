@@ -35,11 +35,11 @@ function smarty_function_bulletmenu($params, &$smarty) {
 				}
 			}
 
-			if ($one_section->level > $last_level || $one_section->level == 0) {
+			if ($one_section->level >= $last_level || $one_section->level == 0) {
 				if ($one_section->level != 0) { $menu .= "<li>"; }
 				$menu .= "<p class=\"sectionname\">".$one_section->section_name."</p>\n";
 				if ($one_section->level != 0) { $menu .= "</li>"; }
-				$menu .= "<ul>\n";
+				if ($one_section->level > $last_level || $one_section->level == 0) {$menu .= "<ul>\n"; }
 			}
 
 			foreach ($one_section->items as $one_item) {
