@@ -159,11 +159,11 @@ class TinyMCE extends CMSModule
 				theme_advanced_buttons2_add_before: "cut,copy,paste,separator",
 				theme_advanced_buttons2_add : "separator,insertdate,inserttime,preview,zoom",
 				theme_advanced_buttons3_add : "emotions,iespell,flash,advhr,ibrowser",
-//				document_base_url : "<?php echo $gCms->config['root_url']?>/",
-//				relative_urls : "false",
-//				plugin_insertdate_dateFormat : "%Y-%m-%d",
-//				plugin_insertdate_timeFormat : "%H:%M:%S",
-//				extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],font[face|size|color],hr[class|width|size|noshade],form[name|id|action]"
+				document_base_url : "<?php echo $gCms->config['root_url']?>/",
+				relative_urls : "false",
+				plugin_insertdate_dateFormat : "%Y-%m-%d",
+				plugin_insertdate_timeFormat : "%H:%M:%S",
+				valid_elements : "*[*]"
 			});
 		</script>
 	
