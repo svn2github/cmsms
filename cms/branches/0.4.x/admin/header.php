@@ -31,6 +31,7 @@ header("Pragma: no-cache");
 	<script type="text/javascript">
 		_editor_url = "<?=$config->root_url?>/htmlarea/";
 		_editor_lang = "en";
+		var editor;
 	</script>
 
 	<script type="text/javascript" src="<?=$config->root_url?>/htmlarea/htmlarea.js"></script>
@@ -38,13 +39,10 @@ header("Pragma: no-cache");
 	<script type="text/javascript">
 		function initHtmlArea() {
 
-			var content = new HTMLArea("content");
-			content.config.pageStyle = '<?=get_stylesheet($config,$template_id)?>';
-			content.generate();
+			editor = new HTMLArea("content");
+			editor.config.pageStyle = '<?=get_stylesheet($config,$template_id)?>';
+			editor.generate();
 		}
-		//editor = new HTMLArea("content");
-		//editor.config.pageStyle = '<?=get_stylesheet($config,$template_id)?>';
-		//editor.generate();
 
 	</script>
 

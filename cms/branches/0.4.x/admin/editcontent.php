@@ -93,7 +93,7 @@ if (!$access) {
 
 if (get_preference($config, $userid, 'use_wysiwyg') == "1") {
 	$htmlarea_flag = "true";
-	$templatepostback = " onchange=\"document.editform.content_change.value=1;document.editform.content.value=content.getHTML();document.editform.submit()\"";
+	$templatepostback = " onchange=\"document.editform.content_change.value=1;document.editform.content.value=editor.getHTML();document.editform.submit()\"";
 }
 
 if ($access) {
