@@ -33,6 +33,38 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 
 	foreach ($allcontent as $onecontent)
 	{
+		#Handy little trick to figure out how deep in the tree we are
+		#Remember, content comes to use in order of how it should be displayed in the tree already
+		$depth = count(split('\.', $onecontent->Hierarchy()));
+
+		#If hierarchy starts with the start_element (if it's set), then continue on
+		if (isset($params['start_element']))
+		{
+			if (!(strpos($onecontent->Hierarchy(), $params['start_element']) !== FALSE && strpos($onecontent->Hierarchy(), $params['start_element']) == 0))
+			{
+				continue;
+			}
+		}
+
+		#Now check to make sure we're not too many levels deep if number_of_levels is set
+		if (isset($params['number_of_levels']))
+		{
+			$number_of_levels = $params['number_of_levels'] - 1;
+			$base_level = 1;
+			
+			#Is start_element set?  If so, reset the base_level to it's level
+			if (isset($params['start_element']))
+			{
+				$base_level = count(split('\.', $params['start_element']));
+			}
+
+			#If this element's level is more than base_level + number_of_levels, then scratch it
+			if ($base_level + $number_of_levels < $depth)
+			{
+				continue;
+			}
+		}
+
 		if ($onecontent->Type() == 'sectionheader')
 		{
 			if ($in_hr == 1)
@@ -49,10 +81,6 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 		}
 		else
 		{
-			#Handy little trick to figure out how deep in the tree we are
-			#Remember, content comes to use in order of how it should be displayed in the tree already
-			$depth = count(split('\.', $onecontent->Hierarchy()));
-
 			if ($depth < $last_level) {
 				for ($i = $depth; $i < $last_level; $i++) $menu .= "</ul>\n";
 			}
