@@ -960,7 +960,7 @@ class CMSModule extends ModuleOperations
 	 */
 	function RemovePermission($permission_name)
 	{
-		$db = $cms->db;
+		$db = $this->cms->db;
 
 		$query = "SELECT permission_id FROM ".cms_db_prefix()."permissions WHERE permission_name = " . $db->qstr($permission_name); 
 		$result = $db->Execute($query);
