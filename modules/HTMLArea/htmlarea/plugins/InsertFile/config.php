@@ -9,7 +9,7 @@
 ** Last changed..:    23 July 2004
 ***********************************************************************/
 
-include_once("../../../config.php");
+include_once("../../../../../config.php");
 
 // Error reporting should be set to E_NONE in production environment
 // error_reporting( E_NONE );
