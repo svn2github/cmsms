@@ -68,6 +68,15 @@ class Content extends ContentBase
 			{
 				$this->mAlias = $params['alias'];
 			}
+			if (isset($params['parent_id']))
+			{
+				if ($this->mParentId != $params['parent_id'])
+				{
+					$this->mHierarchy = '';
+					$this->mItemOrder = -1;
+				}
+				$this->mParentId = $params['parent_id'];
+			}
 			if (isset($params['active']))
 			{
 				$this->mActive = true;
@@ -103,7 +112,7 @@ class Content extends ContentBase
 		$text .= '<tr><td>'.lang('headtags').':</td><td>'.textarea_highlight((isset($use_javasyntax)?$use_javasyntax:false), $this->mProperties->GetValue('headtags'), "headtags").'</td></tr>';
 		$text .= '<tr><td>'.lang('active').':</td><td><input type="checkbox" name="active"'.($this->mActive?' checked="true"':'').'></td></tr>';
 		$text .= '<tr><td>'.lang('showinmenu').':</td><td><input type="checkbox" name="showinmenu"'.($this->mShowInMenu?' checked="true"':'').'></td></tr>';
-
+		$text .= '<tr><td>'.lang('parent').':</td><td>'.ContentManager::CreateHierarchyDropdown($this->mId, $this->mParentId).'</td></tr>';
 		return $text;
 	}
 
@@ -156,6 +165,15 @@ class Link extends ContentBase
 			{
 				$this->mAlias = $params['alias'];
 			}
+			if (isset($params['parent_id']))
+			{
+				if ($this->mParentId != $params['parent_id'])
+				{
+					$this->mHierarchy = '';
+					$this->mItemOrder = -1;
+				}
+				$this->mParentId = $params['parent_id'];
+			}
 			if (isset($params['active']))
 			{
 				$this->mActive = true;
@@ -188,6 +206,7 @@ class Link extends ContentBase
 		$text .= '<tr><td>'.lang('url').':</td><td><input type="text" name="url" value="'.$this->mProperties->GetValue('url').'"></td></tr>';
 		$text .= '<tr><td>'.lang('active').':</td><td><input type="checkbox" name="active"'.($this->mActive?' checked="true"':'').'></td></tr>';
 		$text .= '<tr><td>'.lang('showinmenu').':</td><td><input type="checkbox" name="showinmenu"'.($this->mShowInMenu?' checked="true"':'').'></td></tr>';
+		$text .= '<tr><td>'.lang('parent').':</td><td>'.ContentManager::CreateHierarchyDropdown($this->mId, $this->mParentId).'</td></tr>';
 
 		return $text;
 	}
@@ -205,6 +224,15 @@ class Separator extends ContentBase
 		if (isset($params))
 		{
 			$this->mName = $params['title'];
+			if (isset($params['parent_id']))
+			{
+				if ($this->mParentId != $params['parent_id'])
+				{
+					$this->mHierarchy = '';
+					$this->mItemOrder = -1;
+				}
+				$this->mParentId = $params['parent_id'];
+			}
 			if (isset($params['active']))
 			{
 				$this->mActive = true;
@@ -235,6 +263,7 @@ class Separator extends ContentBase
 		$text .= '<tr><td>'.lang('title').':</td><td><input type="text" name="title" value="'.$this->mName.'"></td></tr>';
 		$text .= '<tr><td>'.lang('active').':</td><td><input type="checkbox" name="active"'.($this->mActive?' checked="true"':'').'></td></tr>';
 		$text .= '<tr><td>'.lang('showinmenu').':</td><td><input type="checkbox" name="showinmenu"'.($this->mShowInMenu?' checked="true"':'').'></td></tr>';
+		$text .= '<tr><td>'.lang('parent').':</td><td>'.ContentManager::CreateHierarchyDropdown($this->mId, $this->mParentId).'</td></tr>';
 
 		return $text;
 	}
@@ -262,6 +291,15 @@ class SectionHeader extends ContentBase
 			if (isset($params['menutext']))
 			{
 				$this->mMenuText = $params['menutext'];
+			}
+			if (isset($params['parent_id']))
+			{
+				if ($this->mParentId != $params['parent_id'])
+				{
+					$this->mHierarchy = '';
+					$this->mItemOrder = -1;
+				}
+				$this->mParentId = $params['parent_id'];
 			}
 			if (isset($params['active']))
 			{
@@ -294,6 +332,7 @@ class SectionHeader extends ContentBase
 		$text .= '<tr><td>'.lang('menutext').':</td><td><input type="text" name="menutext" value="'.$this->mMenuText.'"></td></tr>';
 		$text .= '<tr><td>'.lang('active').':</td><td><input type="checkbox" name="active"'.($this->mActive?' checked="true"':'').'></td></tr>';
 		$text .= '<tr><td>'.lang('showinmenu').':</td><td><input type="checkbox" name="showinmenu"'.($this->mShowInMenu?' checked="true"':'').'></td></tr>';
+		$text .= '<tr><td>'.lang('parent').':</td><td>'.ContentManager::CreateHierarchyDropdown($this->mId, $this->mParentId).'</td></tr>';
 
 		return $text;
 	}

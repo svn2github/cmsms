@@ -76,6 +76,11 @@ class ContentBase
 	var $mParentId;
 
 	/**
+	 * The old parent id... only used on update
+	 */
+	var $mOldParentId;
+
+	/**
 	 * This is used too often to not be part of the base class
 	 */
 	var $mTemplateId;
@@ -85,6 +90,11 @@ class ContentBase
 	 * Integer
 	 */
 	var $mItemOrder;
+
+	/**
+	 * The old item order... only used on update
+	 */
+	var $mOldItemOrder;
 
 	/**
 	 * The full hierarchy of the content
@@ -160,8 +170,10 @@ class ContentBase
 		$this->mOwner			= -1 ;
 		$this->mProperties		= new ContentProperties();
 		$this->mParentId		= -1 ;
+		$this->mOldParentId		= -1 ;
 		$this->mTemplateId		= -1 ;
 		$this->mItemOrder		= -1 ;
+		$this->mOldItemOrder	= -1 ;
 		$this->mHierarchy		= "" ;
 		$this->mActive			= false ;
 		$this->mDefaultContent	= false ;
@@ -250,7 +262,15 @@ class ContentBase
 	 */
 	function Hierarchy()
 	{
-		return $this->mHierarchy;
+		#Change padded numbers back into user-friendly values
+		$tmp = '';
+		$levels = split('\.', $this->mHierarchy);
+		foreach ($levels as $onelevel)
+		{
+			$tmp .= ltrim($onelevel, '0') . '.';
+		}
+		$tmp = rtrim($tmp, '.');
+		return $tmp;
 	}
 
 	/**
@@ -334,8 +354,10 @@ class ContentBase
 				$this->mOwner			= $row["owner_id"];
 				#$this->mProperties		= new ContentProperties();
 				$this->mParentId		= $row["parent_id"];
+				$this->mOldParentId		= $row["parent_id"];
 				$this->mTemplateId		= $row["template_id"];
 				$this->mItemOrder		= $row["item_order"];
+				$this->mOldItemOrder	= $row["item_order"];
 				$this->mHierarchy		= $row["hierarchy"];
 				$this->mMenuText		= $row['menu_text'];
 				$this->mActive			= ($row["active"] == 1?true:false);
@@ -412,8 +434,10 @@ class ContentBase
 		$this->mOwner			= $data["owner_id"];
 		#$this->mProperties		= new ContentProperties(); 
 		$this->mParentId		= $data["parent_id"];
+		$this->mOldParentId		= $data["parent_id"];
 		$this->mTemplateId		= $data["template_id"];
 		$this->mItemOrder		= $data["item_order"];
+		$this->mOldItemOrder	= $data["item_order"];
 		$this->mHierarchy		= $data["hierarchy"];
 		$this->mMenuText		= $data['menu_text'];
 		$this->mDefaultContent	= ($data["default_content"] == 1?true:false);
@@ -480,7 +504,27 @@ class ContentBase
 		
 		$result = false;
 
-		$query = "UPDATE ".cms_db_prefix()."content SET content_name = ?, owner_id = ?, type = ?, template_id = ?, parent_id = ?, active = ?, default_content = ?, show_in_menu = ?, menu_text = ?, content_alias = ?, modified_date = ? WHERE content_id = ?";
+		#Figure out the item_order (if necessary)
+		if ($this->mItemOrder < 1)
+		{
+			$query = "SELECT ".$db->IfNull('max(item_order)','0')." as new_order FROM ".cms_db_prefix()."content WHERE parent_id = ".$this->mParentId;
+			$dbresult = $db->Execute($query);
+
+			if ($dbresult && (1 == $dbresult->RowCount()))
+			{
+				$row = $dbresult->FetchRow();
+				if ($row['new_order'] < 1)
+				{
+					$this->mItemOrder = 1;
+				}
+				else
+				{
+					$this->mItemOrder = $row['new_order'] + 1;
+				}
+			}
+		}
+
+		$query = "UPDATE ".cms_db_prefix()."content SET content_name = ?, owner_id = ?, type = ?, template_id = ?, parent_id = ?, active = ?, default_content = ?, show_in_menu = ?, menu_text = ?, content_alias = ?, modified_date = ?, item_order = ? WHERE content_id = ?";
 
 		$dbresult = $db->Execute($query, array(
 			$this->mName,
@@ -494,16 +538,27 @@ class ContentBase
 			$this->mMenuText,
 			$this->mAlias,
 			$db->DBTimeStamp(time()),
+			$this->mItemOrder,
 			$this->mId
 			));
 
-		if (! $dbresult)
+		if (!$dbresult)
 		{
 			if (true == $config["debug"])
 			{
 				# :TODO: Translate the error message
 				$debug_errors .= "<p>Error updating content</p>\n";
 			}
+		}
+
+		if ($this->mOldParentId != $this->mParentId)
+		{
+			#Fix the item_order if necessary
+			$query = "UPDATE ".cms_db_prefix()."content SET item_order = item_order - 1 WHERE parent_id = ".$this->mOldParentId." AND item_order > ".$this->mOldItemOrder;
+			$result = $db->Execute($query);
+
+			$this->mOldParentId = $this->mParentId;
+			$this->mOldItemOrder = $this->mItemOrder;
 		}
 
 		if (NULL != $this->mProperties)
@@ -1075,7 +1130,7 @@ class ContentManager
 			if ($dbresult && $dbresult->RowCount())
 			{
 				$row = $dbresult->FetchRow();
-				$current_hierarchy_position = $row['item_order'] . "." . $current_hierarchy_position;
+				$current_hierarchy_position = str_pad($row['item_order'], 5, '0', STR_PAD_LEFT) . "." . $current_hierarchy_position;
 				$current_parent_id = $row['parent_id'];
 				$count++;
 			}
@@ -1136,6 +1191,40 @@ class ContentManager
 					array_push($result, $contentobj);
 				}
 			}
+		}
+
+		return $result;
+	}
+
+	function CreateHierarchyDropdown($current = '', $parent = '', $name = 'parent_id')
+	{
+		$result = '';
+
+		$allcontent = ContentManager::GetAllContent();
+
+		if ($allcontent !== FALSE && count($allcontent) > 0)
+		{
+			$result .= '<select name="'.$name.'">';
+			$result .= '<option value="-1">None</option>';
+
+			foreach ($allcontent as $one)
+			{
+				#Don't include ourselves or separators
+				if ($one->Id() != $current && $one->Type() != 'separator')
+				{
+					$result .= '<option value="'.$one->Id().'"';
+
+					#Select current parent if it exists
+					if ($one->Id() == $parent)
+					{
+						$result .= ' selected="true"';
+					}
+
+					$result .= '>'.$one->Hierarchy().'. - '.$one->Name().'</option>';
+				}
+			}
+
+			$reuslt .= '</select>';
 		}
 
 		return $result;

@@ -149,6 +149,8 @@ if (isset($_GET["message"])) {
 		#Ditto with users
 		$users = array();
 
+		$menupos = array();
+
 		foreach ($content_array as $one)
 		{
 			if (!array_key_exists($one->TemplateId(), $templates))
@@ -209,7 +211,11 @@ if (isset($_GET["message"])) {
 					#Figure out some variables real quick
 					$depth = count(split('\.', $one->Hierarchy()));
 
-					$item_order = substr($one->Hierarchy(), -1, 1);
+					$item_order = substr($one->Hierarchy(), strrpos($one->Hierarchy(), '.') + 1);
+					if ($item_order == '')
+					{
+						$item_order = $one->Hierarchy();
+					}
 
 					$num_same_level = 0;
 
@@ -223,7 +229,7 @@ if (isset($_GET["message"])) {
 							if (count(split('\.', $another->Hierarchy())) > 1)
 							{
 								#So only pages with the same parents count
-								if (substr($another->Hierarchy(), -2) == substr($one->Hierarchy(), -2))
+								if (substr($another->Hierarchy(), 0, strrpos($another->Hierarchy(), '.')) == substr($one->Hierarchy(), 0, strrpos($another->Hierarchy(), '.')))
 								{
 									$num_same_level++;
 								}
