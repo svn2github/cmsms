@@ -35,18 +35,18 @@ function htmlarea_module_header_function(&$cms)
 
 	<script type="text/javascript" src="<?php echo $config["root_url"]?>/modules/HTMLArea/htmlarea/htmlarea.js"></script>
 
-	<script type="text/javascript" defer>
+	<script type="text/javascript" defer="1">
 		<!--
 
-		HTMLArea.loadPlugin("ImageManager");
-		HTMLArea.loadPlugin("InsertFile");
-		HTMLArea.loadPlugin("TableOperations");
-		HTMLArea.loadPlugin("ContextMenu");
-		HTMLArea.loadPlugin("CharacterMap");
-		HTMLArea.loadPlugin("FindReplace");
+		//HTMLArea.loadPlugin("ImageManager");
+		//HTMLArea.loadPlugin("InsertFile");
+		//HTMLArea.loadPlugin("TableOperations");
+		//HTMLArea.loadPlugin("ContextMenu");
+		//HTMLArea.loadPlugin("CharacterMap");
+		//HTMLArea.loadPlugin("FindReplace");
 		HTMLArea.loadPlugin("InvertBackground");
 		<?php if ($config["use_Indite"] == true) { ?>	
-			HTMLArea.loadPlugin("Indite");	
+			//HTMLArea.loadPlugin("Indite");	
 		<?php } ?>
 
 		function initHtmlArea()
@@ -59,7 +59,7 @@ function htmlarea_module_header_function(&$cms)
 			?>
 
 			var editor<?php echo $count?> = new HTMLArea("<?php echo $onearea?>", config);
-			editor<?php echo $count?>.registerPlugin(ImageManager);
+			//editor<?php echo $count?>.registerPlugin(ImageManager);
 			<?php 
 				// Ugly Hack alert! making setting session var to send language setting to insertFile
 				if ($config["disable_htmlarea_translation"] != true)
@@ -75,16 +75,16 @@ function htmlarea_module_header_function(&$cms)
 				}
 		 	?>
 
-			editor<?php echo $count?>.registerPlugin(InsertFile);
-			editor<?php echo $count?>.registerPlugin(TableOperations);
-			editor<?php echo $count?>.registerPlugin(ContextMenu);
-			editor<?php echo $count?>.registerPlugin(CharacterMap);
-			editor<?php echo $count?>.registerPlugin(FindReplace);
-			editor<?php echo $count?>.registerPlugin(InvertBackground);
+			//editor<?php echo $count?>.registerPlugin(InsertFile);
+			//editor<?php echo $count?>.registerPlugin(TableOperations);
+			//editor<?php echo $count?>.registerPlugin(ContextMenu);
+			//editor<?php echo $count?>.registerPlugin(CharacterMap);
+			//editor<?php echo $count?>.registerPlugin(FindReplace);
+			//editor<?php echo $count?>.registerPlugin(InvertBackground);
 
 			<?php
 				if ($config["use_Indite"] == true)
-					echo "editor".$count.".registerPlugin(Indite);";
+					echo "//editor".$count.".registerPlugin(Indite);";
 
 				$template_id = -1;
 				if (isset($_POST["template_id"])) 
@@ -128,7 +128,7 @@ function htmlarea_module_header_function(&$cms)
 				{
 					if (document.forms[j].elements[i].id == "plain")
 					{
-						document.forms[j].elements[i].style.display='none';
+						//document.forms[j].elements[i].style.display='none';
 					}
 				}
 			}
@@ -153,6 +153,7 @@ function htmlarea_module_body_function($cms)
 function htmlarea_module_textbox_function(&$cms, $name='textbox', $columns='80', $rows='8', $encoding='', $content='', $stylesheet='')
 {
 	$variables = &$cms->variables;
+	$rows = $rows + 10;
 	if ($stylesheet != '')
 	{
 		$variables['htmlarea_stylesheet'] = $stylesheet;
