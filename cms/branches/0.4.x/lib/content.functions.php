@@ -175,36 +175,39 @@ class Section {
 	var $display_name;
 	var $parent_id;
 	var $items;
+	var $level;
 
 	function get_child_sections($section_id, $sections, $level) {
 
-		echo "get_child_sections: level: ($level) section_id: ($section_id)<br />\n";
+## 		echo "get_child_sections: level: ($level) section_id: ($section_id)<br />\n";
+		echo "<p>Level: $level Searching parent: $section_id\n--------------------------------------------------\n";
 		reset($sections);
 		$child_sections = array();
 		foreach ($sections as $one) {
-## 			echo "looking for a child: section_id: $section_id  name: ".$one->section_name."  parent_id: ".$one->parent_id."<br />\n";
 			if ($section_id == $one->parent_id) {
-				echo "level: $level -> found a child: ".$one->section_name."<br />\n";
-				$prefix = " ** ";
+				$prefix = "";
 				for ($i=0; $i<=$level; $i++) { $prefix .= " -- "; }
 
 				$one->display_name = $prefix.$one->section_name;
+				$one->level = $level;
 				array_push($child_sections, $one);
-## 				array_push($child_sections, $one->get_child_sections($one->section_id, $sections, $level + 1));
 				$children = $one->get_child_sections($one->section_id, $sections, $level +1);
-				array_push($child_sections, $children);
-				foreach ($children as $child) {
-					echo "child: ".$child->section_name."<br />\n";
-				} ## foreach
-
-## 				if (isset($children)) {
-## 					echo "children[] is indeed set<br />\n";
-## 					array_push($child_sections, $children);
-## 				} ## if
+				if (count($children)) {
+					foreach ($children as $child) {  array_push($child_sections, $child); } ## foreach
+				}
 			} ## if
 		} ## foreach
-		echo "returning<br />\n";
-		return $child_sections;
+
+		if (count($child_sections)) {
+			echo "Level: $level -> ============================================================\n";
+			echo var_dump($child_sections);
+			echo "Level: $level -> ============================================================\n";
+
+			return $child_sections;
+		} else {
+			echo "Level: $level -> No children found\n";
+			return;
+		}
 	} ## function
 } ## class
 
@@ -249,7 +252,9 @@ function db_get_menu_items(&$config, $style) {
 				$current_section = new Section;
 				$current_section->section_id = $line["section_id"];
 				$current_section->section_name = $line["section_name"];
+				$current_section->display_name = $line["section_name"];
 				$current_section->parent_id = $line["parent_id"];
+				$current_section->level = 0;
 				$current_section->items = array();
 			} ## if
 
@@ -269,10 +274,12 @@ function db_get_menu_items(&$config, $style) {
 				array_push($sorted, $one_section);
 				$children = $one_section->get_child_sections($one_section->section_id, $sections, 1);
 			} ## if
-			array_push($sorted, $children);
+			if (count($children)) {
+				foreach ($children as $child) { array_push($sorted, $child); }
+			} ## if
 		} ## foreach
 
-		echo "<p>".var_dump($sections)."</p>\n";
+## 		echo "<p>".var_dump($sections)."</p>\n";
 		
 		return $sorted;
 
