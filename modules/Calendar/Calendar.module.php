@@ -23,6 +23,9 @@ class Calendar extends CMSModule
 	var $categories_table_name;
 	var $events_to_categories_table_name;
 	var $events_table_name;
+	var $language;
+	var $language_file_loaded;
+	var $language_strings;
 	
 	function Calendar()
 	{
@@ -30,7 +33,11 @@ class Calendar extends CMSModule
 		
 		$this->categories_table_name = cms_db_prefix() . 'module_calendar_categories';
 		$this->events_to_categories_table_name = cms_db_prefix().'module_calendar_events_to_categories';
-		$this->events_table_name = cms_db_prefix().'module_calendar_events';	
+		$this->events_table_name = cms_db_prefix().'module_calendar_events';
+		
+		$this->language = $this->GetPreference('Calendar-language', 'en_GB');
+		$this->language_file_loaded = false;
+		$this->language_strings = array();
 	}
 	
 	function GetName()
@@ -60,16 +67,57 @@ class Calendar extends CMSModule
 
 	function GetVersion()
 	{
-		return '0.3';
+		return '0.4';
 	}
 
-	function GetDescription($lang = 'en_US')
+	function GetDescription($lang = 'en_GB')
 	{
 		return '<p>Calendar is a module for displaying events on your page. When the
 		module is installed, a Calendar admin page is added to the plugins menu
 		that will allow you to manage your events.</p>';
 	}
 
+	
+	/**
+	 * Retrieve string in the correct language
+	 *
+	 * @param string $string
+	 * @return string
+	 */
+	function lang($string)
+	{
+		$language = $this->language;
+		if($language)
+		{
+			if(!$this->language_file_loaded)
+			{
+				$dir = dirname(__FILE__) . '/lang';
+				if(file_exists("$dir/$language.inc.php"))
+				{
+					include("$dir/$language.inc.php");
+					$this->language_strings = $calendar_language_strings;
+					$this->language_file_loaded = true;
+					return $this->language_strings[$string];
+				}
+				else 
+				{
+					return "-- missing file: $dir/$language.inc.php -- ";
+				}
+
+			}
+			else 
+			{
+				return $this->language_strings[$string];
+			}
+			
+		}
+		else
+		{
+			return "-- $language is missing string: $string -- ";
+		}
+		
+	}
+	
 	function GetHelp($lang = 'en_US')
 	{
 		return <<<EOT
@@ -86,6 +134,14 @@ class Calendar extends CMSModule
 		This will insert the module into your template or page anywhere you wish,
 		and display the calendar.  The code would look something like:
 		<code>{cms_module module="Calendar"}</code></p>
+		<h3>Locale</h3>
+		<p>The month names are set to the language used by the webserver. To override this,
+			add <pre>setlocale(LC_ALL, 'German');</pre> (or whatever language!) into the
+			config.php file.</p>
+		<p>Calendar also supports translation of all text strings to another language. To support
+		your language, add a file named <b><code>&lt;language&gt;.inc.php</code></b> to the 
+		<code>modules/Calendar/lang</code> directory. I would suggest copying en_GB.inc.php as a starting point.
+		<br />You can then select your language from the Settings menu in the Calendar admin.</p>
 		<h3>What Parameters Exist?</h3>
 		<table border=0 cellpadding=3 cellspacing=0>
 		<tr>
@@ -127,11 +183,15 @@ class Calendar extends CMSModule
 		</tr>
 		<tr>
 			<td>date_format</td>
-			<td>Format to display the event's date (as used in strftime()). Default is "%d/%b/%Y". <em>(optional)</em></td>
+			<td>Format to display the event's date (as used in <a href='http://www.php.net/manual/en/function.strftime.php' target='_blank'>strftime()</a>). Default is "%d/%b/%Y". <em>(optional)</em></td>
 		</tr>
 		<tr>
 			<td>datetime_format</td>
-			<td>Format to display the event's date if there is a time as well (as used in strftime()). Default is "%d/%b/%Y %H:%M". <em>(optional)</em></td>
+			<td>Format to display the event's date if there is a time as well (as used in <a href='http://www.php.net/manual/en/function.strftime.php' target='_blank'>strftime()</a>). Default is "%d/%b/%Y %H:%M". <em>(optional)</em></td>
+		</tr>
+		<tr>
+			<td>list_title_format</td>
+			<td>Format to display the title of a list. This is a date as used in <a href='http://www.php.net/manual/en/function.strftime.php' target='_blank'>strftime()</a>. Default is "%b %Y". <em>(optional)</em></td>
 		</tr>
 		<tr>
 			<td>use_session</td>
@@ -147,6 +207,9 @@ EOT;
 		return <<<EOT
 			<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
 			<dl>
+				<dt>Version: 0.4</dt>
+					<dd>Support for language translations. Default to a NULL end date. Improved the help information.
+					Display upcoming events in the correct order! Other minor bug fixes.</dd>
 				<dt>Version: 0.3</dt>
 					<dd>Initial support for "From" and "To" dates for events. Ability to filter admin list of events by category.</dd>
 				<dt>Version: 0.2</dt>
@@ -384,6 +447,12 @@ EOT;
 				}
 				break;
 				
+			case 'admin_settings';
+				if($this->AllowAccess())
+				{
+					$this->AdminSettings($id, $parameters, $returnid);
+				}			
+				break;
 				
 			default:
 				break;
@@ -404,9 +473,10 @@ EOT;
 			$add_event_link = $this->CreateLink($id, 'admin_add_event', $returnid, $contents='Add Event', $params=array());
 			//$manage_event_link = $this->CreateLink($id, 'defaultadmin', $returnid, $contents='Manage Events', $params=array());
 			$manage_categories_link = $this->CreateLink($id, 'admin_manage_categories', $returnid, $contents='Manage Categories', $params=array());
+			$settings_link = $this->CreateLink($id, 'admin_settings', $returnid, $contents='Settings', $params=array());
 			
 			echo <<<EOT
-			<p>Manage Events | $add_event_link | $manage_categories_link</p>	
+			<p>Manage Events | $add_event_link | $manage_categories_link | $settings_link</p>	
 			<h4 class="admintitle">Manage Events</h4>
 	
 EOT;
@@ -433,9 +503,10 @@ EOT;
 		//$add_event_link = $this->CreateLink($id, 'admin_add_event', $returnid, $contents='Add Event', $params=array());
 		$manage_event_link = $this->CreateLink($id, 'defaultadmin', $returnid, $contents='Manage Events', $params=array());
 		$manage_categories_link = $this->CreateLink($id, 'admin_manage_categories', $returnid, $contents='Manage Categories', $params=array());
+		$settings_link = $this->CreateLink($id, 'admin_settings', $returnid, $contents='Settings', $params=array());
 			
 		echo <<<EOT
-		<p>$manage_event_link | Add Event | $manage_categories_link</p>	
+		<p>$manage_event_link | Add Event | $manage_categories_link | $settings_link</p>	
 		<h4 class="admintitle">Manage Events</h4>
 	
 EOT;
@@ -528,16 +599,16 @@ EOT;
 		}
 		else
 		{ 
-			$event_date_end_minute = 0; //date('i');
-			$event_date_end_hour = 0; //date('H');
-			$event_date_end_day = date('d');
-			$event_date_end_month = date('n');
-			$event_date_end_year = $current_year;
+			$event_date_end_minute = 0;
+			$event_date_end_hour = 0;
+			$event_date_end_day = 0;
+			$event_date_end_month = 0;
+			$event_date_end_year = 0;
 		}	    
-
-		echo $this->CreateInputDropdown($id, 'event_date_end_day', $day_array, -1, $event_date_end_day);
-		echo $this->CreateInputDropdown($id, 'event_date_end_month', $month_array, -1, $event_date_end_month);
-		echo $this->CreateInputDropdown($id, 'event_date_end_year', $year_array, -1, $event_date_end_year);
+		
+		echo $this->CreateInputDropdown($id, 'event_date_end_day', array_merge(array(''=>0), $day_array), -1, $event_date_end_day);
+		echo $this->CreateInputDropdown($id, 'event_date_end_month', array_merge(array(''=>0), $month_array), -1, $event_date_end_month);
+		echo $this->CreateInputDropdown($id, 'event_date_end_year', array_merge(array(''=>0), $year_array), -1, $event_date_end_year);
 		echo '&nbsp;at&nbsp;';
 		echo $this->CreateInputDropdown($id, 'event_date_end_hour', $hour_array, -1, $event_date_end_hour);
 		echo ':';
@@ -626,9 +697,10 @@ EOT;
 	{
 		$add_event_link = $this->CreateLink($id, 'admin_add_event', $returnid, $contents='Add Event', $params=array());
 		$manage_event_link = $this->CreateLink($id, 'defaultadmin', $returnid, $contents='Manage Events', $params=array());
+		$settings_link = $this->CreateLink($id, 'admin_settings', $returnid, $contents='Settings', $params=array());
 		
 		echo <<<EOT
-		<p>$manage_event_link | $add_event_link | Manage Categories</p>
+		<p>$manage_event_link | $add_event_link | Manage Categories | $settings_link</p>
 	    <h4>Manage Categories</h4>
 	
 EOT;
@@ -758,13 +830,16 @@ EOT;
 		$event_date_start = sprintf("'%04d-%02d-%02d %02d:%02d'", $event_date_start_year, $event_date_start_month, $event_date_start_day, 
 								$event_date_start_hour, $event_date_start_minute);
 
-		$event_date_end_minute = get_parameter_value($parameters, 'event_date_end_minute', date('i'));
-		$event_date_end_hour = get_parameter_value($parameters, 'event_date_end_hour', date('H'));
-		$event_date_end_day = get_parameter_value($parameters, 'event_date_end_day', date('d'));
-		$event_date_end_month = get_parameter_value($parameters, 'event_date_end_month', date('m'));
-		$event_date_end_year = get_parameter_value($parameters, 'event_date_end_year', date('Y'));
+		$event_date_end_minute = get_parameter_value($parameters, 'event_date_end_minute', 0);
+		$event_date_end_hour = get_parameter_value($parameters, 'event_date_end_hour', 0);
+		$event_date_end_day = get_parameter_value($parameters, 'event_date_end_day', 0);
+		$event_date_end_month = get_parameter_value($parameters, 'event_date_end_month', 0);
+		$event_date_end_year = get_parameter_value($parameters, 'event_date_end_year', 0);
 		
-		$event_date_end = sprintf("'%04d-%02d-%02d %02d:%02d'", $event_date_end_year, $event_date_end_month, $event_date_end_day, 
+		if($event_date_end_year == 0)
+			$event_date_end = 'NULL';
+		else
+			$event_date_end = sprintf("'%04d-%02d-%02d %02d:%02d'", $event_date_end_year, $event_date_end_month, $event_date_end_day, 
 								$event_date_end_hour, $event_date_end_minute);
 		if($event_id > -1)
 		{
@@ -936,8 +1011,8 @@ EOT;
 	
 			$row_count = 0;
 
-			echo "<table cellspacing=0 class='admintable'>\n";
-			echo "<tr><th>Title</th><th>From Date</th><th>To Date</th><th>Summary</th><th></th><th></th></tr>\n";
+			echo "<table cellspacing=0 class='admintable  AdminTable'><thead>\n";
+			echo "<tr><th>Title</th><th>From Date</th><th>To Date</th><th>Summary</th><th></th><th></th></tr></thead>\n";
 		
 			while( ($row = $rs->FetchRow()) )
 			{
@@ -956,11 +1031,18 @@ EOT;
 					$event_date_start_string = strftime('%d/%b/%Y %H:%M', $event_date_start_time);
 					
 				$event_date_end = $row['event_date_end'];
-				$event_date_end_time = strtotime($row['event_date_end']);
-				if(strftime('%H%M', $event_date_end_time)== '0000')
-					$event_date_end_string = strftime('%d/%b/%Y', $event_date_end_time);
-				else
-					$event_date_end_string = strftime('%d/%b/%Y %H:%M', $event_date_end_time);
+				if($event_date_end)
+				{
+					$event_date_end_time = strtotime($row['event_date_end']);
+					if(strftime('%H%M', $event_date_end_time)== '0000')
+						$event_date_end_string = strftime('%d/%b/%Y', $event_date_end_time);
+					else
+						$event_date_end_string = strftime('%d/%b/%Y %H:%M', $event_date_end_time);
+				}
+				else 
+				{
+					$event_date_end_string = '&nbsp;';
+				}
 					
 				$event_summary = $row['event_summary'];
 				$event_created_by = $row['event_created_by'];
@@ -998,10 +1080,73 @@ EOT;
 		}		
 	}
 	
+	function AdminSettings($id, $parameters, $returnid)
+	{
+		$submit = get_parameter_value($parameters, 'submit');
+		if($submit != '')
+		{
+			$language = get_parameter_value($parameters, 'language');
+			$this->SetPreference('Calendar-language', $language);
+			
+			$url = $this->CreateLink($id, 'defaultadmin', $returnid, $contents='Manage Events', $params=array(), '', true);
+			$url = str_replace('&nbsp;', '&', $url);
+			redirect($url);
+			exit;
+		}
+		$language = $this->GetPreference('Calendar-language', 'en_GB');
+		
+		$add_event_link = $this->CreateLink($id, 'admin_add_event', $returnid, $contents='Add Event', $params=array());
+		$manage_event_link = $this->CreateLink($id, 'defaultadmin', $returnid, $contents='Manage Events', $params=array());
+		$manage_categories_link = $this->CreateLink($id, 'admin_manage_categories', $returnid, $contents='Manage Categories', $params=array());
+		$settings_link = $this->CreateLink($id, 'admin_settings', $returnid, $contents='Settings', $params=array());
+		
+		echo <<<EOT
+			<p>$manage_event_link | $add_event_link | $manage_categories_link | Settings</p>	
+			<h4 class="admintitle">Settings</h4>
+	
+EOT;
+
+		echo $this->CreateFormStart($id, 'admin_settings', $returnid, $method='post', $enctype='');
+	    echo <<<EOT
+
+	    <table border=0 cellspacing=0 cellpadding=3>
+	    <tr>
+	        <td align="right">Language:</td>
+	        <td colspan=3>
+EOT;
+		$language_array = array();
+		
+		// find all the current languages		
+		$dir = dirname(__FILE__)."/lang";
+		$ls = dir($dir);
+		while (($file = $ls->read()) != "") {
+			if (is_file("$dir/$file") && strpos($file, "inc.php") != 0) 
+			{
+				$this_lang = str_replace('.inc.php', '', $file);
+				$language_array[$this_lang] = $this_lang;
+			}
+		}
+
+		echo $this->CreateInputDropdown($id, 'language', $language_array, -1, $language);
+
+	    echo <<<EOT
+	        </td>
+	    </tr>
+EOT;
+
+	    echo "<tr><td valign='top' colspan='2' align='center'>";
+		echo $this->CreateInputSubmit($id, 'submit', 'Update Settings');
+		echo '</td></tr></table>';
+		echo $this->CreateFormEnd();
+		
+	}
+	
+	
 	function UserDisplay($id, $parameters, $returnid)
 	{
 		// handling of display of {cms_module module=Calender}
 		
+		$this->language = get_parameter_value($parameters, 'language', $this->language);
 		$display = get_parameter_value($parameters, 'display', 'calendar');
 		$category = get_parameter_value($parameters, 'category', '');
 		$use_session = get_parameter_value($parameters, 'use_session', true);
@@ -1023,6 +1168,7 @@ EOT;
 		$event_id = get_parameter_value($parameters, 'event_id', -1);
 		$date_format = get_parameter_value($parameters, 'date_format', '%d/%b/%Y');
 		$datetime_format = get_parameter_value($parameters, 'datetime_format', '%d/%b/%Y %H:%M');
+		$list_title_format = get_parameter_value($parameters, 'list_title_format', '%b %Y');
 
 		// get the events
 		$categories_table_name = $this->categories_table_name;
@@ -1057,8 +1203,10 @@ EOT;
 		elseif($display == 'upcominglist')
 		{
 			$start = date('Y-m-d H:i');
-			$sql .= "$where ($events_table_name.event_date_start >= '$start') ";
+			$start_midnight = date('Y-m-d 00:00:00');
+			$sql .= "$where ($events_table_name.event_date_start >= '$start' OR $events_table_name.event_date_start = '$start_midnight') ";
 			$where = ' AND ';
+			$sql .= " ORDER BY $events_table_name.event_date_start ASC";
 		}
 		else
 		{
@@ -1082,7 +1230,7 @@ EOT;
 					$end = sprintf('%04d-%02d-%02d 23:59:59', date('Y', $last_day_of_month), date('m', $last_day_of_month), date('d', $last_day_of_month));
 					
 				}
-				$sql .= "$where ($events_table_name.event_date_start >= '$start'  AND $events_table_name.event_date_end <= '$end') ";
+				$sql .= "$where ($events_table_name.event_date_start >= '$start'  AND ($events_table_name.event_date_end <= '$end' OR $events_table_name.event_date_end IS NULL)) ";
 				$where = ' AND ';
 			}
 			if($category)
@@ -1202,11 +1350,15 @@ EOT;
 		{
 			if($rs->RowCount() > 0)
 			{
-				$title_string = strftime($date_format, strtotime($start));
+				if($day == -1)
+					$title_string = strftime($list_title_format, strtotime($start));
+				else
+					$title_string = strftime($date_format, strtotime($start));
 				echo "<div id='$table_id'><h1>$title_string</h1>\n";
 				while($event = $rs->FetchRow())
 				{
 					//debug_display($row, '$row');
+					unset($event_date_end);
 					extract($event);
 				
 					$event_date_start_time = strtotime($event_date_start);
@@ -1215,32 +1367,40 @@ EOT;
 					else
 						$event_date_start_string = strftime($datetime_format, $event_date_start_time);
 						
-					$event_date_end_time = strtotime($event_date_end);
-					if(strftime('%H%M', $event_date_end_time)== '0000')
-						$event_date_end_string = strftime($date_format, $event_date_end_time);
+					if($event_date_end)
+					{
+						$event_date_end_time = strtotime($event_date_end);
+						if(strftime('%H%M', $event_date_end_time)== '0000')
+							$event_date_end_string = strftime($date_format, $event_date_end_time);
+						else
+							$event_date_end_string = strftime($datetime_format, $event_date_end_time);
+					}
 					else
-						$event_date_end_string = strftime($datetime_format, $event_date_end_time);
+					{
+						$event_date_end_string = '';
+					}
 						
 					$summary_string = '';
-					if($summaries)
-						$summary_string = "<p class='calendar-summary'><span class='calendar-summary-title'>Summary: </span>$event_summary</p>";
+					if($summaries && $event_summary != '')
+						$summary_string = "<p class='calendar-summary'><span class='calendar-summary-title'>" . $this->lang('Summary') . ": </span>$event_summary</p>";
 					
 					echo <<<EOT
 					<div class='calendar-event' id='$table_id'>
 					<h2>$event_title</h2>
 EOT;
-					if($event_date_start == $event_date_end)
+					if($event_date_start == $event_date_end || $event_date_end_string == '')
 					{
-						echo "<div class='calendar-date-from'><span class='calendar-date-title'>Date: </span>$event_date_start_string</div>\n";
+						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string</div>\n";
 					}
 					else 
 					{
-						echo "<div class='calendar-date-from'><span class='calendar-date-title'>Date: </span>$event_date_start_string to $event_date_end_string</div>\n";
+						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string to $event_date_end_string</div>\n";
 					}
 					
+					$details_string =  $this->lang('Details');
 					echo <<<EOT
 					$summary_string
-					<p class='calendar-details'><span class='calendar-details-title'>Details: </span>$event_details</p>					
+					<p class='calendar-details'><span class='calendar-details-title'>$details_string: </span>$event_details</p>					
 					</div>
 EOT;
 				}
@@ -1265,6 +1425,7 @@ EOT;
 				while($event = $rs->FetchRow())
 				{
 					//debug_display($row, '$row');
+					unset($event_date_end);
 					extract($event);
 				
 					$event_date_start_time = strtotime($event_date_start);
@@ -1273,31 +1434,37 @@ EOT;
 					else
 						$event_date_start_string = strftime($datetime_format, $event_date_start_time);
 
-					$event_date_end_time = strtotime($event_date_end);
-					if(strftime('%H%M', $event_date_end_time)== '0000')
-						$event_date_end_string = strftime($date_format, $event_date_end_time);
-					else
-						$event_date_end_string = strftime($datetime_format, $event_date_end_time);
-
+					if($event_date_end)
+					{
+						$event_date_end_time = strtotime($event_date_end);
+						if(strftime('%H%M', $event_date_end_time)== '0000')
+							$event_date_end_string = strftime($date_format, $event_date_end_time);
+						else
+							$event_date_end_string = strftime($datetime_format, $event_date_end_time);
+					}
+					else 
+					{
+						$event_date_end_string = '';
+					}
 					$url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'event_id'=>$event_id, 'display'=>'event'), '', true);
 					$url = str_replace('&amp;', '&', $url);
 					
 					$summary_string = '';
 					if($summaries)
-						$summary_string = "<p class='calendar-summary'><span class='calendar-summary-title'>Summary: </span>$event_summary</p>";
+						$summary_string = "<p class='calendar-summary'><span class='calendar-summary-title'>" . $this->lang('Summary') . ": </span>$event_summary</p>";
 					
 					echo <<<EOT
 					<div class='calendar-event' id='$table_id'>
 					<h2><a href='$url'>$event_title</a></h2>
 
 EOT;
-					if($event_date_start == $event_date_end)
+					if($event_date_start == $event_date_end || $event_date_end_string == '')
 					{
-						echo "<div class='calendar-date-from'><span class='calendar-date-title'>Date: </span>$event_date_start_string</div>\n";
+						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string</div>\n";
 					}
 					else 
 					{
-						echo "<div class='calendar-date-from'><span class='calendar-date-title'>Date: </span>$event_date_start_string to $event_date_end_string</div>\n";
+						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string to $event_date_end_string</div>\n";
 					}
 					
 					echo <<<EOT
@@ -1326,7 +1493,7 @@ EOT;
 			else
 				$event_date_end_string = strftime($datetime_format, $event_date_end_time);
 
-			$link = $this->CreateReturnLink($id, $returnid, 'Return');
+			$link = $this->CreateReturnLink($id, $returnid, $this->lang('Return'));
 			
 						
 			echo <<<EOT
@@ -1336,17 +1503,19 @@ EOT;
 EOT;
 					if($event_date_start == $event_date_end)
 					{
-						echo "<div class='calendar-date-from'><span class='calendar-date-title'>Date: </span>$event_date_start_string</div>\n";
+						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ":</span>$event_date_start_string</div>\n";
 					}
 					else 
 					{
-						echo "<div class='calendar-date-from'><span class='calendar-date-title'>Date: </span>$event_date_start_string to $event_date_end_string</div>\n";
+						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ": </span>$event_date_start_string" . $this->lang('to') . "$event_date_end_string</div>\n";
 					}
 					
+					$summary_string = $this->lang('Summary');
+					$details_string = $this->lang('Details');
 					echo <<<EOT
 
-			<p class='calendar-summary'><span class='calendar-summary-title'>Summary: </span>$event_summary</p>
-			<p class='calendar-details'><span class='calendar-details-title'>Details: </span>$event_details</p>
+			<p class='calendar-summary'><span class='calendar-summary-title'>$summary_string: </span>$event_summary</p>
+			<p class='calendar-details'><span class='calendar-details-title'>$details_string: </span>$event_details</p>
 			<p class='calendar-returnlink'>$link.</p>
 			
 			</div>
