@@ -67,4 +67,17 @@ function create_module_admin_link($module, $id, $params, $text) {
 
 }
 
+function create_module_admin_start_form($module, $id, $method="post") {
+
+	return "<form method=\"$method\" action=\"moduleinterface.php\"><input type=\"hidden\" name=\"module\" value=\"$module\" />\n";
+
+
+}
+
+function create_module_admin_end_form() {
+
+	return "</form>\n";
+
+}
+
 ?>

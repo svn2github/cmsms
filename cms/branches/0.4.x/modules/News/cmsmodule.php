@@ -1,4 +1,20 @@
 <?php
+#CMS - CMS Made Simple
+#(c)2004 by Ted Kulp (wishy@users.sf.net)
+#This project's homepage is: http://cmsmadesimple.sf.net
+#
+#This program is free software; you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation; either version 2 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 //Set the module name -- should be the name of the class
 define("MODULE_NAME", "News");
@@ -66,32 +82,75 @@ class News extends cmsmodule {
 	}
 
 	function executeadmin($cms,$id) {
-		$db = $cms->db;
-		$query = "SELECT news_id, news_title, news_data, news_date FROM ".$cms->config->db_prefix."module_news ORDER BY news_date desc";
-		$dbresult = $db->Execute($query);
-		if ($dbresult && $dbresult->RowCount()) {
-			echo "<table cellspacing=\"0\" class=\"admintable\">\n";
-			echo "<tr>\n";
-			echo "<td>Title</td>\n";
-			echo "<td width=\"20%\">Posting Date</td>\n";
-			echo "<td width=\"10%\">&nbsp;</td>\n";
-			echo "<td width=\"10%\">&nbsp;</td>\n";
-			echo "</tr>\n";
-			$rowclass="row1";
-			while ($row = $dbresult->FetchRow()) {
-				echo "<tr class=\"$rowclass\">\n";
-				echo "<td>".$row["news_title"]."</td>\n";
-				echo "<td>".$row["news_date"]."</td>\n";
-				echo "<td>".create_module_admin_link("News",$id,array("action"=>"edit"),"Edit")."</td>\n";
-				echo "<td>".create_module_admin_link("News",$id,array("action"=>"delete"),"Delete")."</td>\n";
+		if ($_POST[$id."action"] == "add" || $_GET[$id."action"] == "add") {
+			?>
+
+<div class="adminform">
+
+<?=create_module_admin_start_form("News", $id)?>
+
+<table>
+	<tr>
+		<td>Title:</td>
+		<td><input name="<?=$id?>newstitle" maxlength="255" /></td>
+	</tr>
+	<tr>
+		<td>Content:</td>
+		<td><textarea name="<?=$id?>newscontent" cols="45" rows="8"></textarea></td>
+	</tr>
+	<tr>
+		<td>&nbsp;</td>
+		<td><input type="submit" name="<?=$id?>addsubmit" value="Add News Item" /></td>
+	</tr>
+</table>
+
+<?=create_module_admin_end_form()?>
+
+</div>
+
+			<?
+		} else if (isset($_POST[$id."addsubmit"])) {
+
+			$title = "";
+			if (isset($_POST[$id."newstitle"])) $title = $_POST[$id."newstitle"];
+			$data = "";
+			if (isset($_POST[$id."newscontent"])) $data = $_POST[$id."newscontent"];
+			$db = $cms->db;
+			$new_id = $db->GenID($cms->config->db_prefix."module_news_seq");
+			$query = "INSERT INTO ".$cms->config->db_prefix."module_news (news_id, news_title, news_data, news_date, create_date) VALUES ($new_id, ".$db->qstr($title).", ".$db->qstr($data).",".$db->DBTimeStamp(time()).",".$db->DBTimeStamp(time()).")";
+			$dbresult = $db->Execute($query);
+			redirect("moduleinterface?module=News");
+		} else {
+
+			$db = $cms->db;
+			$query = "SELECT news_id, news_title, news_data, news_date FROM ".$cms->config->db_prefix."module_news ORDER BY news_date desc";
+			$dbresult = $db->Execute($query);
+			if ($dbresult && $dbresult->RowCount()) {
+				echo "<table cellspacing=\"0\" class=\"admintable\">\n";
+				echo "<tr>\n";
+				echo "<td>Title</td>\n";
+				echo "<td width=\"20%\">Posting Date</td>\n";
+				echo "<td width=\"10%\">&nbsp;</td>\n";
+				echo "<td width=\"10%\">&nbsp;</td>\n";
 				echo "</tr>\n";
-				($rowclass=="row1"?$rowclass="row2":$rowclass="row1");
+				$rowclass="row1";
+				while ($row = $dbresult->FetchRow()) {
+					echo "<tr class=\"$rowclass\">\n";
+					echo "<td>".$row["news_title"]."</td>\n";
+					echo "<td>".$row["news_date"]."</td>\n";
+					echo "<td>".create_module_admin_link("News",$id,array("action"=>"edit"),"Edit")."</td>\n";
+					echo "<td>".create_module_admin_link("News",$id,array("action"=>"delete"),"Delete")."</td>\n";
+					echo "</tr>\n";
+					($rowclass=="row1"?$rowclass="row2":$rowclass="row1");
+				}
+				echo "</table>\n";
+				echo "<div class=\"button\">".create_module_admin_link("News",$id,array("action"=>"add"),"Add News Item")."</div>";
 			}
-			echo "</table>\n";
 		}
 	}
 }
 
 $cmsmodules[MODULE_NAME]['Instance'] = new News;
 
+# vim:ts=4 sw=4 noet
 ?>
