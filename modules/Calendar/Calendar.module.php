@@ -229,6 +229,9 @@ EOT;
 			$dict->ExecuteSQLArray($sqlarray);
 			$sqlarray = $dict->AddColumnSQL($this->events_table_name, "event_date_end T");
 			$dict->ExecuteSQLArray($sqlarray);			
+			
+			$sql = "UPDATE {$this->events_table_name} SET event_date_end = event_date_start";
+			$db->Execute($sql);
 		}
 		
 	}
@@ -970,10 +973,10 @@ EOT;
 	
 				echo <<<EOT
 					<tr class="$row_class">
-						<td width='33%'><a href='$edit_url'>$event_title</a></td>
-						<td width='33%'>$event_date_start_string</td>
-						<td width='33%'>$event_date_end_string</td>
-						<td width='33%'>$event_summary </td>
+						<td><a href='$edit_url'>$event_title</a></td>
+						<td>$event_date_start_string</td>
+						<td>$event_date_end_string</td>
+						<td>$event_summary </td>
 						
 EOT;
 				// edit and delete icons - borrowed from content list for consistency
