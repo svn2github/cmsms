@@ -117,6 +117,7 @@ while (($file = $ls->read()) != "") {
 }
 
 #Setup the object sent to modules
+$modulecmsobj->page = $page;
 $modulecmsobj->db = &$dbnew;
 $modulecmsobj->config = &$config;
 

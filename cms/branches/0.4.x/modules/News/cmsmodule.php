@@ -69,7 +69,11 @@ class News extends cmsmodule {
 		//This is the entryway into the module.  All requests from CMS will come through here.
 		$db = $cms->db;
 		$query = "SELECT news_id, news_title, news_data, news_date FROM ".$cms->config->db_prefix."module_news ORDER BY news_date desc";
-		$dbresult = $db->Execute($query);
+		if (isset($params["number"])) {
+			$dbresult = $db->SelectLimit($query, $params["number"]);
+		} else {
+			$dbresult = $db->Execute($query);
+		}
 		if ($dbresult && $dbresult->RowCount()) {
 			while ($row = $dbresult->FetchRow()) {
 				echo "<div class=\"module_news\">";
