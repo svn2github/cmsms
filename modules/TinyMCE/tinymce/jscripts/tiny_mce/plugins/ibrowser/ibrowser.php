@@ -145,10 +145,10 @@ if ($tinyMCE_img_delete_allowed && isset($HTTP_POST_VARS['lib_action'])
 	{
 		var formObj = document.forms[0];
 		formObj.src.value = '<?php echo $tinyMCE_base_url.$imglib?>'+obj.options[obj.selectedIndex].value; 
-		formObj.width.value = obj.options[obj.selectedIndex].img_width;
-		formObj.height.value = obj.options[obj.selectedIndex].img_height;
-		formObj.size.value = obj.options[obj.selectedIndex].f_size;
-		formObj.alt.value = obj.options[obj.selectedIndex].value;
+		formObj.width.value = obj.options[obj.selectedIndex].getAttribute("img_width");
+		formObj.height.value = obj.options[obj.selectedIndex].getAttribute("img_height");
+		formObj.size.value = obj.options[obj.selectedIndex].getAttribute("f_size");
+		formObj.alt.value = obj.options[obj.selectedIndex].getAttribute("value");
 		owidth = eval(formObj.width.value);
 		oheight = eval(formObj.height.value);
 		updateStyle()		
