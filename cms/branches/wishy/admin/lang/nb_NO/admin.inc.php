@@ -226,4 +226,6 @@ $lang['admin']['depsformodule'] = 'Bindinger for %s Modul';
 $lang['admin']['installed'] = 'Installert'; 
 $lang['admin']['author'] = 'Author'; //needs translation
 $lang['admin']['changehistory'] = 'Change History'; //needs translation
+$lang['admin']['moduleinstallmessage'] = 'Install Message for %s Module'; //needs translation
+$lang['admin']['moduleuninstallmessage'] = 'Uninstall Message for %s Module'; //needs translation
 ?>

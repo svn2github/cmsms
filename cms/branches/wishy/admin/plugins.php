@@ -66,6 +66,25 @@ if ($access)
 						$db->Execute($query, array($onedepkey, $module, $onedepvalue, $db->DBTimeStamp(time()), $db->DBTimeStamp(time())));
 					}
 				}
+
+				#and show the installpost if necessary...
+				if ($modinstance->InstallPostMessage() != FALSE)
+				{
+					@ob_start();
+					echo $modinstance->InstallPostMessage();
+					$content = @ob_get_contents();
+					@ob_end_clean();
+					echo "<div class=\"moduleabout\">";
+					echo "<h2>".lang('moduleinstallmessage', array($module))."</h2>";
+					echo $content;
+					?>
+					<FORM ACTION="plugins.php" METHOD="get">
+					<P><INPUT TYPE="submit" VALUE="<?php echo lang('backtoplugins')?>" CLASS="button" onMouseOver="this.className='buttonHover'" onMouseOut="this.className='button'"></P>
+					</FORM>
+					<?php
+					echo "</div>";
+				}
+
 			}
 			else
 			{
@@ -116,6 +135,24 @@ if ($access)
 				#delete any dependencies
 				$query = "DELETE FROM ".cms_db_prefix()."module_deps WHERE child_module = ?";
 				$db->Execute($query, array($module));
+
+				#and show the uninstallpost if necessary...
+				if ($modinstance->UninstallPostMessage() != FALSE)
+				{
+					@ob_start();
+					echo $modinstance->UninstallPostMessage();
+					$content = @ob_get_contents();
+					@ob_end_clean();
+					echo "<div class=\"moduleabout\">";
+					echo "<h2>".lang('moduleuninstallmessage', array($module))."</h2>";
+					echo $content;
+					?>
+					<FORM ACTION="plugins.php" METHOD="get">
+					<P><INPUT TYPE="submit" VALUE="<?php echo lang('backtoplugins')?>" CLASS="button" onMouseOver="this.className='buttonHover'" onMouseOut="this.className='button'"></P>
+					</FORM>
+					<?php
+					echo "</div>";
+				}
 			}
 			else
 			{

@@ -127,12 +127,28 @@ class CMSModule extends ModuleOperations
 	}
 
 	/**
+	 * Display a message after a successful installation of the module.
+	 */
+	function InstallPostMessage()
+	{
+		return FALSE;
+	}
+
+	/**
 	 * Function that will get called as module is uninstalled. This function should
 	 * remove any database tables that it uses and perform any other cleanup duties.
 	 * It should return a string message if there is a failure. Returning nothing
 	 * (FALSE) will allow the uninstall procedure to proceed.
 	 */
 	function Uninstall()
+	{
+		return FALSE;
+	}
+
+	/**
+	 * Display a message after a successful uninstall of the module.
+	 */
+	function UninstallPostMessage()
 	{
 		return FALSE;
 	}
