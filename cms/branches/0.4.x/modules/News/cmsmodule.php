@@ -73,7 +73,7 @@ class News extends cmsmodule {
 		if ($dbresult && $dbresult->RowCount()) {
 			while ($row = $dbresult->FetchRow()) {
 				echo "<div class=\"module_news\">";
-				echo date("F j, Y, g:i a", $db->UnixDate($row['news_date']))."<br />";
+				echo date("F j, Y, g:i a", $db->UnixTimeStamp($row['news_date']))."<br />";
 				echo $row["news_title"]."<br />";
 				echo $row["news_data"];
 				echo "</div>";
