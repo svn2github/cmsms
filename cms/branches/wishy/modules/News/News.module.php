@@ -63,7 +63,7 @@ class News extends CMSModule
 		$dict->ExecuteSQLArray($sqlarray);
 
 		$db->CreateSequence(cms_db_prefix()."module_news_seq");
-		cms_mapi_create_permission($this->cms, 'Modify News', 'Modify News');
+		$this->CreatePermission('Modify News', 'Modify News');
 	}
 
 	function Upgrade($oldversion, $newversion)
@@ -91,13 +91,13 @@ class News extends CMSModule
 
 	function Uninstall()
 	{
-		$db = $this->cms->db;
+		$db = $this->gCms->db;
 		$dict = NewDataDictionary( $db );
 		$sqlarray = $dict->DropTableSQL( cms_db_prefix()."module_news" );
 		$dict->ExecuteSQLArray($sqlarray);
 
 		$db->DropSequence( cms_db_prefix()."module_news_seq" );
-		cms_mapi_remove_permission($cms, 'Modify News');
+		$this->RemovePermission('Modify News');
 	}
 
 	/**
@@ -416,7 +416,7 @@ class News extends CMSModule
 
 			case "defaultadmin":
 				$rowsperpage=20;
-				$access = cms_mapi_check_permission($this->cms, "Modify News");
+				$access = CheckPermission('Modify News');
 				$newscat = (isset($params['news_cat'])?$params['news_cat']:"");
 				$current_page = (isset($params['page'])?$params['page']:"1");
 				if (!isset($current_page))
@@ -585,7 +585,7 @@ class News extends CMSModule
 			case "delete":
 				$query = "DELETE FROM ".cms_db_prefix()."module_news WHERE news_id = ?";
 				$dbresult = $db->Execute($query, array((isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:"")));
-				cms_mapi_audit($this->cms, (isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:""), "News", "Deleted News Item");
+				Audit($itemid, (isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:""), "News", "Deleted News Item");
 				redirect($config["root_url"]."/admin/moduleinterface.php?module=News");
 				break;
 
@@ -702,7 +702,7 @@ class News extends CMSModule
 					}
 					$query = $querystart . $queryend . ")";
 					$dbresult = $db->Execute($query, $params);
-					cms_mapi_audit($this->cms, $new_id, "News", 'Added News Item');
+					$this->Audit($new_id, "News", 'Added News Item');
 					$this->Redirect($id, 'defaultadmin');
 					return;
 				}
@@ -827,7 +827,7 @@ class News extends CMSModule
 					array_push($params, $newsid);
 					$dbresult = $db->Execute($query, $params);
 
-					cms_mapi_audit($this->cms, $newsid, "News", "Edited News Item");
+					$this->Audit($new_id, "News", "Edited News Item");
 					$this->Redirect($id, 'defaultadmin');
 					return;
 				}
