@@ -181,5 +181,35 @@ function getValueWithDefault($value, $default_value = '')
 	return $return_value;
 }
 
+function getParamValue($value, $params, $default = '')
+{
+	$return_value = $default;
+	
+	if(is_bool($default))
+	{
+		// want a boolean return_value
+		if(isset($params[$id.$value]))
+		{
+			$return_value = settype($params[$id.$value], 'boolean');
+		}
+		else if(isset($params[$value]))
+		{
+			$return_value = settype($params["display_approved"], 'boolean');
+		}
+	}
+	else
+	{
+		if(isset($params[$id.$value]))
+		{
+			$return_value = $params[$id.$value];
+		}
+		else if(isset($params[$value]))
+		{
+			$return_value = $params[$value];
+		}
+	}	
+	return $return_value;
+}
+
 # vim:ts=4 sw=4 noet
 ?>
