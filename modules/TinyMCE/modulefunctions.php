@@ -42,6 +42,14 @@ function tinymce_module_header_function(&$cms)
 			if (isset($cms->variables['tinymce_stylesheet']))
 			{
 				$css = $cms->variables['tinymce_stylesheet'];
+
+				$striptags = cms_mapi_get_preference('TinyMCE', 'striptags', 'false');
+
+				if ($striptags)
+				{
+					$css .= '&stripbackground=true';
+				}
+
 				echo 'content_css : "' . $css . "\",\n";
 			}
 			?>
