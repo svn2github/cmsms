@@ -207,6 +207,8 @@ EOT;
 		return <<<EOT
 			<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
 			<dl>
+				<dt>Version: 0.5+</dt>
+					<dd>Fix event display so that if the end date is not set, we don't display "to".</dd>
 				<dt>Version: 0.5</dt>
 					<dd>Fix the drop down list for end date year. Fix DE translation of "Return" (thanks Piratos!).
 					 Fix spacing around "to" (thanks Greg!). Add Danish and Dutch translations courtesy of board members esmann and dont.</dd>
@@ -1491,11 +1493,18 @@ EOT;
 			else
 				$event_date_start_string = strftime($datetime_format, $event_date_start_time);
 				
-			$event_date_end_time = strtotime($event_date_end);
-			if(strftime('%H%M', $event_date_end_time)== '0000')
-				$event_date_end_string = strftime($date_format, $event_date_end_time);
-			else
-				$event_date_end_string = strftime($datetime_format, $event_date_end_time);
+			if($event_date_end)
+			{
+				$event_date_end_time = strtotime($event_date_end);
+				if(strftime('%H%M', $event_date_end_time)== '0000')
+					$event_date_end_string = strftime($date_format, $event_date_end_time);
+				else
+					$event_date_end_string = strftime($datetime_format, $event_date_end_time);
+			}
+			else 
+			{
+				$event_date_end_string = '';
+			}
 
 			$link = $this->CreateReturnLink($id, $returnid, $this->lang('Return'));
 			
@@ -1505,7 +1514,7 @@ EOT;
 			<h1>$event_title</h1>
 
 EOT;
-					if($event_date_start == $event_date_end)
+					if($event_date_start == $event_date_end || $event_date_end_string == '')
 					{
 						echo "<div class='calendar-date-from'><span class='calendar-date-title'>" . $this->lang('Date') . ":</span>$event_date_start_string</div>\n";
 					}
