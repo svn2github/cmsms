@@ -987,8 +987,14 @@ EOT;
 			$sql .= " ORDER BY $events_table_name.event_date ASC";
 		}
 		//debug_display($sql, '$sql');
-		$rs = $db->Execute($sql);
-		
+		if($display == 'list' && $limit > 0)
+		{
+			$rs = $db->SelectLimit($sql, $limit);
+		}
+		else 
+		{
+			$rs = $db->Execute($sql);
+		}
 		
 		if($display == 'calendar')
 		{
