@@ -213,7 +213,8 @@ EOT;
 			<dl>
 				<dt>Version: 0.6+</dt>
 					<dd>More fixes for multi-day event on calendar. Added new parameter "time_format" so we can make
-					the display of a single day event with a start and stop time look better.</dd>
+					the display of a single day event with a start and stop time look better.
+					Change de_DE's "to" to "bis" as per Mordran's post on the boards.</dd>
 				<dt>Version: 0.6</dt>
 					<dd>Fix event display so that if the end date is not set, we don't display "to". 
 					Filter by category when displaying an upcominglist.
