@@ -702,7 +702,7 @@ class CMSModule extends ModuleOperations
 		return create_textarea($enablewysiwyg, $text, $name, $classname, $id, $encoding, $stylesheet);
 	}
 
-	function CreateLink($action, $id, $return_id, $params, $contents, $warn_message='')
+	function CreateLink($id, $action, $return_id, $params, $contents, $warn_message='')
 	{
 		$text = '<a href="moduleinterface.php?module='.$this->GetName().'&amp;return_id='.$page_id.'&amp;id='.$id.'&amp;action='.$action;
 		foreach ($params as $key=>$value)
@@ -716,6 +716,15 @@ class CMSModule extends ModuleOperations
 		}
 		$text .= '>'.$text.'</a>';
 		return $text;
+	}
+
+	function Redirect($id, $action)
+	{
+		global $gCms;
+		$config = $gCms->config;
+
+		$name = $this->GetName();
+		redirect('moduleinterface.php?module='.$name.'&amp;'.$id.'action='.$action);
 	}
 
 

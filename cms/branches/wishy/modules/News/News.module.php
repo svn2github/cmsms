@@ -100,6 +100,9 @@ class News extends CMSModule
 		cms_mapi_remove_permission($cms, 'Modify News');
 	}
 
+	/**
+	 * This is NOT overriding a CMSModule function.  It's just used internallly.
+	 */
 	function StripToLength($str, $len, $tags=true)
 	{
 		if ($tags == true)
@@ -114,7 +117,10 @@ class News extends CMSModule
 		return $str;
 	}
 
-	function AdminForm($id, $moduleaction, $error='', $hiddenfields='', $data='', $title='', $post_date='', $start_date='', $end_date='')
+	/**
+	 * This is NOT overriding a CMSModule function.  It's just used internallly for displaying the form, since it's used in so many places.
+	 */
+	function AdminForm($id, $moduleaction, $error='', $data='', $title='', $post_date='', $start_date='', $end_date='', $news_cat='', $newsid = '', $expiry='6 Months')
 	{
 		if ( $error != "" )
 		{
@@ -126,7 +132,7 @@ class News extends CMSModule
 
 		<div class="adminform">
 		 
-		<?php echo $this->CreateFormStart($id)?>
+		<?php echo $this->CreateFormStart($id, $moduleaction)?>
 
 		<table width="100%" border="0">
 				<?php
@@ -196,7 +202,7 @@ class News extends CMSModule
 				{
 					$values = array('1 Day'=>'1 Day', '1 Week'=>'1 Week', '2 Weeks'=>'2 Weeks', '1 Month'=>'1 Month', '3 Months'=>'3 Months', '6 Months'=>'6 Months', '1 Year'=>'1 Year', 'Never'=>'Never');
 				}
-				echo $this->CreateInputDropdown($id, 'expiry', $values, -1, '6 Months', $addttext);
+				echo $this->CreateInputDropdown($id, 'expiry', $values, -1, $expiry, $addttext);
 		?>
 			</td>
 		  </tr>
@@ -209,7 +215,13 @@ class News extends CMSModule
 			<td><em>Note:</em> Dates must be in a 'yyyy-mm-dd hh:mm:ss' format.</td>
 		  </tr>
 		  <tr>
-			<td><?php echo $hiddenfields?>&nbsp;</td>
+			<td><?php
+					if ($newsid != '')
+					{
+						echo $this->CreateInputHidden($id, 'newsid', $newsid);
+					}
+				?>
+			</td>
 			<td>
 			  <?php echo $this->CreateInputSubmit($id, 'submit', 'Submit') ?>
 			  <?php echo $this->CreateInputSubmit($id, 'cancelsubmit', 'Cancel') ?>
@@ -405,8 +417,8 @@ class News extends CMSModule
 			case "defaultadmin":
 				$rowsperpage=20;
 				$access = cms_mapi_check_permission($this->cms, "Modify News");
-				$newscat = (isset($params['add_news_cat'])?$params['add_news_cat']:"");
-				$current_page = (isset($params['page'])?$params['page']:"");
+				$newscat = (isset($params['news_cat'])?$params['news_cat']:"");
+				$current_page = (isset($params['page'])?$params['page']:"1");
 				if (!isset($current_page))
 				{
 				  $current_page = 1;
@@ -423,11 +435,11 @@ class News extends CMSModule
 				$dbresult = $db->Execute($query);
 				if ($dbresult && $dbresult->RowCount())
 				{
-					echo cms_mapi_create_admin_form_start("News", $id);
+					echo $this->CreateFormStart($id, 'defaultadmin');
 					echo "<table><tr>";
 					echo "<td><h5>Filter:</h5></td>";
-					echo "<td><select name=\"".$id."news_cat\">";
-					echo "<option";
+					echo '<td><select name="'.$id.'news_cat">';
+					echo '<option';
 					if ($newscat == "All")
 					{
 						echo " selected=\"selected\"";
@@ -448,9 +460,9 @@ class News extends CMSModule
 						echo ">".$x."</option>";
 					}
 					echo "</select></td>";
-					echo "<td><input type=\"submit\" name=\"".$id."filter\" value=\"Select\" /></td>";
+					echo "<td>".$this->CreateInputSubmit($id, 'filter', 'Select')."</td>";
 					echo "</tr></table>";
-					echo cms_mapi_create_admin_form_end();
+					echo $this->CreateFormEnd($id);
 				}
 
 				echo $this->CreateFormStart($id, 'add');
@@ -541,7 +553,6 @@ class News extends CMSModule
 
 			case "edit":
 				$newsid = (isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:"");
-				$hiddenfields = "<input type=\"hidden\" name=\"".$id."action\" value=\"completeedit\" /><input type=\"hidden\" name=\"".$id."news_id\" value=\"".$newsid."\" />";
 				$query = "SELECT * FROM ".cms_db_prefix()."module_news WHERE news_id = ?";
 				$dbresult = $db->Execute($query, array($newsid));
 				if ($dbresult && $dbresult->RowCount() > 0) 
@@ -562,29 +573,50 @@ class News extends CMSModule
 					{
 						$end_date = $row["end_time"];
 					}
+					$this->AdminForm($id, 'completeedit', '', $data, $title, $post_date, $start_date, $end_date, $news_cat, $newsid);
 				}
-				$this->AdminForm($id, $action);
 				break;
 
 			case "add":
-				$newsid = (isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:"");
-				$hiddenfields = "<input type=\"hidden\" name=\"".$id."action\" value=\"completeadd\" /><input type=\"hidden\" name=\"".$id."news_id\" value=\"".$newsid."\" />";
 				$post_date = rtrim(ltrim($db->DBTimeStamp(time()), "'"), "'");
-				$this->AdminForm($id, $action);
+				$this->AdminForm($id, 'completeadd');
 				break;
 
 			case "delete":
-				$query = "DELETE FROM ".cms_db_prefix()."module_news WHERE news_id = ?";        $dbresult = $db->Execute($query, array((isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:"")));
-				cms_mapi_audit($cms, (isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:""), "News", "Deleted News Item");
+				$query = "DELETE FROM ".cms_db_prefix()."module_news WHERE news_id = ?";
+				$dbresult = $db->Execute($query, array((isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:"")));
+				cms_mapi_audit($this->cms, (isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:""), "News", "Deleted News Item");
 				redirect($config["root_url"]."/admin/moduleinterface.php?module=News");
-				 break;
+				break;
 
 			case "completeadd":
-				$newsid = (isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:"");
-				$hiddenfields .= "<input type=\"hidden\" name=\"".$id."action\" value=\"completeadd\" /><input type=\"hidden\" name=\"".$id."news_id\" value=\"".$newsid."\" />";
+
+				$error = '';
+
+				if (isset($params['cancelsubmit']))
+				{
+					$this->Redirect($id, 'defaultadmin');
+				}
 				$validinfo = true;
 
-				if ($news_cat == "")
+				$newsid = (isset($params['newsid'])?$params['newsid']:"");
+				$newscat = (isset($params['newscat'])?$params['newscat']:"");
+				if ($newscat == "")
+				{
+					$newscat = (isset($params['selcat'])?$params['selcat']:"");
+					if ($newscat == "")
+					{
+						$newscat = (isset($params['addcat'])?$params['addcat']:"");
+					}
+				}
+				$title = (isset($params['newstitle'])?$params['newstitle']:"");
+				$data = (isset($params['newscontent'])?$params['newscontent']:"");
+				$post_date = (isset($params['post_date'])?$params['post_date']:"");
+				$start_date = (isset($params['start_date'])?$params['start_date']:"");
+				$end_date = (isset($params['end_date'])?$params['end_date']:"");
+				$expiry = (isset($params['expiry'])?$params['expiry']:"");
+
+				if ($newscat == "")
 				{
 					$error .= "<li>No Category given</li>";
 					$validinfo = false;
@@ -644,7 +676,7 @@ class News extends CMSModule
 					$new_id = $db->GenID(cms_db_prefix()."module_news_seq");
 					$querystart = "INSERT INTO ".cms_db_prefix()."module_news (news_cat, news_id, news_title, news_data, news_date, create_date";
 					$queryend = ") VALUES (?,?,?,?,?,?";
-					$params = array( $news_cat, $new_id, $title, $data, $post_date, $db->DBTimeStamp(time()));
+					$params = array($newscat, $new_id, $title, $data, $post_date, $db->DBTimeStamp(time()));
 					if (strlen($end_date) > 0)
 					{
 						$querystart .= ", end_time";
@@ -670,19 +702,44 @@ class News extends CMSModule
 					}
 					$query = $querystart . $queryend . ")";
 					$dbresult = $db->Execute($query, $params);
-					cms_mapi_audit($cms, $new_id, "News", "Added News Item");
-					redirect($config["root_url"]."/admin/moduleinterface.php?module=News");
+					cms_mapi_audit($this->cms, $new_id, "News", 'Added News Item');
+					$this->Redirect($id, 'defaultadmin');
 					return;
+				}
+				else
+				{
+					$this->AdminForm($id, 'completeadd', $error, $data, $title, $post_date, $start_date, $end_date, '', $newsid, $expiry);
 				}
 				break;
 
 			case "completeedit":
-				$newsid = (isset($_GET[$id."news_id"])?$_GET[$id."news_id"]:"").(isset($_POST[$id."news_id"])?$_POST[$id."news_id"]:"");
-				$hiddenfields .= "<input type=\"hidden\" name=\"".$id."action\" value=\"completeedit\" /><input type=\"hidden\" name=\"".$id."news_id\" value=\"".$newsid."\" />";
+
+				if (isset($params['cancelsubmit']))
+				{
+					$this->Redirect($id, 'defaultadmin');
+				}
 
 				$validinfo = true;
+				$error = '';
 
-				if ($news_cat == "")
+				$newsid = (isset($params['newsid'])?$params['newsid']:"");
+				$newscat = (isset($params['newscat'])?$params['newscat']:"");
+				if ($newscat == "")
+				{
+					$newscat = (isset($params['selcat'])?$params['selcat']:"");
+					if ($newscat == "")
+					{
+						$newscat = (isset($params['addcat'])?$params['addcat']:"");
+					}
+				}
+				$title = (isset($params['newstitle'])?$params['newstitle']:"");
+				$data = (isset($params['newscontent'])?$params['newscontent']:"");
+				$post_date = (isset($params['post_date'])?$params['post_date']:"");
+				$start_date = (isset($params['start_date'])?$params['start_date']:"");
+				$end_date = (isset($params['end_date'])?$params['end_date']:"");
+				$expiry = (isset($params['expiry'])?$params['expiry']:"");
+
+				if ($newscat == "")
 				{
 					$error .= "<li>No Category given</li>";
 					$validinfo = false;
@@ -740,7 +797,7 @@ class News extends CMSModule
 				if ($validinfo)
 				{
 					$query = "UPDATE ".cms_db_prefix()."module_news SET news_cat = ?, news_title = ?, news_data = ?, modified_date = ?";
-					$params = array($news_cat, $title, $data, $db->DBTimeStamp(time()));
+					$params = array($newscat, $title, $data, $db->DBTimeStamp(time()));
 					if ($start_date != "")
 					{
 						$query .= ", start_time = ?";
@@ -770,9 +827,13 @@ class News extends CMSModule
 					array_push($params, $newsid);
 					$dbresult = $db->Execute($query, $params);
 
-					cms_mapi_audit($cms, $newsid, "News", "Edited News Item");
-					redirect($config["root_url"]."/admin/moduleinterface.php?module=News");
+					cms_mapi_audit($this->cms, $newsid, "News", "Edited News Item");
+					$this->Redirect($id, 'defaultadmin');
 					return;
+				}
+				else
+				{
+					$this->AdminForm($id, 'completeedit', $error, $data, $title, $post_date, $start_date, $end_date, $newscat, $newsid, $expiry);
 				}
 				break;
 		}
