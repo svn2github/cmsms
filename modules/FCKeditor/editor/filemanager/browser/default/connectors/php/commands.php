@@ -1,4 +1,4 @@
-<?php
+<?php 
 /*
  * FCKeditor - The text editor for internet
  * Copyright (C) 2003-2004 Frederico Caldeira Knabben
@@ -12,8 +12,8 @@
  * File Name: commands.php
  * 	This is the File Manager Connector for ASP.
  * 
- * Version:  2.0 RC1
- * Modified: 2004-11-29 17:56:52
+ * Version:  2.0 RC2
+ * Modified: 2004-12-10 17:49:19
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -32,7 +32,7 @@ function GetFolders( $resourceType, $currentFolder )
 	while ( $sFile = readdir( $oCurrentFolder ) ) 
 	{
 		if ( $sFile != '.' && $sFile != '..' && is_dir( $sServerDir . $sFile ) )
-			echo '<Folder name="' . $sFile . '" />' ;
+			echo '<Folder name="' . ConvertToXmlAttribute( $sFile ) . '" />' ;
 	}
 
 	closedir( $oCurrentFolder ) ;
@@ -57,7 +57,7 @@ function GetFoldersAndFiles( $resourceType, $currentFolder )
 		if ( $sFile != '.' && $sFile != '..' )
 		{
 			if ( is_dir( $sServerDir . $sFile ) )
-				$sFolders .= '<Folder name="' . $sFile . '" />' ;
+				$sFolders .= '<Folder name="' . ConvertToXmlAttribute( $sFile ) . '" />' ;
 			else
 			{
 				$iFileSize = filesize( $sServerDir . $sFile ) ;
@@ -67,7 +67,7 @@ function GetFoldersAndFiles( $resourceType, $currentFolder )
 					if ( $iFileSize < 1 ) $iFileSize = 1 ;
 				}
 
-				$sFiles	.= '<File name="' . $sFile . '" size="' . $iFileSize . '" />' ;
+				$sFiles	.= '<File name="' . ConvertToXmlAttribute( $sFile ) . '" size="' . $iFileSize . '" />' ;
 			}
 		}
 	}
@@ -120,7 +120,7 @@ function CreateFolder( $resourceType, $currentFolder )
 		$sErrorNumber = '102' ;
 
 	// Create the "Error" node.
-	echo '<Error number="' . $sErrorNumber . '" originalDescription="' . $sErrorMsg . '" />' ;
+	echo '<Error number="' . $sErrorNumber . '" originalDescription="' . ConvertToXmlAttribute( $sErrorMsg ) . '" />' ;
 }
 
 function FileUpload( $resourceType, $currentFolder )

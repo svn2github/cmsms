@@ -15,7 +15,7 @@
  * 	It defines the FCKeditor class that can be used to create editor
  * 	instances in PHP pages on server side.
  * 
- * Version:  2.0 RC1
+ * Version:  2.0 RC2
  * Modified: 2004-11-29 17:56:52
  * 
  * File Authors:
@@ -53,7 +53,7 @@ class FCKeditor
 	{
 		$HtmlValue = htmlspecialchars( $this->Value ) ;
 
-		$Html = '<div class="wysiwyg">' ;
+		$Html = '<div>' ;
 		
 		if ( $this->IsCompatible() )
 		{
@@ -63,10 +63,10 @@ class FCKeditor
 				$Link .= "&Toolbar={$this->ToolbarSet}" ;
 
 			// Render the linked hidden field.
-			$Html .= "<input type=\"hidden\" id=\"{$this->InstanceName}\" name=\"{$this->InstanceName}\" value=\"{$HtmlValue}\" />" ;
+			$Html .= "<input type=\"hidden\" id=\"{$this->InstanceName}\" name=\"{$this->InstanceName}\" value=\"{$HtmlValue}\">" ;
 
 			// Render the configurations hidden field.
-			$Html .= "<input type=\"hidden\" id=\"{$this->InstanceName}___Config\" value=\"" . $this->GetConfigFieldString() . "\" />" ;
+			$Html .= "<input type=\"hidden\" id=\"{$this->InstanceName}___Config\" value=\"" . $this->GetConfigFieldString() . "\">" ;
 
 			// Render the editor IFRAME.
 			$Html .= "<iframe id=\"{$this->InstanceName}___Frame\" src=\"{$Link}\" width=\"{$this->Width}\" height=\"{$this->Height}\" frameborder=\"no\" scrolling=\"no\"></iframe>" ;

@@ -1,4 +1,4 @@
-<?php
+<?php 
 /*
  * FCKeditor - The text editor for internet
  * Copyright (C) 2003-2004 Frederico Caldeira Knabben
@@ -12,8 +12,8 @@
  * File Name: connector.php
  * 	This is the File Manager Connector for ASP.
  * 
- * Version:  2.0 RC1
- * Modified: 2004-11-29 17:56:52
+ * Version:  2.0 RC2
+ * Modified: 2004-12-17 07:47:40
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -37,7 +37,8 @@ else
 	$GLOBALS["UserFilesPath"] = '/UserFiles/' ;
 
 // Map the "UserFiles" path to a local directory.
-$GLOBALS["UserFilesDirectory"] = GetRootPath() . str_replace( '/', '\\', $GLOBALS["UserFilesPath"] ) ;
+//$GLOBALS["UserFilesDirectory"] = GetRootPath() . str_replace( '/', '\\', $GLOBALS["UserFilesPath"] ) ;
+$GLOBALS["UserFilesDirectory"] = GetRootPath() . $GLOBALS["UserFilesPath"] ;
 
 DoResponse() ;
 

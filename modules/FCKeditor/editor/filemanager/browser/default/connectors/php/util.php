@@ -12,8 +12,8 @@
  * File Name: util.php
  * 	This is the File Manager Connector for ASP.
  * 
- * Version:  2.0 RC1
- * Modified: 2004-11-29 17:42:10
+ * Version:  2.0 RC2
+ * Modified: 2004-12-10 17:46:39
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -29,5 +29,10 @@ function RemoveFromEnd( $sourceString, $charToRemove )
 {
 	$sPattern = '|' . $charToRemove . '+$|' ;
 	return preg_replace( $sPattern, '', $sourceString ) ;
+}
+
+function ConvertToXmlAttribute( $value )
+{
+	return utf8_encode( htmlspecialchars( $value ) ) ;
 }
 ?>

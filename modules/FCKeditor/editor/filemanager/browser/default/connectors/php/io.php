@@ -12,8 +12,8 @@
  * File Name: io.php
  * 	This is the File Manager Connector for ASP.
  * 
- * Version:  2.0 RC1
- * Modified: 2004-11-29 17:49:29
+ * Version:  2.0 RC2
+ * Modified: 2004-12-17 07:50:01
  * 
  * File Authors:
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
@@ -35,13 +35,15 @@ function RemoveExtension( $fileName )
 function ServerMapFolder( $resourceType, $folderPath )
 {
 	// Get the resource type directory.
-	$sResourceTypePath = $GLOBALS["UserFilesDirectory"] . $resourceType . '\\' ;
+//	$sResourceTypePath = $GLOBALS["UserFilesDirectory"] . $resourceType . '\\' ;
+	$sResourceTypePath = $GLOBALS["UserFilesDirectory"] . $resourceType . '/' ;
 	
 	// Ensure that the directory exists.
 	CreateServerFolder( $sResourceTypePath ) ;
 
 	// Return the resource type directory combined with the required path.
-	return $sResourceTypePath . str_replace( '/', '\\', RemoveFromStart( $folderPath, '/' ) ) ;
+//	return $sResourceTypePath . str_replace( '/', '\\', RemoveFromStart( $folderPath, '/' ) ) ;
+	return $sResourceTypePath . RemoveFromStart( $folderPath, '/' ) ;
 }
 
 function GetParentFolder( $folderPath )
@@ -57,8 +59,6 @@ function CreateServerFolder( $folderPath )
 	// Check if the parent exists, or create it.
 	if ( !file_exists( $sParent ) ) 
 	{
-		echo '<hr>' . $sParent . '</hr>' ;
-
 		$sErrorMsg = CreateServerFolder( $sParent ) ;
 		if ( $sErrorMsg != '' )
 			return $sErrorMsg ;
@@ -89,8 +89,10 @@ function GetRootPath()
 {
 	$sRealPath = realpath( './' ) ; 
 
-	$sSelfPath = str_replace( '/', '\\', $_SERVER['PHP_SELF'] ) ;
-	$sSelfPath = substr( $sSelfPath, 0, strrpos( $sSelfPath, '\\' ) ) ;
+//	$sSelfPath = str_replace( '/', '\\', $_SERVER['PHP_SELF'] ) ;
+	$sSelfPath = $_SERVER['PHP_SELF'] ;
+//	$sSelfPath = substr( $sSelfPath, 0, strrpos( $sSelfPath, '\\' ) ) ;
+	$sSelfPath = substr( $sSelfPath, 0, strrpos( $sSelfPath, '/' ) ) ;
 
 	return substr( $sRealPath, 0, strlen( $sRealPath ) - strlen( $sSelfPath ) ) ;
 }
