@@ -31,15 +31,19 @@ header("Pragma: no-cache");
 	<script type="text/javascript">
 		_editor_url = "<?=$config->root_url?>/htmlarea/";
 		_editor_lang = "en";
-		var editor;
 	</script>
 
 	<script type="text/javascript" src="<?=$config->root_url?>/htmlarea/htmlarea.js"></script>
 
 	<script type="text/javascript">
-		function initHtmlArea() {
 
+		HTMLArea.loadPlugin("TableOperations");
+		HTMLArea.loadPlugin("ContextMenu");
+		var editor = null;
+		function initHtmlArea() {
 			editor = new HTMLArea("content");
+			editor.registerPlugin(TableOperations);
+			editor.registerPlugin(ContextMenu);
 			editor.config.pageStyle = '<?=get_stylesheet($config,$template_id)?>';
 			editor.generate();
 		}
