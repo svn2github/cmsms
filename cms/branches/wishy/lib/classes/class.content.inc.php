@@ -375,24 +375,25 @@ class ContentBase
 		
 		$result = true;
 
-		$this->mId				= $data["id"];
-		$this->mName			= $data["name"];
-		$this->mAlias			= $data["alias"];
+		$this->mId				= $data["content_id"];
+		$this->mName			= $data["content_name"];
+		$this->mAlias			= $data["content_alias"];
 		$this->mType			= $data["type"];
-		$this->mOwner			= $data["owner"];
-		$this->mProperties		= NULL;
+		$this->mOwner			= $data["owner_id"];
+		$this->mProperties		= new ContentProperties(); 
 		$this->mParentId		= $data["parent_id"];
 		$this->mTemplateId		= $data["template_id"];
 		$this->mItemOrder		= $data["item_order"];
 		$this->mHierarchy		= $data["hierarchy"];
 		$this->mDefaultContent	= ($data["default_content"] == 1?true:false);
 		$this->mActive			= ($data["active"] == 1?true:false);
-		$this->mCreationDate	= $data["creation_date"];
+		$this->mCreationDate	= $data["create_date"];
 		$this->mModifiedDate	= $data["modified_date"];
 
 		if ($loadProperties)
 		{
-			$this->mProperties = ContentOperations::LoadPropertiesFromData($this->mType, $data);
+			#$this->mProperties = ContentOperations::LoadPropertiesFromData($this->mType, $data);
+			$this->mProperties->Load($this->mId);
 
 			if (NULL == $this->mProperties)
 			{
@@ -1030,7 +1031,7 @@ class ContentManager
 
 		$result = array();
 
-		$query = "SELECT content_id, type FROM ".cms_db_prefix()."content ORDER BY hierarchy";
+		$query = "SELECT * FROM ".cms_db_prefix()."content ORDER BY hierarchy";
 		$dbresult = $db->Execute($query);
 
 		if ($dbresult && $dbresult->RowCount() > 0)
@@ -1041,7 +1042,7 @@ class ContentManager
 				if (in_array($row['type'], ContentManager::ListContentTypes()))
 				{
 					$contentobj = new $row['type'];
-					$contentobj->LoadFromId($row['content_id'], true);
+					$contentobj->LoadFromData($row, true);
 					array_push($result, $contentobj);
 				}
 			}

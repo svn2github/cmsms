@@ -142,22 +142,33 @@ if (isset($_GET["message"])) {
 		$image_false ="<img src=\"../images/cms/false.gif\" alt=\"".lang('false')."\" title=\"".lang('false')."\" border=\"0\">";
 
 		$counter = 0;
+
+		#Setup array so we don't load more templates than we need to
+		$templates = array();
+
 		foreach ($content_array as $one)
 		{
+			if (!array_key_exists($one->TemplateId(), $templates))
+			{
+				$templates[$one->TemplateId()] = TemplateOperations::LoadTemplateById($one->TemplateId());
+			}
+
 			if ($counter < $page*$limit && $counter >= ($page*$limit)-$limit)
 			{
 				echo "<tr class=\"$currow\">\n";
 				echo "<td>".$one->Hierarchy()."</td>\n";
 				echo "<td><a href=\"editcontent.php?content_id=".$one->Id()."\">".$one->Name()."</a></td>\n";
-				if ($one->GetPropertyValue("template_id"))
+				if ($templates[$one->TemplateId()]->name)
 				{
-					echo "<td>".$one->GetPropertyValue("template_id")."</td>\n";
+					echo "<td>".$templates[$one->TemplateId()]->name."</td>\n";
 				}
 				else
 				{
 					echo "<td>&nbsp;</td>\n";
 				}
+
 				echo "<td align=\"center\">".$one->Type()."</td>\n";
+
 				if ($one->Owner() > -1)
 				{
 					$owner_user = UserOperations::LoadUserById($one->Owner());
@@ -235,12 +246,14 @@ if (isset($_GET["message"])) {
 		} ## foreach
 		echo "</table>\n";
 
-
-	} else {
+	}
+	else
+	{
 		echo "<p>".lang('noentries')."</p>";
 	}
 
-	if (check_permission($userid, 'Add Content')) {
+	if (check_permission($userid, 'Add Content'))
+	{
 ?>
 
 <DIV CLASS="button"><A HREF="addcontent.php"><?php echo lang("addcontent")?></A></DIV>
@@ -250,9 +263,9 @@ if (isset($_GET["message"])) {
 <?php echo lang('helplistcontent')?>
 <A NAME="help">&nbsp;</A>
 </DIV>
+
 <?php
 	}
-
 
 include_once("footer.php");
 

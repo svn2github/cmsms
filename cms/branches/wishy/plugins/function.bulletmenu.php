@@ -22,7 +22,64 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 
 	# getting menu parameters
 	$showadmin = isset($params["showadmin"]) ? $params["showadmin"] : 1 ;
+
+	$allcontent = ContentManager::GetAllContent();
+
+	# defining variables
+	$menu = "";
+	$last_level = 0;
+	$count = 0;
+	$in_hr = 0;
+
+	foreach ($allcontent as $onecontent)
+	{
+		if ($onecontent->Type() == 'sectionheader')
+		{
+			if ($in_hr == 1)
+			{
+				$menu .= "</ul>\n";
+				$in_hr = 0;
+			}
+			$menu .= "<div class=\"sectionheader\">".$onecontent->GetPropertyValue('menutext')."</div>\n";
+			if ($count > 0 && $in_hr == 0)
+			{
+				$menu .= "<ul>\n";
+				$in_hr = 1;
+			}
+		}
+		else
+		{
+			$depth = count(split('\.', $onecontent->Hierarchy()));
+
+			if ($depth < $last_level) {
+				for ($i = $depth; $i < $last_level; $i++) $menu .= "</ul>\n";
+			}
+			if ($depth > $last_level) {
+				for ($i = $depth; $i > $last_level; $i--) $menu .= "<ul>\n";
+			}
+			if ($onecontent->Type() == 'separator')
+			{
+				$menu .= "<hr class=\"separator\"/>\n";
+			}
+			else
+			{
+				$menu .= "<li><a href=\"".$onecontent->Alias()."\">".$onecontent->GetPropertyValue('menutext')."</a></li>\n";
+			}
+			$in_hr = 1;
+			$last_level = $depth;
+		}
+	}
+
+	for ($i = 0; $i < $last_level; $i++) $menu .= "</ul>";
+
+	if ($showadmin == 1)
+	{
+		$menu .= "<ul><li><a href='admin/'>Admin</a></li></ul>\n";
+	}
 	
+	/*
+	#How the F%@^ does this work?
+
 	# getting content hierarchy parameters
 	$newparams = array();
 	foreach($params as $key => $val) $newparams[$key] = $val;
@@ -49,59 +106,7 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 		}
 		$newparams["start_element"] = $parent;
 	}
-	
-	# getting content
-	$content = db_get_menu_items($newparams);
-
-	# defining variables
-	$menu = "";
-	$last_level = 0;
-	$count = 0;
-	$in_hr = 0;
-
-	foreach ($content as $one) {
-
-		if ($one->page_type == "sectionheader")
-		{
-			if ($in_hr == 1)
-			{
-				$menu .= "</ul>\n";
-				$in_hr = 0;
-			}
-			$menu .= "<div class=\"sectionheader\">".$one->menu_text."</div>\n";
-			if ($count > 0 && $in_hr == 0)
-			{
-				$menu .= "<ul>\n";
-				$in_hr = 1;
-			}
-		}
-		else
-		{
-			if ($one->level < $last_level) {
-				for ($i = $one->level; $i < $last_level; $i++)	$menu .= "</ul>\n";
-			}
-			if ($one->level > $last_level) {
-				for ($i = $one->level; $i > $last_level; $i--) $menu .= "<ul>\n";
-			}
-			if ($one->page_type == "separator")
-			{
-				$menu .= "<hr class=\"separator\"/>\n";
-			}
-			else
-			{
-				$menu .= "<li><a href=\"".$one->url."\">".$one->menu_text."</a></li>\n";
-			}
-			$in_hr = 1;
-			$last_level = $one->level;
-		}
-		$count++;
-	}
-
-	for ($i = 0; $i < $last_level; $i++) $menu .= "</ul>";
-
-	if ($showadmin == 1) {
-		$menu .= "<ul><li><a href='admin/'>Admin</a></li></ul>\n";
-	}
+	*/
 
 	return $menu;
 
