@@ -143,7 +143,7 @@ function bookmarks_module_executeuser( $cms, $id, $return_id, $params )
 	{
 		include_once(BOOKMARKS_MODULE_COMMONCODE_FILE);
 
-		$action = getRequestValue('action', 'main');
+		$action = getRequestValue($id.'action', 'main');
 
 		switch($action)
 		{
@@ -182,7 +182,7 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 
 	if(isset($params["addform"]))
 	{
-		bookmarks_module_frontend_display_form($cms, $id, $return_id);
+		bookmarks_module_frontend_display_form($cms, $id, $return_id, $params);
 		return;
 	}
 
@@ -476,7 +476,7 @@ function bookmarks_module_executeadmin($cms,$module_id)
 			return;
 		}
 
-		$action = getRequestValue('action', 'main');
+		$action = getRequestValue($module_id.'action', 'main');
 		//DB($action,'action');
 
 		switch($action)
@@ -495,7 +495,7 @@ function bookmarks_module_executeadmin($cms,$module_id)
 
 			case 'bookmarks_update':
 				bookmarks_module_admin_update_bookmark($cms, $module_id, 1);
-				RedirectTo($_SERVER['PHP_SELF'] . '?module=Bookmarks&action=bookmarks&result=1');
+				RedirectTo($_SERVER['PHP_SELF'] . "?module=Bookmarks&{$module_id}action=bookmarks&result=1");
 			break;
 
 			case 'categories':
@@ -507,7 +507,7 @@ function bookmarks_module_executeadmin($cms,$module_id)
 			break;
 
 			default:
-				echo "Error: unknown action: {$_REQUEST['action']}";
+				echo "Error: unknown action: $action";
 			break;
 		}
 	}
@@ -539,9 +539,11 @@ function bookmarks_module_help(/*$cms*/)
 	<li><em>(optional)</em> type="text" - set to "text" for html display or "rss" for an rss feed</li>
 	<li><em>(optional)</em> order_by_date="false" - set to "true" to order the list of bookmarks by date. If set to true, will turn off show_category_with_title</li>
 	<li><em>(optional)</em> auto_detect_link - set to "true" to output the RSS autodetect &lt;link&gt; element for use in &lt;head&gt;</li>
-	<li><em>(optional)</em> addform - set to "true" to display a form allowing users to submit bookmarks</li>
 	<li><em>(optional)</em> makerssbutton - set to display an RSS image that links to the RSS feed</li>
 	<li><em>(optional)</em> summaries - set to "true" to display the summary information.</li>
+	<li><em>(optional)</em> addform - set to "true" to display a form allowing users to submit bookmarks</li>
+	<li><em>(optional)</em> include_back_button - used with addform=true. When set, will include a back button on the form</li>
+	<li><em>(optional)</em> email_to - used with addform=true. Set to the email address to which email notifications of new bookmarks will be sent</li>
 
 	</ul>
 	</p>

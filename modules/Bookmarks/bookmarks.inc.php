@@ -22,7 +22,7 @@
  * @return array
  * @param ADOConnection $db
  * @param integer $bookmark_id
- * @desc Retrieve a bookmark from the database as an associative array. Returns an 
+ * @desc Retrieve a bookmark from the database as an associative array. Returns an
  *		 array with default fields otherwise.
 */
 function bookmarks_module_admin_get_bookmark($db, $bookmark_id, $default_to_approved=0)
@@ -84,8 +84,8 @@ function bookmarks_module_admin_main($cms, $module_id)
 		echo <<<EOT
 		<p>
 		Add Bookmark
-		| <a href='moduleinterface.php?module=Bookmarks&amp;action=bookmarks'>Manage Bookmarks</a>
-		| <a href='moduleinterface.php?module=Bookmarks&amp;action=categories'>Manage Categories</a>
+		| <a href='moduleinterface.php?module=Bookmarks&amp;{$module_id}action=bookmarks'>Manage Bookmarks</a>
+		| <a href='moduleinterface.php?module=Bookmarks&amp;{$module_id}action=categories'>Manage Categories</a>
 		</p>
 
 		<h4 class="admintitle">Add Bookmark</h4>
@@ -105,20 +105,20 @@ function bookmarks_module_admin_display_bookmarks($cms, $module_id)
 {
 	$keyword = getRequestValue($module_id.'keyword', '', 'Bookmarks');
 	$not_approved_only = getRequestValue($module_id.'not_approved_only', 0, 'Bookmarks');
-	
+
 	$not_approved_only_checked_off = '';
 	$not_approved_only_checked_on = '';
 	if($not_approved_only != 0)
 		$not_approved_only_checked_on = 'checked=checked';
 	else
 		$not_approved_only_checked_off = 'checked=checked';
-	
+
 
 	echo <<<EOT
 	<p>
 	<a href='moduleinterface.php?module=Bookmarks'>Add Bookmark</a>
 	| Manage Bookmarks
-	| <a href='moduleinterface.php?module=Bookmarks&amp;action=categories'>Manage Categories</a>
+	| <a href='moduleinterface.php?module=Bookmarks&amp;{$module_id}action=categories'>Manage Categories</a>
 	</p>
 
 	<h4 class="admintitle">Manage Bookmarks</h4>
@@ -127,7 +127,7 @@ function bookmarks_module_admin_display_bookmarks($cms, $module_id)
 EOT;
 	echo cms_mapi_create_admin_form_start("Bookmarks", $module_id, 'get');
 	echo <<<EOT
-<input type='hidden' name='action' value='bookmarks'>
+<input type='hidden' name='{$module_id}action' value='bookmarks'>
 <table border=0 cellpadding=0 cellspacing=0 style='margin-bottom: 10px'>
     <tr>
         <td align="right" style='padding-right: 5px;'>Filter By:</td>
@@ -197,11 +197,11 @@ EOT;
 		$num_rows = $rs->RecordCount();
 		$rows_per_column = intval($num_rows / $number_of_columns) + 0; /* 10 is a fudge factor to make it look better! */
 
-		
+
 		$current_category_name = '';
 		$row_count = 0;
 
-		$edit_url = $_SERVER['PHP_SELF'] . '?module=Bookmarks&amp;action=edit_bookmark&amp;'.$module_id.'bookmark_id';
+		$edit_url = $_SERVER['PHP_SELF'] . '?module=Bookmarks&amp;'.$module_id.'action=edit_bookmark&amp;'.$module_id.'bookmark_id';
 
 		// true / false images
 		$image_true ="<img src=\"../images/cms/true.gif\" alt=\"".lang('true')."\" title=\"".lang('true')."\" border=\"0\">";
@@ -211,7 +211,7 @@ EOT;
 		{
 			$row_count++;
 			$row_class = ($row_count % 2) ? 'row1' : 'row2';
-			
+
 			$bookmark_id = $row['bookmark_id'];
 			$category_name = $row['category_name'];
 			$bookmark_title = $row['bookmark_title'];
@@ -302,12 +302,12 @@ function bookmarks_module_admin_display_bookmark_edit_form($cms, $module_id, $bo
 		$approved_checked_on = 'checked=checked';
 	else
 		$approved_checked_off = 'checked=checked';
-	
+
 	echo cms_mapi_create_admin_form_start("Bookmarks", $module_id);
 
 	echo <<<EOT
 
-<input type='hidden' name='action' value='bookmarks_update'>
+<input type='hidden' name='{$module_id}action' value='bookmarks_update'>
 <input type="hidden" name="{$module_id}id" value="$bookmark_id">
 
 <table border=0 cellpadding=5 cellspacing=0>
@@ -393,7 +393,7 @@ function bookmarks_module_admin_update_bookmark($cms, $module_id, $approved=0)
 	$url = $db->quote(getRequestValue($module_id.'url'), get_magic_quotes_runtime());
 	$summary = $db->quote(getRequestValue($module_id.'summary'), get_magic_quotes_runtime());
 	$bookmark_approved = getRequestValue($module_id.'approved', 0);
-	
+
 	if($approved && $bookmark_id > -1)
 	{
 		// update
@@ -460,11 +460,32 @@ function bookmarks_module_admin_update_bookmark($cms, $module_id, $approved=0)
  * @param string $return_id
  * @desc Enter description here...
 */
-function bookmarks_module_frontend_display_form($cms, $module_id, $return_id, $include_back_button = false)
+function bookmarks_module_frontend_display_form($cms, $module_id, $return_id, $params)
 {
 	$db = $cms->db; /* @var $db ADOConnection */
 	$categories = bookmarks_module_get_categories($db);
 	$bookmark = bookmarks_module_admin_get_bookmark($db, -1);
+
+	$include_back_button = false;
+	if(isset($params[$id.'include_back_button']))
+	{
+		$include_back_button = settype($params[$id.'include_back_button'], 'boolean');
+	}
+	else if(isset($params['include_back_button']))
+	{
+		$include_back_button = settype($params['include_back_button'], 'boolean');
+	}
+
+	$email_to = '';
+	if(isset($params[$id.'email_to']))
+	{
+		$email_to = $params[$id.'email_to'];
+	}
+	else if(isset($params['email_to']))
+	{
+		$email_to = $params[$id.'email_to'];
+	}
+
 
 	$button_text = 'Add';
 	if($bookmark_id > 0)
@@ -474,9 +495,13 @@ function bookmarks_module_frontend_display_form($cms, $module_id, $return_id, $i
 
 	echo cms_mapi_create_user_form_start("Bookmarks", $module_id, $return_id);
 
+	if($email_to != '')
+	{
+		echo "<input type='hidden' name='{$module_id}email_to' value='$email_to'>\n";
+	}
 	echo <<<EOT
-	
-<input type='hidden' name='action' value='bookmarks_useradd'>
+
+<input type='hidden' name='{$module_id}action' value='bookmarks_useradd'>
 <input type="hidden" name="{$module_id}id" value="$bookmark_id">
 <input type="hidden" name="{$module_id}referer" value="{$_SERVER['SCRIPT_NAME']}">
 
@@ -536,7 +561,7 @@ EOT;
 
 EOT;
 	}
-	
+
 	echo <<<EOT
             <input type="submit" value="Submit">
         </td>
@@ -544,8 +569,8 @@ EOT;
 </table>
 </form>
 EOT;
-	
-		
+
+
 }
 
 
@@ -561,11 +586,35 @@ function bookmarks_module_frontend_add($cms, $module_id, $return_id, $params)
 {
 	$approved=0;
 	bookmarks_module_admin_update_bookmark($cms, $module_id, $approved);
-	
+	$email_to = getRequestValue($module_id.'email_to');
+	if($email_to != '')
+	{
+		// get admin email address.
+		$from_email_addr = 'bookmarksmodule@example.com';
+		$sql = 'SELECT email FROM ' .cms_db_prefix().'users WHERE user_id = 1';
+		$rs = $cms->db->Execute($sql);
+		if($rs)
+			$from_email_addr = $rs->fields['email'];
+
+		$subject = 'New Bookmark Submitted';
+		$body = "A new bookmark has been submitted.\n\n";
+		$body .= "Title: {$params[$module_id.'title']}\n";
+		$body .= "Url: {$params[$module_id.'url']}\n";
+		$body .= "Summary: {$params[$module_id.'summary']}\n";
+
+	    $result = @mail($email_to, $subject, $body,
+	        "From:$from_email_addr\r\n"
+    	    ."Return-Path: <$from_email_addr>\r\n"
+        	."Reply-To: <$from_email_addr>\r\n"
+	        ."X-Mailer: PHP/" . phpversion());
+
+	}
+
 	$link = cms_mapi_create_content_link_by_page_id($return_id, "Return");
-	
+
+
 	echo "<p class='cms-module-bookmarks-submitted'>Thank you for your submission. $link.</p>";
-	
+
 
 }
 ?>

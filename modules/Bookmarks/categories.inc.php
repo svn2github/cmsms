@@ -53,7 +53,7 @@ function bookmarks_module_admin_display_category($cms, $module_id)
 	echo <<<EOT
 	<p>
 	<a href='moduleinterface.php?module=Bookmarks'>Add Bookmark</a>
-	| <a href='moduleinterface.php?module=Bookmarks&amp;action=bookmarks'>Manage Bookmarks</a>
+	| <a href='moduleinterface.php?module=Bookmarks&amp;{$module_id}action=bookmarks'>Manage Bookmarks</a>
 	| Manage Categories
 	</p>
 
@@ -62,7 +62,7 @@ function bookmarks_module_admin_display_category($cms, $module_id)
 EOT;
     echo cms_mapi_create_admin_form_start("Bookmarks", $module_id);
     echo <<<EOT
-	<input type='hidden' name='action' value='categories_update'>
+	<input type='hidden' name='{$module_id}action' value='categories_update'>
 
 	<table border=0 cellspacing=0 cellpadding=3>
 	<tr>
@@ -91,7 +91,7 @@ EOT;
 
 	$num_cols = 2;
 	$rows_per_col = intval($num_cats / $num_cols);
-	
+
 	$count = 1;
 	for($i = 0; $i < $num_cats; $i++,$count ++)
 	{
@@ -194,7 +194,7 @@ function bookmarks_module_admin_update_categories($cms, $module_id)
 		}
 	}
 
-	RedirectTo($_SERVER['PHP_SELF'] . '?module=Bookmarks&action=categories&result=1');
+	RedirectTo($_SERVER['PHP_SELF'] . '?module=Bookmarks&'.$module_id.'action=categories&result=1');
 }
 
 
