@@ -224,4 +224,6 @@ $lang['admin']['missingdependency'] = 'Mangler binding';
 $lang['admin']['minimumversion'] = 'Minimum versjon';
 $lang['admin']['depsformodule'] = 'Bindinger for %s Modul';
 $lang['admin']['installed'] = 'Installert'; 
+$lang['admin']['author'] = 'Author'; //needs translation
+$lang['admin']['changehistory'] = 'Change History'; //needs translation
 ?>

@@ -53,7 +53,7 @@ if ($access)
 			#now insert a record
 			if ($result === FALSE)
 			{
-				$query = "INSERT INTO ".cms_db_prefix()."modules (module_name, version, status, active) VALUES (".$db->qstr($module).",".$db->qstr($gCms->modules[$module]['Version']).",'installed',1)";
+				$query = "INSERT INTO ".cms_db_prefix()."modules (module_name, version, status, active) VALUES (".$db->qstr($module).",".$db->qstr($modinstance->GetVersion()).",'installed',1)";
 				$db->Execute($query);
 				
 				#and insert any dependancies
@@ -144,14 +144,27 @@ include_once("header.php");
 
 if ($action == "showmoduleabout")
 {
-	if (isset($gCms->modules[$module]['about_function'])) {
-		@ob_start();
-		call_user_func_array($gCms->modules[$module]['about_function'], array($gCms));
-		$content = @ob_get_contents();
-		@ob_end_clean();
+	if (isset($gCms->modules[$module]['object']))
+	{
 		echo "<div class=\"moduleabout\">";
 		echo "<h2>".lang('moduleabout', array($module))."</h2>";
-		echo $content;
+		if ($gCms->modules[$module]['object']->GetAuthor() != '')
+		{
+			echo "<br />".lang('author').": " . $gCms->modules[$module]['object']->GetAuthor();
+			if ($gCms->modules[$module]['object']->GetAuthorEmail() != '')
+			{
+				echo ' &lt;' . $gCms->modules[$module]['object']->GetAuthorEmail() . '&gt;';
+			}
+			echo "<br />";
+		}
+		echo "<br />".lang('version').": " .$gCms->modules[$module]['object']->GetVersion() . "<br />";
+
+		if ($gCms->modules[$module]['object']->GetChangeLog() != '')
+		{
+			echo "<br />".lang('changehistory').":<br />";
+			echo $gCms->modules[$module]['object']->GetChangeLog() . '<br />';
+		}
+
 		?>
 		<FORM ACTION="plugins.php" METHOD="get">
 		<P><INPUT TYPE="submit" VALUE="<?php echo lang('backtoplugins')?>" CLASS="button" onMouseOver="this.className='buttonHover'" onMouseOut="this.className='button'"></P>
@@ -162,14 +175,11 @@ if ($action == "showmoduleabout")
 }
 else if ($action == "showmodulehelp")
 {
-	if (isset($gCms->modules[$module]['help_function'])) {
-		@ob_start();
-		call_user_func_array($gCms->modules[$module]['help_function'], array($gCms));
-		$content = @ob_get_contents();
-		@ob_end_clean();
+	if (isset($gCms->modules[$module]['object']))
+	{
 		echo "<div class=\"moduleabout\">";
 		echo "<h2>".lang('modulehelp', array($module))."</h2>";
-		echo $content;
+		echo $gCms->modules[$module]['object']->GetHelp();
 		?>
 		<FORM ACTION="plugins.php" METHOD="get">
 		<P><INPUT TYPE="submit" VALUE="<?php echo lang('backtoplugins')?>" CLASS="button" onMouseOver="this.className='buttonHover'" onMouseOut="this.className='button'"></P>

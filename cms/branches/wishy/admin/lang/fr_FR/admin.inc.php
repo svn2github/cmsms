@@ -224,4 +224,6 @@ $lang['admin']['missingdependency'] = 'Dépendance manquante';
 $lang['admin']['minimumversion'] = 'Version minimale';
 $lang['admin']['depsformodule'] = 'Dépendances pour module %s ';
 $lang['admin']['installed'] = 'Installé'; 
+$lang['admin']['author'] = 'Author'; //needs translation
+$lang['admin']['changehistory'] = 'Change History'; //needs translation
 ?>

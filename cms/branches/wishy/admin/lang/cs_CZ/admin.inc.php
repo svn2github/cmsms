@@ -224,4 +224,6 @@ $lang['admin']['missingdependency'] = 'Nevyřešené závislosti';
 $lang['admin']['minimumversion'] = 'Minimální verze';
 $lang['admin']['depsformodule'] = 'Závislosti pro %s modul';
 $lang['admin']['installed'] = 'Instalováno';
+$lang['admin']['author'] = 'Author'; //needs translation
+$lang['admin']['changehistory'] = 'Change History'; //needs translation
 ?>
