@@ -31,8 +31,6 @@ class Content extends ContentBase
 {
 	function SetProperties()
 	{
-		$this->mProperties->Add("string", "title");
-		$this->mProperties->Add("string", "menutext");
 		$this->mProperties->Add("string", "content_en"); //For later language support
 		$this->mProperties->Add("string", "headtags");
 
@@ -44,7 +42,7 @@ class Content extends ContentBase
 	{
 		if (isset($params))
 		{
-			$parameters = array('title', 'menutext', 'content_en', 'headtags');
+			$parameters = array('content_en', 'headtags');
 			foreach ($parameters as $oneparam)
 			{
 				if (isset($params[$oneparam]))
@@ -53,10 +51,14 @@ class Content extends ContentBase
 				}
 
 				#Make the name the same as the title
-				if ($oneparam == 'title')
-				{
-					$this->mName = $params[$oneparam];
-				}
+			}
+			if (isset($params['title']))
+			{
+				$this->mName = $params['title'];
+			}
+			if (isset($params['menutext']))
+			{
+				$this->mMenuText = $params['menutext'];
 			}
 			if (isset($params['template_id']))
 			{
@@ -78,9 +80,9 @@ class Content extends ContentBase
 	{
 		$text = "";
 
-		$text .= '<tr><td>'.lang('title').':</td><td><input type="text" name="title" value="'.$this->mProperties->GetValue('title').'"></td></tr>';
-		$text .= '<tr><td>'.lang('menutext').':</td><td><input type="text" name="menutext" value="'.$this->mProperties->GetValue('menutext').'"></td></tr>';
-		$text .= '<tr><td>'.lang('template').':</td><td><input type="text" name="template_id" value="'.$this->mTemplateId.'"></td></tr>';
+		$text .= '<tr><td>'.lang('title').':</td><td><input type="text" name="title" value="'.$this->mName.'"></td></tr>';
+		$text .= '<tr><td>'.lang('menutext').':</td><td><input type="text" name="menutext" value="'.$this->mMenuText.'"></td></tr>';
+		$text .= '<tr><td>'.lang('template').':</td><td>'.TemplateOperations::TemplateDropdown('template_id', $this->mTemplateId).'</td></tr>';
 		$text .= '<tr><td>'.lang('content').':</td><td>'.textarea_highlight((isset($use_javasyntax)?$use_javasyntax:false), $this->mProperties->GetValue('content_en'), "content_en", "syntaxHighlight", "HTML (Complex)", "content_en") . '</td></tr>';
 		$text .= '<tr><td>'.lang('headtags').':</td><td>'.textarea_highlight((isset($use_javasyntax)?$use_javasyntax:false), $this->mProperties->GetValue('headtags'), "headtags").'</td></tr>';
 
@@ -107,6 +109,57 @@ class Content extends ContentBase
 
 class Link extends ContentBase
 {
+	function SetProperties()
+	{
+		$this->mProperties->Add('string', 'url');
+	}
+
+	function FillParams($params)
+	{
+		if (isset($params))
+		{
+			$parameters = array('url');
+			foreach ($parameters as $oneparam)
+			{
+				if (isset($params[$oneparam]))
+				{
+					$this->mProperties->SetValue($oneparam, $params[$oneparam]);
+				}
+			}
+			if (isset($params['title']))
+			{
+				$this->mName = $params['title'];
+			}
+			if (isset($params['menutext']))
+			{
+				$this->mMenuText = $params['menutext'];
+			}
+			if (isset($params['alias']))
+			{
+				$this->mAlias = $params['alias'];
+			}
+		}
+	}
+
+	function Show()
+	{
+	}
+
+	function Edit()
+	{
+		$text = "";
+
+		$text .= '<tr><td>'.lang('title').':</td><td><input type="text" name="title" value="'.$this->mName.'"></td></tr>';
+		$text .= '<tr><td>'.lang('menutext').':</td><td><input type="text" name="menutext" value="'.$this->mMenuText.'"></td></tr>';
+		$text .= '<tr><td>'.lang('url').':</td><td><input type="text" name="url" value="'.$this->mProperties->GetValue('url').'"></td></tr>';
+
+		return $text;
+	}
+
+	function GetURL()
+	{
+		return $this->mProperties->GetValue('url');
+	}
 }
 
 # vim:ts=4 sw=4 noet

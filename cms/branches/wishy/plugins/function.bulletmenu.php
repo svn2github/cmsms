@@ -72,7 +72,7 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 				$menu .= "</ul>\n";
 				$in_hr = 0;
 			}
-			$menu .= "<div class=\"sectionheader\">".$onecontent->GetPropertyValue('menutext')."</div>\n";
+			$menu .= "<div class=\"sectionheader\">".$onecontent->MenuText()."</div>\n";
 			if ($count > 0 && $in_hr == 0)
 			{
 				$menu .= "<ul>\n";
@@ -93,7 +93,7 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 			}
 			else
 			{
-				$menu .= "<li><a href=\"".$onecontent->GetURL()."\">".$onecontent->GetPropertyValue('menutext')."</a></li>\n";
+				$menu .= "<li><a href=\"".$onecontent->GetURL()."\">".$onecontent->MenuText()."</a></li>\n";
 			}
 			$in_hr = 1;
 			$last_level = $depth;
@@ -106,37 +106,6 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 	{
 		$menu .= "<ul><li><a href='admin/'>Admin</a></li></ul>\n";
 	}
-	
-	/*
-	#How the F%@^ does this work?
-
-	# getting content hierarchy parameters
-	$newparams = array();
-	foreach($params as $key => $val) $newparams[$key] = $val;
-	$newparams["show"] = "menu";
-
-	if (isset($newparams["start_element"]))
-	{
-		$tmp	= $newparams["start_element"];
-		$tmptab	= explode(".",$tmp);
-		$parent	= 0;
-
-		foreach($tmptab as $key)
-		{
-			if ("" != $key)
-			{
-				$query	= "SELECT page_id FROM ".cms_db_prefix()."pages WHERE item_order = '$key' AND parent_id = '$parent'";
-				$result = $db->Execute($query);
-				if ($result && $result->RowCount() > 0)
-				{
-					$line	= $result->FetchRow();
-					$parent	= $line["page_id"];
-				}
-			}
-		}
-		$newparams["start_element"] = $parent;
-	}
-	*/
 
 	return $menu;
 

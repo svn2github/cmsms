@@ -20,12 +20,15 @@ $CMS_ADMIN_PAGE=1;
 
 require_once("../include.php");
 
+if (isset($_POST["cancel"]))
+{
+	redirect("listcontent.php");
+	return;
+}
+
 check_login();
 
 $error = "";
-
-$old_content_type = "";
-if (isset($_POST["content_type"])) $content_type = $_POST["content_type"];
 
 $submit = false;
 if (isset($_POST["submitbutton"])) $submit = true;
@@ -50,18 +53,31 @@ else
 }
 
 $contentobj = "";
-if (isset($_POST["serialized_content"]) && $content_type == $old_content_type)
+if (isset($_POST["serialized_content"]))
 {
 	$contentobj = unserialize(base64_decode($_POST["serialized_content"]));
+	if (get_class($contentobj) != $content_type)
+	{
+		#Fill up the existing object with values in form
+		#Create new object
+		#Copy important fields to new object
+		#Put new object on top of old on
+
+		$contentobj->FillParams($_POST);
+		$tmpobj = new $content_type;
+		$tmpobj->mName = $contentobj->mName;
+		$tmpobj->mMenuText = $contentobj->mMenuText;
+		$tmpobj->mTemplateId = $contentobj->mTemplateId;
+		$tmpobj->mAlias = $contentobj->mAlias;
+		$tmpobj->mOwner = $contentobj->mOwner;
+		$tmpobj->mActive = $contentobj->mActive;
+		$contentobj = $tmpobj;
+	}
 }
 else
 {
 	$contentobj = new $content_type;
-}
-
-if (isset($_POST["cancel"])) {
-	redirect("listcontent.php");
-	return;
+	$contentobj->mActive = true;
 }
 
 
@@ -77,7 +93,7 @@ if ($access)
 		$contentobj->FillParams($_POST);
 		$contentobj->Save();
 		ContentManager::SetAllHierarchyPositions();
-		audit($contentobj->id, $contentobj->name, 'Added Content');
+		audit($contentobj->Id(), $contentobj->Name(), 'Added Content');
 		redirect("listcontent.php");
 		return;
 	}
@@ -86,8 +102,7 @@ if ($access)
 include_once("header.php");
 
 #Get a list of content_types and build the dropdown to select one
-#$typesdropdown = "<select name=\"content_type\" onchange=\"document.addform.content_change.value=1;document.addform.submit()\" class=\"standard\">";
-$typesdropdown = '<select name="content_type" class="standard">';
+$typesdropdown = '<select name="content_type" onchange="document.addform.submit()" class="standard">';
 foreach ($existingtypes as $onetype)
 {
 	$typesdropdown .= "<option value=\"$onetype\"";
@@ -131,7 +146,6 @@ $typesdropdown .= "</select>";
 </div> <!--end adminform-->
 
 <input type="hidden" name="serialized_content" value="<?php echo base64_encode(serialize($contentobj)) ?>">
-<input type="hidden" name="old_content_type" value="<?php echo $content_type?>">
 
 </form>
 

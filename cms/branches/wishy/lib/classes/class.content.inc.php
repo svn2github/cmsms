@@ -93,6 +93,11 @@ class ContentBase
 	var $mHierarchy;
 
 	/**
+	 * What should be displayed in a menu
+	 */
+	var $mMenuText;
+
+	/**
 	 * Is the content active ?
 	 * Integer : 0 / 1
 	 */
@@ -132,7 +137,7 @@ class ContentBase
 	/**
 	 * Generic constructor. Runs the SetInitialValues fuction.
 	 */
-	function Content()
+	function ContentBase()
 	{
 		$this->SetInitialValues();
 		$this->SetProperties();
@@ -155,6 +160,7 @@ class ContentBase
 		$this->mHierarchy		= "" ;
 		$this->mActive			= false ;
 		$this->mDefaultContent	= false ;
+		$this->mMenuText		= "" ;
 		$this->mCreationDate	= "" ;
 		$this->mModifiedDate	= "" ;
 		$this->mPreview         = false ;
@@ -258,6 +264,14 @@ class ContentBase
 	}
 
 	/**
+	 * Returns the menu text for this content
+	 */
+	function MenuText()
+	{
+		return $this->mMenuText;
+	}
+
+	/**
 	 * Returns the properties
 	 */
 	function Properties()
@@ -309,6 +323,7 @@ class ContentBase
 				$this->mTemplateId		= $row["template_id"];
 				$this->mItemOrder		= $row["item_order"];
 				$this->mHierarchy		= $row["hierarchy"];
+				$this->mMenuText		= $row['menu_text'];
 				$this->mActive			= ($row["active"] == 1?true:false);
 				$this->mDefaultContent	= ($row["default_content"] == 1?true:false);
 				$this->mCreationDate	= $row["create_date"];
@@ -385,6 +400,7 @@ class ContentBase
 		$this->mTemplateId		= $data["template_id"];
 		$this->mItemOrder		= $data["item_order"];
 		$this->mHierarchy		= $data["hierarchy"];
+		$this->mMenuText		= $data['menu_text'];
 		$this->mDefaultContent	= ($data["default_content"] == 1?true:false);
 		$this->mActive			= ($data["active"] == 1?true:false);
 		$this->mCreationDate	= $data["create_date"];
@@ -448,7 +464,7 @@ class ContentBase
 		
 		$result = false;
 
-		$query = "UPDATE ".cms_db_prefix()."content SET content_name = ?, owner_id = ?, template_id = ?, parent_id = ?, active = ?, default_content = ?, content_alias = ?, modified_date = ? WHERE content_id = ?";
+		$query = "UPDATE ".cms_db_prefix()."content SET content_name = ?, owner_id = ?, template_id = ?, parent_id = ?, active = ?, default_content = ?, menu_text = ?, content_alias = ?, modified_date = ? WHERE content_id = ?";
 
 		$dbresult = $db->Execute($query, array(
 			$this->mName,
@@ -457,6 +473,7 @@ class ContentBase
 			$this->mParentId,
 			($this->mActive==true?1:0),
 			($this->mDefaultContent==true?1:0),
+			$this->mMenuText,
 			$this->mAlias,
 			$db->DBTimeStamp(time()),
 			$this->mId
@@ -491,6 +508,7 @@ class ContentBase
 	 */
 	# :TODO: This function should return something
 	# :TODO: Take care bout hierarchy here, it has no value !
+	# :TODO: Figure out proper item_order
 	function Insert()
 	{
 		global $gCms, $config, $sql_queries, $debug_errors;
@@ -498,10 +516,30 @@ class ContentBase
 		
 		$result = false;
 
+		#Figure out the item_order
+		if ($this->mItemOrder < 1)
+		{
+			$query = "SELECT max(item_order) as new_order FROM ".cms_db_prefix()."content WHERE parent_id = ".$this->mParentId;
+			$dbresult = $db->Execute($query);
+
+			if ($dbresult && (1 == $dbresult->RowCount()))
+			{
+				$row = $dbresult->FetchRow();
+				if ($row['new_order'] < 1)
+				{
+					$this->mItemOrder = 1;
+				}
+				else
+				{
+					$this->mItemOrder = $row['new_order'] + 1;
+				}
+			}
+		}
+
 		$newid = $db->GenID(cms_db_prefix()."content_seq");
 		$this->mId = $newid;
 
-		$query = "INSERT INTO ".$config["db_prefix"]."content (content_id, content_name, content_alias, type, owner_id, parent_id, template_id, item_order, hierarchy, active, default_content, create_date, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+		$query = "INSERT INTO ".$config["db_prefix"]."content (content_id, content_name, content_alias, type, owner_id, parent_id, template_id, item_order, hierarchy, active, default_content, menu_text, create_date, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 
 		$dbresult = $db->Execute($query, array(
 			$newid,
@@ -515,15 +553,10 @@ class ContentBase
 			$this->mHierarchy,
 			($this->mActive==true?1:0),
 			($this->mDefaultContent==true?1:0),
+			$this->mMenuText,
 			$db->DBTimeStamp(time()),
 			$db->DBTimeStamp(time())
 			));
-
-		# debug mode
-		if ($config["debug"] == true)
-		{
-			$sql_queries .= "<p>$query</p>\n";
-		}
 
 		if (! $dbresult)
 		{
@@ -632,14 +665,8 @@ class ContentBase
 		}
 		else
 		{
-			$query		= "DELETE FROM ".$config["db_prefix"]."content WHERE id = ?";
+			$query		= "DELETE FROM ".cms_db_prefix()."content WHERE content_id = ?";
 			$dbresult	= $db->Execute($query, array($this->mId));
-
-			# debug mode
-			if (true == $config["debug"])
-			{
-				$sql_queries .= "<p>$query</p>\n";
-			}
 
 			if (! $dbresult)
 			{
@@ -650,10 +677,14 @@ class ContentBase
 				}
 			}
 
+			#Fix the item_order if necessary
+			$query = "UPDATE ".cms_db_prefix()."content SET item_order = item_order - 1 WHERE parent_id = ".$this->ParentId()." AND item_order > ".$this->ItemOrder();
+			$result = $db->Execute($query);
+
 			if (NULL != $this->mProperties)
 			{
 				# :TODO: There might be some error checking there
-				$this->mProperties.Delete();
+				$this->mProperties->Delete($this->mId);
 			}
 			else
 			{
@@ -714,6 +745,27 @@ class ContentBase
 	{
 		# :TODO:
 		return "<tr><td>Help Not Defined</td></tr>";
+	}
+
+	/**
+	 * Does this have children?
+	 */
+	function HasChildren()
+	{
+		global $gCms, $config, $sql_queries, $debug_errors;
+		$db = &$gCms->db;
+		
+		$result = false;
+
+		$query = "SELECT content_id FROM ".cms_db_prefix()."content WHERE parent_id = ".$this->mId;
+		$dbresult = $db->Execute($query);
+
+		if ($dbresult && $dbresult->RowCount() > 0)
+		{
+			$result = true;
+		}
+
+		return $result;
 	}
 }
 
@@ -823,8 +875,13 @@ class ContentProperties
 		}
 	}
 
-	function Delete()
+	function Delete($content_id)
 	{
+		global $gCms, $config, $sql_queries, $debug_errors;
+		$db = &$gCms->db;
+
+		$query = "DELETE FROM ".cms_db_prefix()."content_props WHERE content_id = ?";
+		$db->Execute($query, array($content_id));
 	}
 }
 
