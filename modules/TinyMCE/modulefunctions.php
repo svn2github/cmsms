@@ -60,7 +60,12 @@ function tinymce_module_header_function(&$cms)
 			theme_advanced_buttons1_add : "fontselect,fontsizeselect,forecolor",
 			theme_advanced_buttons2_add_before: "cut,copy,paste,separator",
 			theme_advanced_buttons2_add : "separator,insertdate,inserttime,preview,zoom",
-			theme_advanced_buttons3_add : "emotions,iespell,flash,advhr,ibrowser"
+			theme_advanced_buttons3_add : "emotions,iespell,flash,advhr,ibrowser",
+			document_base_url : "<?php echo $cms->config['root_url']?>/",
+			relative_urls : "false",
+			plugin_insertdate_dateFormat : "%Y-%m-%d",
+			plugin_insertdate_timeFormat : "%H:%M:%S",
+			extended_valid_elements : "a[name|href|target|title|onclick],img[class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name],font[face|size|color],hr[class|width|size|noshade]"
 		});
 	</script>
 
@@ -85,7 +90,7 @@ function tinymce_module_textbox_function(&$cms, $name='textbox', $columns='80', 
 		$variables['tinymce_textareas'] = array();
 	}
 	array_push($variables['tinymce_textareas'], $name);
-	return '<textarea name="'.$name.'" cols="80" rows="15">'.cms_htmlentities($content,ENT_NOQUOTES,get_encoding($encoding)).'</textarea>';
+	return '<textarea name="'.$name.'" cols="'.$columns.'" rows="'.($rows+5).'">'.cms_htmlentities($content,ENT_NOQUOTES,get_encoding($encoding)).'</textarea>';
 }
 
 function tinymce_module_executeadmin($cms, $id)
