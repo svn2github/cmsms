@@ -49,6 +49,8 @@ function smarty_cms_function_bulletmenu($params, &$smarty) {
 		}
 		else
 		{
+			#Handy little trick to figure out how deep in the tree we are
+			#Remember, content comes to use in order of how it should be displayed in the tree already
 			$depth = count(split('\.', $onecontent->Hierarchy()));
 
 			if ($depth < $last_level) {

@@ -831,7 +831,7 @@ class ContentManager
 		global $gCms;
 		$db = &$gCms->db;
 
-		$query = "SELECT type FROM ".cms_db_prefix()."content WHERE content_id = ?";
+		$query = "SELECT * FROM ".cms_db_prefix()."content WHERE content_id = ?";
 		$dbresult = $db->Execute($query, array($id));
 		if ($dbresult && $dbresult->RowCount() > 0)
 		{
@@ -841,7 +841,7 @@ class ContentManager
 			if (in_array($row['type'], ContentManager::ListContentTypes()))
 			{
 				$contentobj = new $row['type'];
-				$contentobj->LoadFromId($id,true);
+				$contentobj->LoadFromData($row,true);
 				return $contentobj;
 			}
 			else
@@ -864,7 +864,7 @@ class ContentManager
 
 		if (is_numeric($tpl_name) && strpos($tpl_name,'.') === FALSE && strpos($tpl_name,',') === FALSE) //Fix for postgres
 		{
-			$query = "SELECT type, content_id FROM ".cms_db_prefix()."content WHERE content_id = ? OR content_alias = ?";
+			$query = "SELECT * FROM ".cms_db_prefix()."content WHERE content_id = ? OR content_alias = ?";
 			if ($only_active == true)
 			{
 				$query .= " AND active = 1";
@@ -873,7 +873,7 @@ class ContentManager
 		}
 		else
 		{
-			$query = "SELECT type, content_id FROM ".cms_db_prefix()."content WHERE content_id = ?";
+			$query = "SELECT * FROM ".cms_db_prefix()."content WHERE content_id = ?";
 			if ($only_active == true)
 			{
 				$query .= " AND active = 1";
@@ -889,7 +889,7 @@ class ContentManager
 			if (in_array($row['type'], ContentManager::ListContentTypes()))
 			{
 				$contentobj = new $row['type'];
-				$contentobj->LoadFromId($row['content_id'],true);
+				$contentobj->LoadFromData($row,true);
 				return $contentobj;
 			}
 			else

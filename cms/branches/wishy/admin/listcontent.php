@@ -146,11 +146,19 @@ if (isset($_GET["message"])) {
 		#Setup array so we don't load more templates than we need to
 		$templates = array();
 
+		#Ditto with users
+		$users = array();
+
 		foreach ($content_array as $one)
 		{
 			if (!array_key_exists($one->TemplateId(), $templates))
 			{
 				$templates[$one->TemplateId()] = TemplateOperations::LoadTemplateById($one->TemplateId());
+			}
+
+			if (!array_key_exists($one->Owner(), $users))
+			{
+				$users[$one->Owner()] = UserOperations::LoadUserById($one->Owner());
 			}
 
 			if ($counter < $page*$limit && $counter >= ($page*$limit)-$limit)
@@ -171,8 +179,7 @@ if (isset($_GET["message"])) {
 
 				if ($one->Owner() > -1)
 				{
-					$owner_user = UserOperations::LoadUserById($one->Owner());
-					echo "<td align=\"center\">".$owner_user->username."</td>\n";
+					echo "<td align=\"center\">".$users[$one->Owner()]->username."</td>\n";
 				}
 				else
 				{
@@ -199,15 +206,49 @@ if (isset($_GET["message"])) {
 
 				if ($modifyall)
 				{
-					echo "<td align=\"center\">";
-					if ($one->num_same_level > 1)
+					#Figure out some variables real quick
+					$depth = count(split('\.', $one->Hierarchy()));
+					echo "depth: " . $depth;
+
+					$item_order = substr($one->Hierarchy(), -1, 1);
+					echo "item_order: " . $item_order;
+
+					$num_same_level = 0;
+
+					#TODO: Handle depth correctly yet
+					foreach ($content_array as $another)
 					{
-						if ($one->item_order == 1 && $one->num_same_level)
+						#Are they the same level?
+						if (count(split('\.', $another->Hierarchy())) == $depth)
+						{
+							#Make sure it's not top level
+							if (count(split('\.', $another->Hierarchy())) > 1)
+							{
+								#So only pages with the same parents count
+								if (substr($another->Hierarchy(), -2) == substr($one->Hierarchy(), -2))
+								{
+									$num_same_level++;
+								}
+							}
+							else
+							{
+								#It's top level, just increase the count
+								$num_same_level++;	
+							}
+						}
+					}
+					
+					echo "num_same_level: " . $num_same_level;
+
+					echo "<td align=\"center\">";
+					if ($num_same_level > 1)
+					{
+						if ($item_order == 1 && $num_same_level)
 						{
 							echo "<a href=\"movecontent.php?direction=down&amp;page_id=".$one->page_id."&amp;parent_id=".$one->parent_id."&amp;page=".$page."\">".
 								"<img src=\"../images/cms/arrow-d.gif\" alt=\"".lang('down')."\" title=\"".lang('down')."\" border=\"0\"></a>";
 						}
-						else if ($one->item_order == $one->num_same_level)
+						else if ($item_order == $num_same_level)
 						{
 							echo "<a href=\"movecontent.php?direction=up&amp;page_id=".$one->page_id."&amp;parent_id=".$one->parent_id."&amp;page=".$page."\">".
 								"<img src=\"../images/cms/arrow-u.gif\" alt=\"".lang('up')."\" title=\"".lang('up')."\" border=\"0\"></a>";
@@ -224,18 +265,18 @@ if (isset($_GET["message"])) {
 				}
 				if ($config["query_var"] == "")
 				{
-					echo "<td align=\"center\"><a href=\"".$config["root_url"]."/index.php/".$one->page_id."\" target=\"_blank\"><img src=\"../images/cms/view.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('view')."\" title=\"".lang('view')."\"></a></td>\n";
+					echo "<td align=\"center\"><a href=\"".$config["root_url"]."/index.php/".$one->Id()."\" target=\"_blank\"><img src=\"../images/cms/view.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('view')."\" title=\"".lang('view')."\"></a></td>\n";
 				}
-				else if (isset($one->page_alias) && $one->page_alias != "")
+				else if ($one->Alias() != "")
 				{
-					echo "<td align=\"center\"><a href=\"".$config["root_url"]."/index.php?".$config['query_var']."=".$one->page_alias."\" target=\"_blank\"><img src=\"../images/cms/view.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('view')."\" title=\"".lang('view')."\"></a></td>\n";
+					echo "<td align=\"center\"><a href=\"".$config["root_url"]."/index.php?".$config['query_var']."=".$one->Alias()."\" target=\"_blank\"><img src=\"../images/cms/view.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('view')."\" title=\"".lang('view')."\"></a></td>\n";
 				}
 				else
 				{
-					echo "<td align=\"center\"><a href=\"".$config["root_url"]."/index.php?".$config['query_var']."=".$one->page_id."\" target=\"_blank\"><img src=\"../images/cms/view.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('view')."\" title=\"".lang('view')."\"></a></td>\n";
+					echo "<td align=\"center\"><a href=\"".$config["root_url"]."/index.php?".$config['query_var']."=".$one->Id()."\" target=\"_blank\"><img src=\"../images/cms/view.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('view')."\" title=\"".lang('view')."\"></a></td>\n";
 				}
 				echo "<td align=\"center\"><a href=\"editcontent.php?content_id=".$one->Id()."\"><img src=\"../images/cms/edit.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('edit')."\" title=\"".lang('edit')."\"></a></td>\n";
-				echo "<td align=\"center\"><a href=\"deletecontent.php?page_id=".$one->Id."\" onclick=\"return confirm('".lang('deleteconfirm')."');\"><img src=\"../images/cms/delete.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('delete')."\" title=\"".lang('delete')."\"></a></td>\n";
+				echo "<td align=\"center\"><a href=\"deletecontent.php?page_id=".$one->Id()."\" onclick=\"return confirm('".lang('deleteconfirm')."');\"><img src=\"../images/cms/delete.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('delete')."\" title=\"".lang('delete')."\"></a></td>\n";
 				echo "</tr>\n";
 
 				$count++;
