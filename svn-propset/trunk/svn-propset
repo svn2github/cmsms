@@ -22,7 +22,7 @@ D="$(dirname $0)"
 
 VERSION="${0##*/} Version 0.1"
 
-USAGE="Usage: ${0##*/} -f|--force | -n|no-commit | -t|--test | -h|--help -v|--version -u|--usage [path]"
+USAGE="Usage: ${0##*/} -f|--force | -n|no-commit | -t|--test | -h|--help | -v|--version | -u|--usage [path]"
 
 HELP="This script sets predefined properties for predefined mime-types in a svn repository:
 
