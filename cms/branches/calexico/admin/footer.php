@@ -9,6 +9,7 @@
 if ($config["debug"] == true)
 {
 	echo $sql_queries;
+	echo $debug_errors;
 }
 ?>
 <DIV ID=footer1></DIV>
