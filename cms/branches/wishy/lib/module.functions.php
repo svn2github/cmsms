@@ -872,33 +872,13 @@ class Smarty_ModuleInterface extends Smarty {
 			{
 				$line = $result->FetchRow();
 
-				$stylesheet = "";
-				if (isset($line[stylesheet])) {
-					$stylesheet .= "<style type=\"text/css\">\n";
-					$stylesheet .= "{literal}".$line["stylesheet"]."{/literal}";
-					$stylesheet .= "</style>\n";
-				}
+				$tpl_source = $line['template_content'];
+				$content = $line['page_content'];
+				$title = $line['page_title'];
+				$template_id = $line['template_id'];
 
-				# the new css stuff
-				$tempstylesheet = "";
+				$stylesheet = '<link rel="stylesheet" type="text/css" href="stylesheet.php?templateid='.$template_id.'" />';
 
-				$cssquery = "SELECT css_text FROM ".cms_db_prefix()."css, ".cms_db_prefix()."css_assoc
-					WHERE	css_id		= assoc_css_id
-					AND		assoc_type	= 'template'
-					AND		assoc_to_id = '".$line[template_id]."'";
-				$cssresult = $db->Execute($cssquery);
-
-				$stylesheet .= "<style type=\"text/css\">\n";
-				while ($cssline = $cssresult->FetchRow())
-				{
-					$tempstylesheet .= "\n".$cssline['css_text']."\n";
-				}
-				$stylesheet .= "{literal}".$tempstylesheet."{/literal}";
-				$stylesheet .= "</style>\n";
-
-				$tpl_source = $line[template_content];
-				$content = $line[page_content];
-				$title = $line[page_title];
 				$tpl_source = ereg_replace("\{stylesheet\}", $stylesheet, $tpl_source);
 				$tpl_source = ereg_replace("\{title\}", $title, $tpl_source);
 
