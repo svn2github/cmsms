@@ -11,6 +11,7 @@ $flds = "
 	parent_id I,
 	item_order I,
 	hierarchy C(255),
+	default_content I1,
 	create_date T,
 	modified_date T
 ";

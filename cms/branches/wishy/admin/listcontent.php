@@ -36,57 +36,96 @@ if (isset($_GET["message"])) {
 
 	$modifyall = check_permission($userid, 'Modify Any Content');
 
-	if ($modifyall) {
-		if (isset($_GET["makedefault"])) {
-			$query = "UPDATE ".cms_db_prefix()."pages SET default_page = 0";
-			$result = $db->Execute($query);
-			$query = "UPDATE ".cms_db_prefix()."pages SET default_page = 1 WHERE page_id = ".$_GET["makedefault"];
-			$result = $db->Execute($query);
+	$content_array = ContentManager::GetAllContent();
+
+	if ($modifyall)
+	{
+		if (isset($_GET["makedefault"]))
+		{
+			foreach ($content_array as $key=>$value_copy)
+			{
+				if ($value_copy->Id() == $_GET["makedefault"])
+				{
+					$value =& $content_array[$key];
+					if ($value->mDefaultContent != true)
+					{
+						$value->mDefaultContent = true;
+						$value->Save();
+					}
+				}
+				else
+				{
+					$value =& $content_array[$key];
+					if ($value->mDefaultContent != false)
+					{
+						$value->mDefaultContent = false;
+						$value->Save();
+					}
+				}
+			}
 		}
 	}
     // check if we're activating a page
     if (isset($_GET["setactive"])) 
 	{
       	// to activate a page, you must be admin, owner, or additional author
-      	$permission = ($modifyall || check_ownership($userid,$_GET["setactive"]) || check_authorship($userid,$_GET["setactive"]));
+		#$permission = ($modifyall || check_ownership($userid,$_GET["setactive"]) || check_authorship($userid,$_GET["setactive"]));
+		$permission = true;
       	if($permission) 
 		{
-			$query = "UPDATE ".cms_db_prefix(). "pages SET active = 1 where page_id = ".$_GET["setactive"];
-			$result = $db->Execute($query);
+			foreach ($content_array as $key=>$value_copy)
+			{
+				if ($value_copy->Id() == $_GET["setactive"])
+				{
+					#Modify the object inline
+					$value =& $content_array[$key];
+					$value->mActive = true;
+					$value->Save();
+				}
+			}
     	}
     }
+
     // perhaps we're deactivating a page instead?
     if (isset($_GET["setinactive"])) 
 	{
       	// to deactivate a page, you must be admin, owner, or additional author
-      	$permission = ($modifyall || check_ownership($userid,$_GET["setinactive"]) || check_authorship($userid,$_GET["setinactive"]));
+      	#$permission = ($modifyall || check_ownership($userid,$_GET["setinactive"]) || check_authorship($userid,$_GET["setinactive"]));
+		$permission = true;
       	if($permission) 
 		{
-			$query = "UPDATE ".cms_db_prefix(). "pages SET active = 0 where page_id = ".$_GET["setinactive"];
-			$result = $db->Execute($query);
+			foreach ($content_array as $key=>$value_copy)
+			{
+				if ($value_copy->Id() == $_GET["setinactive"])
+				{
+					#Modify the object inline
+					$value =& $content_array[$key];
+					$value->mActive = false;
+					$value->Save();
+				}
+			}
 	    }
     }
-
-	$content_array = db_get_menu_items();
 
 	$page = 1;
 	if (isset($_GET['page']))$page = $_GET['page'];
 	$limit = 20;
 	echo "<div align=\"right\" class=\"clearbox\">".pagination($page, count($content_array), $limit)."</div>";
 	
-	if (count($content_array)) {
-
+	if (count($content_array))
+	{
 		echo '<table cellspacing="0" class="admintable">'."\n";
 		echo "<tr>\n";
 		echo "<td>&nbsp;</td>";
 		echo "<td width=\"25%\">".lang('title')."</td>\n";
-		echo "<td>".lang('template')."</td>\n";
+		echo "<td align=\"center\">".lang('template')."</td>\n";
 		echo "<td align=\"center\">".lang('type')."</td>\n";
 //		echo "<td align=\"center\">".lang('URL')."</td>\n";
 		echo "<td align=\"center\">".lang('owner')."</td>\n";
 		echo "<td align=\"center\">".lang('active')."</td>\n";
 		echo "<td align=\"center\">".lang('default')."</td>\n";
-		if ($modifyall) {
+		if ($modifyall)
+		{
 			echo "<td align=\"center\">".lang('move')."</td>\n";
 		}
 		echo "<td align=\"center\" width=\"16\">&nbsp;</td>\n";
@@ -97,36 +136,43 @@ if (isset($_GET["message"])) {
 		$count = 1;
 
 		$currow = "row1";
-
-		$types = get_page_types();
 		
 		// construct true/false button images
 		$image_true ="<img src=\"../images/cms/true.gif\" alt=\"".lang('true')."\" title=\"".lang('true')."\" border=\"0\">";
 		$image_false ="<img src=\"../images/cms/false.gif\" alt=\"".lang('false')."\" title=\"".lang('false')."\" border=\"0\">";
 
 		$counter = 0;
-		foreach ($content_array as $one) {
-			if ($counter < $page*$limit && $counter >= ($page*$limit)-$limit) {
+		foreach ($content_array as $one)
+		{
+			if ($counter < $page*$limit && $counter >= ($page*$limit)-$limit)
+			{
 				echo "<tr class=\"$currow\">\n";
-				echo "<td>".$one->hier."</td>\n";
-				echo "<td><a href=\"editcontent.php?content_id=".$one->page_id."&amp;parent_id=".$one->parent_id."\">".$one->page_title."</a></td>\n";
-				echo "<td>".$one->template_name."</td>\n";
-				echo "<td align=\"center\">".$types[$one->page_type]."</td>\n";
-	//			echo "<td>".($types[$one->page_type]=="Link"?$one->page_url:"&nbsp;")."</td>\n";
-				echo "<td align=\"center\">".$one->username."</td>\n";
-// 
-				if($one->active) 
+				echo "<td>".$one->Hierarchy()."</td>\n";
+				echo "<td><a href=\"editcontent.php?content_id=".$one->page_id."&amp;parent_id=".$one->parent_id."\">".$one->Name()."</a></td>\n";
+				if ($one->GetPropertyValue("template_id"))
 				{
-					echo "<td align=\"center\">".($one->default_page == 1?$image_true:"<a href=\"listcontent.php?setinactive=".$one->page_id."\">".$image_true."</a>")."</td>\n";
+					echo "<td>".$one->GetPropertyValue("template_id")."</td>\n";
+				}
+				else
+				{
+					echo "<td>&nbsp;</td>\n";
+				}
+				echo "<td align=\"center\">".$one->Type()."</td>\n";
+	//			echo "<td>".($one->Type()=="link"?$one->page_url:"&nbsp;")."</td>\n";
+				echo "<td align=\"center\">".$one->Owner()."</td>\n";
+// 
+				if($one->Active())
+				{
+					echo "<td align=\"center\">".($one->default_page == 1?$image_true:"<a href=\"listcontent.php?setinactive=".$one->Id()."\">".$image_true."</a>")."</td>\n";
 				}
 				else 
 				{
-				  	echo "<td align=\"center\"><a href=\"listcontent.php?setactive=".$one->page_id."\">".$image_false."</a></td>\n";
+				  	echo "<td align=\"center\"><a href=\"listcontent.php?setactive=".$one->Id()."\">".$image_false."</a></td>\n";
 				}
- 
-				if ($one->page_type == "content" && $one->active)
+
+				if ($one->Type() == "content")
 				{
-					echo "<td align=\"center\">".($one->default_page == 1?$image_true:"<a href=\"listcontent.php?makedefault=".$one->page_id."\" onclick=\"return confirm('".lang("confirmdefault")."');\">".$image_false."</a>")."</td>\n";
+					echo "<td align=\"center\">".($one->DefaultContent() == true?$image_true:"<a href=\"listcontent.php?makedefault=".$one->Id()."\" onclick=\"return confirm('".lang("confirmdefault")."');\">".$image_false."</a>")."</td>\n";
 				}
 				else
 				{
@@ -170,8 +216,8 @@ if (isset($_GET["message"])) {
 				{
 					echo "<td align=\"center\"><a href=\"".$config["root_url"]."/index.php?".$config['query_var']."=".$one->page_id."\" target=\"_blank\"><img src=\"../images/cms/view.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('view')."\" title=\"".lang('view')."\"></a></td>\n";
 				}
-				echo "<td align=\"center\"><a href=\"editcontent.php?content_id=".$one->page_id."&amp;parent_id=".$one->parent_id."\"><img src=\"../images/cms/edit.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('edit')."\" title=\"".lang('edit')."\"></a></td>\n";
-				echo "<td align=\"center\"><a href=\"deletecontent.php?page_id=".$one->page_id."\" onclick=\"return confirm('".lang('deleteconfirm')."');\"><img src=\"../images/cms/delete.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('delete')."\" title=\"".lang('delete')."\"></a></td>\n";
+				echo "<td align=\"center\"><a href=\"editcontent.php?content_id=".$one->Id()."\"><img src=\"../images/cms/edit.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('edit')."\" title=\"".lang('edit')."\"></a></td>\n";
+				echo "<td align=\"center\"><a href=\"deletecontent.php?page_id=".$one->Id."\" onclick=\"return confirm('".lang('deleteconfirm')."');\"><img src=\"../images/cms/delete.gif\" width=\"16\" height=\"16\" border=\"0\" alt=\"".lang('delete')."\" title=\"".lang('delete')."\"></a></td>\n";
 				echo "</tr>\n";
 
 				$count++;

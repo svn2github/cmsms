@@ -99,6 +99,11 @@ class ContentBase
 	var $mPreview;
 
 	/**
+	 * Is this page the default?
+	 */
+	var $mDefaultContent;
+
+	/**
 	 * Creation date
 	 * Date
 	 */
@@ -137,6 +142,7 @@ class ContentBase
 		$this->mItemOrder		= -1 ;
 		$this->mHierarchy		= "" ;
 		$this->mActive			= false ;
+		$this->mDefaultContent	= false ;
 		$this->mCreationDate	= "" ;
 		$this->mModifiedDate	= "" ;
 		$this->mPreview         = false ;
@@ -218,6 +224,27 @@ class ContentBase
 		return $this->mActive;
 	}
 
+	/**
+	 * Returns if the page is the default
+	 */
+	function DefaultContent()
+	{
+		return $this->mDefaultContent;
+	}
+
+	/**
+	 * Returns the properties
+	 */
+	function Properties()
+	{
+		return $this->mProperties;
+	}
+
+	function GetPropertyValue($name)
+	{
+		return $this->mProperties->GetValue($name);
+	}
+
 	/************************************************************************/
 	/* The rest																*/
 	/************************************************************************/
@@ -255,7 +282,8 @@ class ContentBase
 				$this->mParentId		= $row["parent_id"];
 				$this->mItemOrder		= $row["item_order"];
 				$this->mHierarchy		= $row["hierarchy"];
-				$this->mActive			= $row["active"];
+				$this->mActive			= ($row["active"] == 1?true:false);
+				$this->mDefaultContent	= ($row["default_content"] == 1?true:false);
 				$this->mCreationDate	= $row["create_date"];
 				$this->mModifiedDate	= $row["modified_date"];
 
@@ -328,6 +356,7 @@ class ContentBase
 		$this->mParentId		= $data["parent_id"];
 		$this->mItemOrder		= $data["item_order"];
 		$this->mHierarchy		= $data["hierarchy"];
+		$this->mDefaultContent	= ($data["default_content"] == 1?true:false);
 		$this->mActive			= ($data["active"] == 1?true:false);
 		$this->mCreationDate	= $data["creation_date"];
 		$this->mModifiedDate	= $data["modified_date"];
@@ -389,12 +418,13 @@ class ContentBase
 		
 		$result = false;
 
-		$query = "UPDATE ".cms_db_prefix()."content SET content_name = ?, owner_id = ?, active = ?, modified_date = ? WHERE content_id = ?";
+		$query = "UPDATE ".cms_db_prefix()."content SET content_name = ?, owner_id = ?, active = ?, default_content = ?, modified_date = ? WHERE content_id = ?";
 
 		$dbresult = $db->Execute($query, array(
 			$this->mName,
 			$this->mOwner,
 			($this->mActive==true?1:0),
+			($this->mDefaultContent==true?1:0),
 			$db->DBTimeStamp(time()),
 			$this->mId
 			));
@@ -417,7 +447,7 @@ class ContentBase
 		if (NULL != $this->mProperties)
 		{
 			# :TODO: There might be some error checking there
-			$this->mProperties.Save($this->mId);
+			$this->mProperties->Save($this->mId);
 		}
 		else
 		{
@@ -444,7 +474,7 @@ class ContentBase
 		$newid = $db->GenID(cms_db_prefix()."content_seq");
 		$this->mId = $newid;
 
-		$query = "INSERT INTO ".$config["db_prefix"]."content (content_id, content_name, type, owner_id, parent_id, item_order, hierarchy, active, create_date, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?)";
+		$query = "INSERT INTO ".$config["db_prefix"]."content (content_id, content_name, type, owner_id, parent_id, item_order, hierarchy, active, default_content, create_date, modified_date) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
 
 		$dbresult = $db->Execute($query, array(
 			$newid,
@@ -455,6 +485,7 @@ class ContentBase
 			$this->mItemOrder,
 			$this->mHierarchy,
 			($this->mActive==true?1:0),
+			($this->mDefaultContent==true?1:0),
 			$db->DBTimeStamp(time()),
 			$db->DBTimeStamp(time())
 			));
@@ -894,6 +925,33 @@ class ContentManager
 				ContentManager::SetHierarchyPosition($row['content_id']);
 			}
 		}
+	}
+
+	function GetAllContent()
+	{
+		global $gCms;
+		$db = $gCms->db;
+
+		$result = array();
+
+		$query = "SELECT content_id, type FROM ".cms_db_prefix()."content ORDER BY hierarchy";
+		$dbresult = $db->Execute($query);
+
+		if ($dbresult && $dbresult->RowCount() > 0)
+		{
+			while ($row = $dbresult->FetchRow())
+			{
+				#Make sure the type exists.  If so, instantiate and load
+				if (in_array($row['type'], ContentManager::ListContentTypes()))
+				{
+					$contentobj = new $row['type'];
+					$contentobj->LoadFromId($row['content_id'], true);
+					array_push($result, $contentobj);
+				}
+			}
+		}
+
+		return $result;
 	}
 }
 

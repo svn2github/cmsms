@@ -29,7 +29,7 @@ if (isset($_POST["content_id"])) $content_id = $_POST["content_id"];
 else if (isset($_GET["content_id"])) $content_id = $_GET["content_id"];
 
 $old_content_type = "";
-if (isset($_POST["content_type"])) $content_type = $_POST["content_type"];
+if (isset($_POST["old_content_type"])) $old_content_type = $_POST["old_content_type"];
 
 $preview = false;
 if (isset($_POST["previewbutton"])) $preview = true;

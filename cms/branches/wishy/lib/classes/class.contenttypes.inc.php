@@ -69,7 +69,7 @@ class Content extends ContentBase
 
 		$text .= '<tr><td>'.lang('title').':</td><td><input type="text" name="title" value="'.$this->mProperties->GetValue('title').'"></td></tr>';
 		$text .= '<tr><td>'.lang('menutext').':</td><td><input type="text" name="menutext" value="'.$this->mProperties->GetValue('menutext').'"></td></tr>';
-		$text .= '<tr><td>'.lang('template').':</td><td><input type="text" name="template" value="'.$this->mProperties->GetValue('template').'"></td></tr>';
+		$text .= '<tr><td>'.lang('template').':</td><td><input type="text" name="template_id" value="'.$this->mProperties->GetValue('template_id').'"></td></tr>';
 		$text .= '<tr><td>'.lang('content').':</td><td>'.textarea_highlight((isset($use_javasyntax)?$use_javasyntax:false), $this->mProperties->GetValue('content_en'), "content_en", "syntaxHighlight", "HTML (Complex)", "content_en") . '</td></tr>';
 		$text .= '<tr><td>'.lang('headtags').':</td><td>'.textarea_highlight((isset($use_javasyntax)?$use_javasyntax:false), $this->mProperties->GetValue('headtags'), "headtags").'</td></tr>';
 
