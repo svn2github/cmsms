@@ -52,10 +52,8 @@ function mime_of()
 function find_mime_types()
 {
   local dir="$1"
-  # fine files only
-  find "$dir" -type f |
-  # remove the */.svn/* directories
-  grep -v '/\.svn/' |
+  # find files only, but not in .svn directories
+  find "$dir" \( -name ".svn" -prune -or \( -type f -and -print \) \) |
   # remove './' if line starts with it (beautify)
   sed 's:^\./::' |
   # find the mime types
