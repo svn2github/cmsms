@@ -21,8 +21,8 @@
  *
  * @package CMS
  */
-require_once(dirname(dirname(__FILE__)).'/smarty/Smarty.class.php');
-require_once(dirname(dirname(__FILE__)) . "/lib/classes/class.htmlblob.inc.php");
+require_once(dirname(__FILE__).'/smarty/Smarty.class.php');
+require_once(dirname(__FILE__) . "/classes/class.htmlblob.inc.php");
 $sorted_sections = array();
 $sorted_content = array();
 
@@ -40,10 +40,10 @@ class Smarty_CMS extends Smarty {
 	{
 		$this->Smarty();
 
-		$this->template_dir = $config["root_path"].'/smarty/cms/templates/';
-		$this->compile_dir = $config["root_path"].'/smarty/cms/templates_c/';
-		$this->config_dir = $config["root_path"].'/smarty/cms/configs/';
-		$this->cache_dir = $config["root_path"].'/smarty/cms/cache/';
+		$this->template_dir = $config["root_path"].'/tmp/templates/';
+		$this->compile_dir = $config["root_path"].'/tmp/templates_c/';
+		$this->config_dir = $config["root_path"].'/tmp/configs/';
+		$this->cache_dir = $config["root_path"].'/tmp/cache/';
 		$this->plugins_dir = $config["root_path"].'/plugins/';
 
 		$this->caching = true;

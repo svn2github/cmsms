@@ -794,7 +794,7 @@ function cms_mapi_create_content_link_by_page_id($page_id, $link_text) {
 	return "<a href=\"".$config["root_url"]."/index.php?page=$page_id\">$link_text</a>\n";
 }
 
-require_once(dirname(dirname(__FILE__)).'/smarty/Smarty.class.php');
+require_once(dirname(dirname(__FILE__)).'/lib/smarty/Smarty.class.php');
 
 class Smarty_ModuleInterface extends Smarty {
 
@@ -805,10 +805,10 @@ class Smarty_ModuleInterface extends Smarty {
 		global $gCms;
 		$config = &$gCms->config;
 
-		$this->template_dir = $config["root_path"].'/smarty/cms/templates/';
-		$this->compile_dir = $config["root_path"].'/smarty/cms/templates_c/';
-		$this->config_dir = $config["root_path"].'/smarty/cms/configs/';
-		$this->cache_dir = $config["root_path"].'/smarty/cms/cache/';
+		$this->template_dir = $config["root_path"].'/tmp/templates/';
+		$this->compile_dir = $config["root_path"].'/tmp/templates_c/';
+		$this->config_dir = $config["root_path"].'/tmp/configs/';
+		$this->cache_dir = $config["root_path"].'/tmp/cache/';
 		$this->plugins_dir = $config["root_path"].'/plugins/';
 
 		$this->compile_check = true;

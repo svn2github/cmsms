@@ -30,6 +30,8 @@ if (!file_exists("config.php") || filesize("config.php") == 0) {
     redirect("install/install.php");
     exit;
 } ## if
+
+/*
 if (isset($_GET["deleteinstall"]) && $_GET["deleteinstall"] == "true") {
     @unlink("install/install.php");
 } ## if
@@ -43,6 +45,7 @@ if (file_exists("config.php") && file_exists("install/install.php")) {
     echo "Click <a href=\"index.php?deleteinstall=true\">here</a> to have CMS try to delete it for you.  If successful you will see the CMS main page<br>\n";
     exit;
 } ## if
+*/
 
 require_once(dirname(__FILE__)."/include.php"); #Makes gCms object
 
@@ -97,9 +100,6 @@ if (get_site_preference('enablecustom404') == "0")
 #}
 
 echo $html;
-
-#header("Content-Language: " . $current_language);
-#header("Content-Type: text/html; charset=" . get_encoding());
 
 @ob_flush();
 
