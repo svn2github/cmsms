@@ -60,7 +60,7 @@ class Calendar extends CMSModule
 
 	function GetVersion()
 	{
-		return '0.1';
+		return '0.2';
 	}
 
 	function GetDescription($lang = 'en_US')
@@ -143,6 +143,8 @@ EOT;
 		return <<<EOT
 			<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
 			<dl>
+				<dt>Version: 0.2</dt>
+					<dd>New display option: "upcominglist". Also many bugfixes!</dd>
 				<dt>Version: 0.1</dt>
 					<dd>Initial release.</dd>
 
