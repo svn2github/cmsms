@@ -224,13 +224,13 @@ function db_get_menu_items(&$config, $style) {
 
 ## 	echo "style: ($style)";
 	if ($style === "subs") { ## shows all sections and subsections, no pages
-		$query = "SELECT s.section_name, s.parent_id, s.section_id, s.active FROM ".$config->db_prefix."sections s order by parent_id, item_order";
+		$query = "SELECT p.menu_text, p.page_title, p.page_url, s.section_name, s.parent_id, s.section_id, s.active FROM ".$config->db_prefix."sections s LEFT OUTER JOIN ".$config->db_prefix."pages p ON s.section_id=p.section_id order by s.parent_id, s.item_order";
 		$result = $db->Execute($query);
 
 		$pages = array();
 		while ($line = $result->FetchRow()) {
 
-			if (!isset($current_section) || $line["section_name"] != $current_section->name) {
+			if (!isset($current_section) || $line["section_id"] != $current_section->section_id) {
 
 				if (isset($current_section)) {
 					array_push($sections, $current_section);
@@ -245,6 +245,22 @@ function db_get_menu_items(&$config, $style) {
 				$current_section->active = $line["active"];
 				$current_section->items = array();
 			} ## if
+
+			if ($line["page_title"] != "") {
+				$menu_item = new MenuItem;
+				$menu_item->menu_text = $line["menu_text"];
+				if ($line['page_type'] == "link") {
+					$menu_item->url = $line["page_url"];
+				} else {
+					if (isset($config->query_var) && $config->query_var != "") {
+						$menu_item->url = $config->root_url."/index.php?".$config->query_var."=".$line["page_url"];
+					}
+					else if ($line['page_type'] == "link") {
+						$menu_item->url = $line["page_url"];
+					}
+					array_push($current_section->items, $menu_item);
+				}
+			}
 
 		} ## while
 
@@ -294,7 +310,7 @@ function db_get_menu_items(&$config, $style) {
 					$menu_item->url = $line["page_url"];
 				}
 				array_push($current_section->items, $menu_item);
-			} ## while
+			}
 
 		} ## while
 
