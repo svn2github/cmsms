@@ -142,7 +142,12 @@ function htmlarea_module_header_function(&$cms)
 
 function htmlarea_module_body_function($cms)
 {
-	echo "onload='page_load();'";
+	$variables = $cms->variables;
+
+	if (array_key_exists('htmlarea_textareas', $cms->variables))
+	{
+		echo "onload='page_load();'";
+	}
 }
 
 function htmlarea_module_textbox_function(&$cms, $name='textbox', $columns='80', $rows='8', $encoding='', $content='', $stylesheet='')
