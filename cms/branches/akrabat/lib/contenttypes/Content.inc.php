@@ -288,6 +288,30 @@ class content extends ContentBase
 		}
 		return $result;
 	}
+	
+	function ContentPreRender($tpl_source)
+	{
+		// check for additional content blocks
+		$this->GetAdditionalContentBlocks();
+
+		// find the {content block='XXX'} and store into an array
+		$pattern = '{content[ ]+block[ ]*=["\']([a-zA-z0-9 -_]*)["\'][a-zA-z0-9\'" =_-]*}';
+		$matches = array();
+		$result = preg_match_all($pattern, $tpl_source, $matches);
+		if($result)
+		{
+			$count = count($matches);
+			// iterate over each additional content block and replace with the text from the property
+			for($i = 0; $i < $count; $i++)
+			{
+				$pattern = $matches[0][$i];
+				$blockNameId = $this->additionalContentBlocks[$matches[1][$i]];
+				$replace = $this->GetPropertyValue($blockNameId);
+				$tpl_source = str_replace('{' . $pattern . '}', $replace, $tpl_source);
+			}
+		}		
+		return $tpl_source;
+	}
 }
 
 # vim:ts=4 sw=4 noet
