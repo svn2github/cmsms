@@ -1042,7 +1042,7 @@ EOT;
 			
 			
 			// add the css class "calendar-today" if this month is being displayed 
-			if(strtotime(sprintf("04d-02d-01", $year, $month)) == strtotime(sprintf("04d-02d-01", date('Y'), date('m'))))
+			if(sprintf("%04d-%02d-01", $year, $month) == sprintf("%04d-%02d-01", date('Y'), date('m')))
 			{
 				// month being displayed is this month. Therefore today exists
 				$today = date('j');
