@@ -208,7 +208,8 @@ EOT;
 			<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
 			<dl>
 				<dt>Version: 0.5+</dt>
-					<dd>Fix event display so that if the end date is not set, we don't display "to".</dd>
+					<dd>Fix event display so that if the end date is not set, we don't display "to". 
+					Filter by category when displaying an upcominglist.</dd>
 				<dt>Version: 0.5</dt>
 					<dd>Fix the drop down list for end date year. Fix DE translation of "Return" (thanks Piratos!).
 					 Fix spacing around "to" (thanks Greg!). Add Danish and Dutch translations courtesy of board members esmann and dont.</dd>
@@ -1212,6 +1213,24 @@ EOT;
 			$start_midnight = date('Y-m-d 00:00:00');
 			$sql .= "$where ($events_table_name.event_date_start >= '$start' OR $events_table_name.event_date_start = '$start_midnight') ";
 			$where = ' AND ';
+			if($category)
+			{
+				$cats = explode(',', $category);
+				$sql .= $where . ' (';
+				$count = 0;
+				foreach($cats as $cat)
+				{
+					$cat = trim($cat);
+					if($count != 0)
+					{
+						$sql .= ' OR ';
+					}
+					$count++;
+					$sql .= "$categories_table_name.category_name LIKE '$cat' ";
+				}
+				$sql .=	') ';
+				$where = ' AND ';
+			}			
 			$sql .= " ORDER BY $events_table_name.event_date_start ASC";
 		}
 		else
