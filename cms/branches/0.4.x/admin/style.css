@@ -121,7 +121,6 @@ div.nav form {
 div.content {
 	height: 100%;
 	color: #000;
-/*	margin-left: 200px; &*/
 
 }
 
@@ -183,8 +182,9 @@ div.adminform {
 	padding: 8px;
 	margin-top: 10px;
 	margin-right: 10px;
-	margin-left: 180px;
-	
+	/*margin-left: 180px;*/
+	position: absolute;
+	left: 200px;
 }
 
 /* end form style */
