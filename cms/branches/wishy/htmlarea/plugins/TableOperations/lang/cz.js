@@ -1,0 +1,90 @@
+// I18N constants
+
+// LANG: "cz", ENCODING: UTF-8 | ISO-8859-2
+// Author: Jiri Löw, <jirilow@jirilow.com>
+
+// FOR TRANSLATORS:
+//
+//   1. PLEASE PUT YOUR CONTACT INFO IN THE ABOVE LINE
+//      (at least a valid email address)
+//
+//   2. PLEASE TRY TO USE UTF-8 FOR ENCODING;
+//      (if this is not possible, please include a comment
+//       that states what encoding is necessary.)
+
+TableOperations.I18N = {
+	"Align":					  "Zarovnání",
+	"All four sides":				  "V¹echny ètyøi strany",
+	"Background":					  "Pozadí",
+	"Baseline":                                       "Základní linka",
+	"Border":					  "Obrys",
+	"Borders":					  "Obrysy",
+	"Bottom":                                         "Dolù",
+	"CSS Style":					  "Kaskádové styly (CSS)",
+	"Caption":					  "Titulek",
+	"Cell Properties":                                "Vlastnosti buòky",
+	"Center":					  "Na støed",
+	"Char":                                           "Znak",
+	"Collapsed borders":                              "Stlaèené okraje",
+	"Color":					  "Barva",
+	"Description":					  "Popis",
+	"FG Color":					  "Barva popøedí",
+	"Float":                                          "Obtékání",
+	"Frames":					  "Rámeèky",
+	"Height":                                         "Vý¹ka",
+	"How many columns would you like to merge?":      "Kolik sloupcù si pøejete spojit?",
+	"How many rows would you like to merge?":         "Kolik øádkù si pøejete spojit?",
+	"Image URL":					  "Adresa obrázku",
+	"Justify":                                        "Do stran",
+	"Layout":					  "Rozlo¾ení",
+	"Left":						  "Vlevo",
+	"Margin":                                         "Okraj",
+	"Middle":                                         "Na støed",
+	"No rules":					  "®ádné èáry",
+	"No sides":					  "®ádné strany",
+	"None":                                           "®ádné",
+	"Padding":					  "Odsazování",
+	"Please click into some cell":                    "Prosím kliknìte do nìkteré buòky",
+	"Right":					  "Vpravo",
+	"Row Properties":                                 "Vlastnosti øádku",
+	"Rules will appear between all rows and columns": "Èáry mezi v¹emi øádky i sloupci",
+	"Rules will appear between columns only":	  "Èáry pouze mezi sloupci",
+	"Rules will appear between rows only":		  "Èáry pouze mezi øádky",
+	"Rules":					  "Èáry",
+	"Spacing and padding":                            "Mezery a odsazování",
+	"Spacing":					  "Mezery",
+	"Summary":					  "Shrnutí",
+	"TO-cell-delete":				  "Smazat buòku",
+	"TO-cell-insert-after":				  "Vlo¾it buòku za",
+	"TO-cell-insert-before":			  "Vlo¾it buòku pøed",
+	"TO-cell-merge":				  "Spojit buòky",
+	"TO-cell-prop":					  "Vlastnosti buòky",
+	"TO-cell-split":				  "Rozdìlit buòku",
+	"TO-col-delete":				  "Smazat sloupec",
+	"TO-col-insert-after":				  "Vlo¾it sloupec za",
+	"TO-col-insert-before":				  "Vlo¾it sloupec pøed",
+	"TO-col-split":					  "Rozdìlit sloupec",
+	"TO-row-delete":				  "Smazat øádek",
+	"TO-row-insert-above":				  "Smazat øádek nad",
+	"TO-row-insert-under":				  "Smazat øádek pod",
+	"TO-row-prop":					  "Vlastnosti øádku",
+	"TO-row-split":					  "Rozdìlit øádek",
+	"TO-table-prop":				  "Vlastnosti tabulky",
+	"Table Properties":				  "Vlastnosti tabulky",
+	"Text align":                                     "Zarovnání textu",
+	"The bottom side only":				  "Pouze spodní strana",
+	"The left-hand side only":			  "Pouze levá strana",
+	"The right and left sides only":		  "Pouze levá a pravá strana",
+	"The right-hand side only":			  "Pouze pravá strana",
+	"The top and bottom sides only":		  "Pouze horní a dolní strana",
+	"The top side only":				  "Pouze horní strana",
+	"Top":                                            "Nahoru",	
+	"Unset color":                                    "Zru¹it barvu",
+	"Vertical align":                                 "Svislé zarovnání",
+	"Width":					  "©íøka",
+	"not-del-last-cell":				  "HTMLArea zbabìle odmítá smazat poslední buòku v øádku.",
+	"not-del-last-col":				  "HTMLArea zbabìle odmítá smazat poslední sloupec v tabulce.",
+	"not-del-last-row":				  "HTMLArea zbabìle odmítá smazat poslední øádek v tabulce.",
+	"percent":					  "procent",
+	"pixels":					  "pixelù"
+};
