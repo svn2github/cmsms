@@ -671,6 +671,32 @@ class CMSModule extends ModuleOperations
 		return $text . "\n";
 	}
 
+	function CreateInputDropdown($id, $name, $items, $selectedindex=-1, $selectedvalue='', $addttext='')
+	{
+		$text = '<select name="'.$id.$name.'"';
+		if ($addttext != '')
+		{
+			$text .= ' ' . $addttext;
+		}
+		$text .= '>';
+		$count = 0;
+		foreach ($items as $key=>$value)
+		{
+			$text .= '<option value="'.$value.'"';
+			if ($selectedindex == $count || $selectedvalue == $value)
+			{
+				$text .= ' ' . 'selected="selected"';
+			}
+			$text .= '>';
+			$text .= $key;
+			$text .= '</option>';
+			$count++;
+		}
+		$text .= '</select>'."\n";
+
+		return $text;
+	}
+
 	function CreateTextArea($enablewysiwyg, $text, $name, $classname, $id='', $encoding='', $stylesheet='')
 	{
 		return create_textarea($enablewysiwyg, $text, $name, $classname, $id, $encoding, $stylesheet);
@@ -692,12 +718,12 @@ class CMSModule extends ModuleOperations
 		return $text;
 	}
 
+
 	/**
 	 * ------------------------------------------------------------------
 	 * Internal Functions
 	 * ------------------------------------------------------------------
 	 */
-
 }
 
 /**
@@ -850,7 +876,7 @@ class ModuleOperations
 	}
 
 	/**
-	 * Returns a hash of all loaded modules.  This will either include all
+	 * Returns a hash of all loaded modules.  This will include all
 	 * modules loaded by LoadModules, which could either be all or them,
 	 * or just ones that are active and installed.
 	 */

@@ -185,23 +185,19 @@ class News extends CMSModule
 		  <tr>
 			<td>Expiry:</td>
 			<td>
-		<?php
-		   if( $moduleaction == "edit" || $moduleaction == "completeedit" ) {
-			  echo "<select name=\"".$id."expiry\" disabled=\"disabled\">";
-		   }
-		   else {
-			  echo "<select name=\"".$id."expiry\">";
-		   }
+			<?php
+				$addttext = '';
+				$values = array();
+				if( $moduleaction == "edit" || $moduleaction == "completeedit" )
+				{
+					$addttext = 'disabled="disabled"';
+				}
+				else
+				{
+					$values = array('1 Day'=>'1 Day', '1 Week'=>'1 Week', '2 Weeks'=>'2 Weeks', '1 Month'=>'1 Month', '3 Months'=>'3 Months', '6 Months'=>'6 Months', '1 Year'=>'1 Year', 'Never'=>'Never');
+				}
+				echo $this->CreateInputDropdown($id, 'expiry', $values, -1, '6 Months', $addttext);
 		?>
-				 <option>1 Day</option>
-				 <option>1 Week</option>
-				 <option>2 Weeks</option>
-				 <option>1 Month</option>
-				 <option>3 Months</option>
-				 <option selected="selected">6 Months</option>
-				 <option>1 Year</option>
-				 <option>Never</option>
-			   </select>
 			</td>
 		  </tr>
 		  <tr>
