@@ -553,9 +553,13 @@ function bookmarks_module_about()
 	?>
 	<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
 	<dl>
-	<dt>Version: 0.1</dt>
-	<dd>Initial realase. The code framework is based on the News module by Robert
-	Campbell &lt;rob@techcom.dydnsns.org&gt;</dd>
+		<dt>Version: 0.1</dt>
+		<dd>Initial realase. The code framework is based on the News module by Robert
+			Campbell &lt;rob@techcom.dydnsns.org&gt;</dd>
+		<dt>Version: 0.9</dt>
+			<dd>First release of code to rest of world!</dd>
+		<dt>Version: 0.9.1</dt>
+			<dd>Bug fixes to help, column handling and the admin list.</dd>
 	</dl>
 	<?php
 }

@@ -21,7 +21,7 @@
 $module_name = "Bookmarks";
 
 // Defines
-define('BOOKMARKS_MODULE_VERSION', 0.9.1);
+define('BOOKMARKS_MODULE_VERSION', '0.9.1');
 
 define('BOOKMARKS_MODULE_COMMONCODE_FILE', dirname(__FILE__).'/../CommonCode/modulefunctions.php');
 define('BOOKMARKS_MODULE_MIN_COMMONCODE_VERSION', 1.0);
