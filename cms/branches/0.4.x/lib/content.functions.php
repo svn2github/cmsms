@@ -170,59 +170,156 @@ function db_get_default_page (&$config) {
 }
 
 class Section {
+	var $section_id;
 	var $section_name;
+	var $display_name;
+	var $parent_id;
 	var $items;
-}
+
+	function get_child_sections($section_id, $sections, $level) {
+
+		echo "get_child_sections: level: ($level) section_id: ($section_id)<br />\n";
+		reset($sections);
+		$child_sections = array();
+		foreach ($sections as $one) {
+## 			echo "looking for a child: section_id: $section_id  name: ".$one->section_name."  parent_id: ".$one->parent_id."<br />\n";
+			if ($section_id == $one->parent_id) {
+				echo "level: $level -> found a child: ".$one->section_name."<br />\n";
+				$prefix = " ** ";
+				for ($i=0; $i<=$level; $i++) { $prefix .= " -- "; }
+
+				$one->display_name = $prefix.$one->section_name;
+				array_push($child_sections, $one);
+## 				array_push($child_sections, $one->get_child_sections($one->section_id, $sections, $level + 1));
+				$children = $one->get_child_sections($one->section_id, $sections, $level +1);
+				array_push($child_sections, $children);
+				foreach ($children as $child) {
+					echo "child: ".$child->section_name."<br />\n";
+				} ## foreach
+
+## 				if (isset($children)) {
+## 					echo "children[] is indeed set<br />\n";
+## 					array_push($child_sections, $children);
+## 				} ## if
+			} ## if
+		} ## foreach
+		echo "returning<br />\n";
+		return $child_sections;
+	} ## function
+} ## class
 
 class MenuItem {
 	var $name;
 	var $url;
 }
 
-function db_get_menu_items(&$config) {
+class Page {
+	var $title;
+	var $url;
+	var $menu_text;
+	var $show_in_menu;
+	var $page_type;
+	var $item_order;
+	var $active;
+	var $section_id;
+}
+
+function db_get_menu_items(&$config, $style) {
 
 	$db = $config->db;
 
 	$sections = array();
 	$current_section;
 
-	$query = "SELECT p.*, s.section_name FROM ".$config->db_prefix."pages p INNER JOIN ".$config->db_prefix."sections s ON s.section_id = p.section_id WHERE p.show_in_menu = 1 AND p.active = 1 ORDER BY s.item_order, p.item_order, p.menu_text";
-	$result = $db->Execute($query);
+## 	echo "style: ($style)";
+	if ($style === "subs") { ## shows all sections and subsections, no pages
+		## $query = "SELECT p.*, s.section_name, s.parent_id, s.section_id FROM ".$config->db_prefix."sections s LEFT OUTER JOIN ".$config->db_prefix."pages p ON s.section_id = p.section_id order by section_name";
+		$query = "SELECT s.section_name, s.parent_id, s.section_id FROM ".$config->db_prefix."sections s order by parent_id, item_order";
+		$result = $db->Execute($query);
 
-	while ($line = $result->FetchRow()) {
+		$pages = array();
+		while ($line = $result->FetchRow()) {
 
-		if (!isset($current_section) || $line["section_name"] != $current_section->name) {
+			if (!isset($current_section) || $line["section_name"] != $current_section->name) {
 
-			if (isset($current_section)) {
-				array_push($sections, $current_section);
+				if (isset($current_section)) {
+					array_push($sections, $current_section);
+				} ## if
+
+				$current_section = new Section;
+				$current_section->section_id = $line["section_id"];
+				$current_section->section_name = $line["section_name"];
+				$current_section->parent_id = $line["parent_id"];
+				$current_section->items = array();
+			} ## if
+
+			if (isset($line["page_title"])) {
+				echo "section (".$current_section->section_name.") -> (".$line["page_title"].")<br />\n";
+			} ## if
+		} ## while
+
+		if (isset($current_section)) {
+			array_push($sections, $current_section);
+		} ## if
+
+		## warning, ugly code follows		
+		$sorted = array();
+
+		reset($sections);
+		$children = array();
+		foreach($sections as $one_section) {
+			if ($one_section->parent_id == 0) {
+				array_push($sorted, $one_section);
+				$children = $one_section->get_child_sections($one_section->section_id, $sections, 1);
+			} ## if
+			array_push($sorted, $children);
+		} ## foreach
+		
+		return $sorted;
+
+
+	} elseif ($style === "basic") {
+		$query = "SELECT p.*, s.section_name, s.parent_id FROM ".$config->db_prefix."pages p INNER JOIN ".$config->db_prefix."sections s ON s.section_id = p.section_id WHERE p.show_in_menu = 1 AND p.active = 1 ORDER BY s.item_order, p.item_order, p.menu_text";
+		$result = $db->Execute($query);
+
+		while ($line = $result->FetchRow()) {
+
+			if (!isset($current_section) || $line["section_name"] != $current_section->section_name) {
+
+				if (isset($current_section)) {
+					array_push($sections, $current_section);
+				}
+				$current_section = new Section;
+				$current_section->section_name = $line["section_name"];
+				$current_section->parent_id = $line["parent_id"];
+				$current_section->items = array();
 			}
-			$current_section = new Section;
-			$current_section->name = $line["section_name"];
-			$current_section->items = array();
-		}
 
-		$menu_item = new MenuItem;
-		$menu_item->name = $line["menu_text"];
-		if ($line['page_type'] == "link") {
-			$menu_item->url = $line["page_url"];
-		}
-		else {
-			if (isset($config->query_var) && $config->query_var != "") {
-				$menu_item->url = $config->root_url."/index.php?".$config->query_var."=".$line["page_url"];
+			$menu_item = new MenuItem;
+			$menu_item->section_name = $line["menu_text"];
+			if ($line['page_type'] == "link") {
+				$menu_item->url = $line["page_url"];
 			}
 			else {
-				$menu_item->url = $config->root_url."/index.php/".$line["page_url"];
-			}
-		}
-		array_push($current_section->items, $menu_item);
-	}
+				if (isset($config->query_var) && $config->query_var != "") {
+					$menu_item->url = $config->root_url."/index.php?".$config->query_var."=".$line["page_url"];
+				}
+				else if ($line['page_type'] == "link") {
+					$menu_item->url = $line["page_url"];
+				}
+				array_push($current_section->items, $menu_item);
+			} ## while
+
+		} ## while
+
+	} ## if
 
 	if (isset($current_section)) {
 		array_push($sections, $current_section);
 	}
-	
 	return $sections;
-}
+			
+} ## function
 
 function get_page_types(&$config) {
 

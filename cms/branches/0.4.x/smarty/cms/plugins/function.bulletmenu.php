@@ -22,7 +22,7 @@ function smarty_function_bulletmenu($params, &$smarty) {
 
 	$menu = "";
 
-	$sections = db_get_menu_items($smarty->configCMS);
+	$sections = db_get_menu_items($smarty->configCMS, "basic");
 
 	foreach ($sections as $onesection) {
 
