@@ -301,6 +301,12 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 			ob_start();
 
 		}
+		
+		$target = '';
+		if(isset($params["target"]))
+		{
+			$target = ' target = "' . $params["target"] . '" ';
+		}
 
 		$row_count = 0;
 		while( ($row = $dbresult->FetchRow()) )
@@ -357,7 +363,7 @@ function bookmarks_module_executeuser_display($cms, $id, $return_id, $params )
 					echo "\t\t<ul class='cms-module-bookmarks-list'>\n";
 				}
 
-				echo "\t\t\t<li><a class='bookmark-link' href='$bookmark_url'>$bookmark_title</a>$bookmark_summary</li>\n";
+				echo "\t\t\t<li><a class='bookmark-link' $target href='$bookmark_url'>$bookmark_title</a>$bookmark_summary</li>\n";
 			}
 		}
 
@@ -504,6 +510,10 @@ and display bookmarks.  The code would look something like:
 <tr>
 	<td>summaries</td>
 	<td>Set to "true" to display the summary information. <em>(optional)</em></td>
+</tr>
+<tr>
+	<td>target</td>
+	<td>Set to "_blank" to get all links to open in a new window. <em>(optional)</em></td>
 </tr>
 <tr>
 	<td>addform</td>
