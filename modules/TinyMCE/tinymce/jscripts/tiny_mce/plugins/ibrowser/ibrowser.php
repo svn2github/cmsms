@@ -252,6 +252,7 @@ if ($tinyMCE_img_delete_allowed && isset($HTTP_POST_VARS['lib_action'])
     else
       $_root = $HTTP_SERVER_VARS['DOCUMENT_ROOT'];
     
+    echo $_root.$imglib;
     $d = @dir($_root.$imglib);
   ?>
           <select name="imglist" size="15" style="width: 100%;" 
