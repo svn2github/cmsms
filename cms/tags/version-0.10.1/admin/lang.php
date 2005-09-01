@@ -85,7 +85,7 @@ if (isset($CMS_ADMIN_PAGE)) {
 	#	}
 	#}
 
-    $file = dirname(__FILE__) . "/admin/lang/" . $current_language . "/admin.inc.php";
+    $file = dirname(__FILE__) . "/lang/" . $current_language . "/admin.inc.php";
     if (is_file($file) && strlen($current_language) == 5 && strpos($current_language, ".") === false)
 	{
 		include ($file);
