@@ -79,6 +79,9 @@ if ($page == "")
 	$page = ContentManager::GetDefaultContent();
 }
 
+$pageinfo = PageInfoOperations::LoadPageInfoByContentAlias($page);
+$gCms->variables['pageinfo'] =& $pageinfo;
+
 $old_error_handler = '';
 if (get_site_preference('enablecustom404') == "0" && (!$config['debug']))
 {
@@ -93,8 +96,8 @@ if (isset($_GET["print"]))
 }
 else
 {
-	($smarty->is_cached('db:'.$page)?$cached="":$cached="not ");
-	$html = $smarty->fetch('db:'.$page) . "\n";
+	($smarty->is_cached('template:'.$page)?$cached="":$cached="not ");
+	$html = $smarty->fetch('template:'.$page) . "\n";
 }
 
 if (get_site_preference('enablecustom404') == "0" && (!$config['debug']))
@@ -145,8 +148,8 @@ if (get_site_preference('enablesitedownmessage') == "1")
 	$smarty->clear_all_cache();
 }
 
-if ($config["debug"] == true)
-{
+#if ($config["debug"] == true)
+#{
 	echo $sql_queries;
 	foreach ($gCms->errors as $error)
 	{
@@ -154,7 +157,7 @@ if ($config["debug"] == true)
 	}
 
 	#xdebug_dump_function_profile(1);
-}
+#}
 
 # vim:ts=4 sw=4 noet
 ?>
