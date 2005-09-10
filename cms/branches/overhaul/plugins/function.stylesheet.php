@@ -18,7 +18,28 @@
 
 function smarty_cms_function_stylesheet($params, &$smarty)
 {
-	return 'Stylesheet';
+	global $gCms;
+	$config = &$gCms->config;
+	$pageinfo = &$gCms->variables['pageinfo'];
+
+	$stylesheet = '';
+
+	foreach (get_stylesheet_media_types($pageinfo->template_id) as $media)
+	{
+		$stylesheet .= '<link rel="stylesheet" type="text/css" ';
+		if ($media != '')
+		{
+			$stylesheet .= 'media="'.$media.'" ';
+		}
+		$stylesheet .= 'href="'.$config['root_url'].'/stylesheet.php?templateid='.$pageinfo->template_id;
+		if ($media != '')
+		{
+			$stylesheet .= '&amp;mediatype='.urlencode($media);
+		}
+		$stylesheet .= '" />'."\n"; 
+	}
+
+	return $stylesheet;
 }
 
 function smarty_cms_help_function_stylesheet() {

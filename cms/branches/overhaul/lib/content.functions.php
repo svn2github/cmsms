@@ -712,44 +712,51 @@ function load_plugins(&$smarty)
 function search_plugins(&$smarty, &$plugins, $dir, $caching)
 {
 	$ls = dir($dir);
-	while (($file = $ls->read()) != "") {
-		if (is_file("$dir/$file") && (strpos($file, ".") === false || strpos($file, ".") != 0)) {
-			if (preg_match("/^(.*?)\.(.*?)\.php/", $file, $matches)) {
+	while (($file = $ls->read()) != "")
+	{
+		if (is_file("$dir/$file") && (strpos($file, ".") === false || strpos($file, ".") != 0))
+		{
+			//Valid plugins will always have a 3 part filename
+			$filearray = explode('.', $file);
+			if (count($filearray == 3))
+			{
 				$filename = $dir . '/' . $file;
+				//The part we care about is the middle one...
+				$file = $filearray[1];
 				if (strpos($filename, 'function') !== false && filesize($filename) > 50)
 				{
 					require_once $filename;
-					if (function_exists("smarty_cms_function_" . $matches[2]))
+					if (function_exists("smarty_cms_function_" . $file))
 					{
-						$smarty->register_function($matches[2], "smarty_cms_function_" . $matches[2], $caching);
-						array_push($plugins, $matches[2]);
+						$smarty->register_function($file, "smarty_cms_function_" . $file, $caching);
+						array_push($plugins, $file);
 					}
 				}
 				else if (strpos($filename, 'compiler') !== false)
 				{
 					require_once $filename;
-					if (function_exists("smarty_cms_compiler_" . $matches[2]))
+					if (function_exists("smarty_cms_compiler_" . $file))
 					{
-						$smarty->register_compiler_function($matches[2], "smarty_cms_compiler_" . $matches[2], $caching);
-						array_push($plugins, $matches[2]);
+						$smarty->register_compiler_function($file, "smarty_cms_compiler_" . $file, $caching);
+						array_push($plugins, $file);
 					}
 				}
 				else if (strpos($filename, 'prefilter') !== false)
 				{
 					require_once $filename;
-					if (function_exists("smarty_cms_prefilter_" . $matches[2]))
+					if (function_exists("smarty_cms_prefilter_" . $file))
 					{
-						$smarty->register_prefilter($matches[2], "smarty_cms_prefilter_" . $matches[2], $caching);
-						array_push($plugins, $matches[2]);
+						$smarty->register_prefilter($file, "smarty_cms_prefilter_" . $file, $caching);
+						array_push($plugins, $file);
 					}
 				}
 				else if (strpos($filename, 'modifier') !== false)
 				{
 					require_once $filename;
-					if (function_exists("smarty_cms_modifier_" . $matches[2]))
+					if (function_exists("smarty_cms_modifier_" . $file))
 					{
-						$smarty->register_modifier($matches[2], "smarty_cms_modifier_" . $matches[2], $caching);
-						array_push($plugins, $matches[2]);
+						$smarty->register_modifier($file, "smarty_cms_modifier_" . $file, $caching);
+						array_push($plugins, $file);
 					}
 				}
 			}
