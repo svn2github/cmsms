@@ -70,10 +70,10 @@ class Smarty_CMS extends Smarty {
 
 		load_plugins($this);
 
-		#$this->register_resource("db", array(&$this, "db_get_template",
-		#				       "db_get_timestamp",
-		#				       "db_get_secure",
-		#				       "db_get_trusted"));
+		$this->register_resource("db", array(&$this, "template_get_template",
+						       "template_get_timestamp",
+						       "db_get_secure",
+						       "db_get_trusted"));
 		$this->register_resource("print", array(&$this, "db_get_template",
 						       "db_get_timestamp",
 						       "db_get_secure",
@@ -92,6 +92,10 @@ class Smarty_CMS extends Smarty {
 						       "db_get_trusted"));
 		$this->register_resource("template", array(&$this, "template_get_template",
 						       "template_get_timestamp",
+						       "db_get_secure",
+						       "db_get_trusted"));
+		$this->register_resource("module", array(&$this, "module_get_template",
+						       "module_get_timestamp",
 						       "db_get_secure",
 						       "db_get_trusted"));
 	}
@@ -264,31 +268,46 @@ class Smarty_CMS extends Smarty {
 			debug_buffer('template');
 			debug_buffer($pageinfo);
 
-			$templateobj = TemplateOperations::LoadTemplateByID($pageinfo->template_id);
-			if (isset($templateobj) && $templateobj !== FALSE)
-			{
-				#Time to fill our template content
-				#If it's in print mode, then just create a simple stupid template
-				if (isset($_GET["print"]))
-				{
-					$tpl_source = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'."\n".'<html><head><title>{title}</title>{stylesheet}{literal}<style type="text/css" media="print">#back {display: none;}</style>{/literal}</head><body style="background-color: white; color: black; background-image: none;"><form action="index.php?page='.$tpl_name.'" method="post"><input type="submit" value="Go Back"></form>{content}</body></html>';
-				}
-				else
-				{
-					$tpl_source = $templateobj->content;
-				}
+			$gCms->variables['content_id'] = $pageinfo->content_id;
+			$gCms->variables['page'] = $tpl_name;
+			$gCms->variables['page_id'] = $tpl_name;
 
-				#Perform the content template callback
-				foreach($gCms->modules as $key=>$value)
-				{
-					if ($gCms->modules[$key]['installed'] == true &&
-						$gCms->modules[$key]['active'] == true)
-					{
-						$gCms->modules[$key]['object']->ContentTemplate($tpl_source);
-					}
-				}
-				debug_buffer('end template_get_template');
+			$gCms->variables['page_name'] = $pageinfo->content_alias;
+			$gCms->variables['position'] = $pageinfo->hierarchy;
+
+			if (isset($_GET['id']) && isset($_GET[$_GET['id'].'showtemplate']) && $_GET[$_GET['id'].'showtemplate'] == 'false')
+			{
+				$tpl_source = '{content}';
 				return true;
+			}
+			else
+			{
+				$templateobj = TemplateOperations::LoadTemplateByID($pageinfo->template_id);
+				if (isset($templateobj) && $templateobj !== FALSE)
+				{
+					#Time to fill our template content
+					#If it's in print mode, then just create a simple stupid template
+					if (isset($_GET["print"]))
+					{
+						$tpl_source = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'."\n".'<html><head><title>{title}</title>{stylesheet}{literal}<style type="text/css" media="print">#back {display: none;}</style>{/literal}</head><body style="background-color: white; color: black; background-image: none;"><form action="index.php?page='.$tpl_name.'" method="post"><input type="submit" value="Go Back"></form>{content}</body></html>';
+					}
+					else
+					{
+						$tpl_source = $templateobj->content;
+					}
+
+					#Perform the content template callback
+					foreach($gCms->modules as $key=>$value)
+					{
+						if ($gCms->modules[$key]['installed'] == true &&
+							$gCms->modules[$key]['active'] == true)
+						{
+							$gCms->modules[$key]['object']->ContentTemplate($tpl_source);
+						}
+					}
+					debug_buffer('end template_get_template');
+					return true;
+				}
 			}
 			return false;
 		}
@@ -351,6 +370,215 @@ class Smarty_CMS extends Smarty {
 
 		$tpl_timestamp = $pageinfo->content_modified_date;
 		debug_buffer('end content_get_timestamp');
+		return true;
+	}
+	
+	function module_get_template ($tpl_name, &$tpl_source, &$smarty_obj)
+	{
+		global $gCms;
+		$pageinfo =& $gCms->variables['pageinfo'];
+
+		#Run the execute_user function and replace {content} with it's output 
+		if (isset($gCms->modules[$tpl_name]))
+		{
+			@ob_start();
+			$usePassedID = true;
+
+			foreach ($_REQUEST as $key=>$value)
+			{
+				if (strpos($key, 'cntnt01') !== FALSE)
+				{
+					$usePassedID = false;
+				}
+			}
+
+			if ($usePassedID)
+			{
+				$id = $smarty_obj->id;
+			}
+			else
+			{
+				$id = 'cntnt01';
+			}
+
+			$params = @ModuleOperations::GetModuleParameters($id);
+			echo $gCms->modules[$tpl_name]['object']->DoActionBase((isset($_REQUEST[$id.'action'])?$_REQUEST[$id.'action']:'default'), $id, $params, isset($pageinfo)?$pageinfo->content_id:'');
+			$modoutput = @ob_get_contents();
+			@ob_end_clean();
+
+			$tpl_source = $modoutput;
+
+			#Perform the content data callback
+			foreach($gCms->modules as $key=>$value)
+			{
+				if ($gCms->modules[$key]['installed'] == true &&
+					$gCms->modules[$key]['active'] == true)
+				{
+					$gCms->modules[$key]['object']->ContentData($modoutput);
+				}
+			}
+		}
+
+		#Perform the content prerender callback
+		foreach($gCms->modules as $key=>$value)
+		{
+			if ($gCms->modules[$key]['installed'] == true &&
+				$gCms->modules[$key]['active'] == true)
+			{
+				$gCms->modules[$key]['object']->ContentPreRender($tpl_source);
+			}
+		}
+		
+		header("Content-Type: ".$gCms->variables['content-type']."; charset=" . (isset($line['encoding']) && $line['encoding'] != ''?$line['encoding']:get_encoding()));
+		if (isset($gCms->variables['content-filename']) && $gCms->variables['content-filename'] != '')
+		{
+			header('Content-Disposition: attachment; filename="'.$gCms->variables['content-filename'].'"');
+			header("Pragma: public");
+		}
+
+		return true;
+		/*
+		global $gCms;
+		$config = $gCms->config;
+		$db = $gCms->db;
+		$cmsmodules = $gCms->modules;
+		$pageinfo = $gCms->variables['pageinfo'];
+
+		if (isset($pageinfo) && $pageinfo !== FALSE)
+		{
+			$gCms->variables['content_id'] = $tpl_name;
+			$gCms->variables['page'] = $tpl_name;
+			$gCms->variables['page_id'] = $pageinfo->cotent_id;
+
+			$gCms->variables['page_name'] = $pageinfo->content_name;
+
+			#Set the title
+			$title = $pageinfo->content_name;
+			$menu_text = $pageinfo->menu_text;
+
+			#Perform the content title callback
+			foreach($gCms->modules as $key=>$value)
+			{
+				if ($gCms->modules[$key]['installed'] == true &&
+					$gCms->modules[$key]['active'] == true)
+				{
+					$gCms->modules[$key]['object']->ContentTitle($title);
+				}
+			}
+
+			#Setup the stylesheet inclusion
+			$template_id = $pageinfo->template_id;
+			#$stylesheet = '<link rel="stylesheet" type="text/css" href="stylesheet.php?templateid='.$template_id.'" />';
+
+			if ($smarty_obj->showtemplate == true)
+			{
+				$template = TemplateOperations::LoadTemplateByID($pageinfo->template_id);
+				$tpl_source = $template->content;
+
+				#Perform the content template callback
+				foreach($gCms->modules as $key=>$value)
+				{
+					if ($gCms->modules[$key]['installed'] == true &&
+						$gCms->modules[$key]['active'] == true)
+					{
+						$gCms->modules[$key]['object']->ContentTemplate($tpl_source);
+					}
+				}
+
+				$gCms->variables['position'] = $pageinfo->hierarchy;
+
+				#$tpl_source = ereg_replace("\{stylesheet\}", $stylesheet, $tpl_source);
+				#$tpl_source = ereg_replace("\{title\}", $title, $tpl_source);
+
+				#So no one can do anything nasty
+				if (!(isset($config["use_smarty_php_tags"]) && $config["use_smarty_php_tags"] == true)) {
+					$tpl_source = ereg_replace("\{\/?php\}", "", $tpl_source);
+				}
+			}
+
+			#Run the execute_user function and replace {content} with it's output 
+			if (isset($gCms->modules[$smarty_obj->module]))
+			{
+				@ob_start();
+				#call_user_func_array($gCms->modules[$smarty_obj->module]['execute_admin_function'], array($gCms,"module_".$module."_"));
+                $usePassedID = true;
+
+                foreach ($_REQUEST as $key=>$value)
+				{
+                    if (strpos($key, 'cntnt01') !== FALSE)
+					{
+                        $usePassedID = false;
+					}
+				}
+
+				if ($usePassedID)
+				{
+                    $id = $smarty_obj->id;
+				}
+                else
+				{
+				    $id = 'cntnt01';
+				}
+
+				$params = @ModuleOperations::GetModuleParameters($id);
+				echo $gCms->modules[$smarty_obj->module]['object']->DoActionBase((isset($_REQUEST[$id.'action'])?$_REQUEST[$id.'action']:'default'), $id, $params, $tpl_name);
+				$modoutput = @ob_get_contents();
+				@ob_end_clean();
+
+				if ($smarty_obj->showtemplate == true)
+				{
+					#Perform the content data callback
+					foreach($gCms->modules as $key=>$value)
+					{
+						if ($gCms->modules[$key]['installed'] == true &&
+							$gCms->modules[$key]['active'] == true)
+						{
+							$gCms->modules[$key]['object']->ContentData($modoutput);
+						}
+					}
+
+					$tpl_source = eregi_replace("\{content\}", $modoutput, $tpl_source);
+
+					#In case any lingering tags are coming in from the content
+					$tpl_source = ereg_replace("\{stylesheet\}", $stylesheet, $tpl_source);
+					$tpl_source = ereg_replace("\{title\}", $title, $tpl_source);
+					$tpl_source = ereg_replace("\{menu_text\}", $menu_text, $tpl_source);
+				}
+				else
+				{
+					$tpl_source = $modoutput;
+				}
+			}
+
+			#Perform the content prerender callback
+			foreach($gCms->modules as $key=>$value)
+			{
+				if ($gCms->modules[$key]['installed'] == true &&
+					$gCms->modules[$key]['active'] == true)
+				{
+					$gCms->modules[$key]['object']->ContentPreRender($tpl_source);
+				}
+			}
+			
+			header("Content-Type: ".$gCms->variables['content-type']."; charset=" . (isset($line['encoding']) && $line['encoding'] != ''?$line['encoding']:get_encoding()));
+			if (isset($gCms->variables['content-filename']) && $gCms->variables['content-filename'] != '')
+			{
+				header('Content-Disposition: attachment; filename="'.$gCms->variables['content-filename'].'"');
+				header("Pragma: public");
+			}
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+		*/
+	}
+
+	function module_get_timestamp($tpl_name, &$tpl_timestamp, &$smarty_obj)
+	{
+		$tpl_timestamp = time();
 		return true;
 	}
 

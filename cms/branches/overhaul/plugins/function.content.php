@@ -22,8 +22,14 @@ function smarty_cms_function_content($params, &$smarty)
 	$pageinfo = $gCms->variables['pageinfo'];
 	if (isset($pageinfo) && $pageinfo !== FALSE)
 	{
-		$content = ContentManager::LoadContentFromId($pageinfo->content_id);
-		return $smarty->fetch('content:'.$pageinfo->content_id);
+		if (isset($_GET['module']) || isset($_GET['mact']))
+		{
+			return $smarty->fetch('module:'.$_GET['module']);
+		}
+		else
+		{
+			return $smarty->fetch('content:'.$pageinfo->content_id);
+		}
 	}
 	return '';
 }
