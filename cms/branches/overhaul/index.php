@@ -31,7 +31,6 @@ $starttime = microtime();
 
 clearstatcache();
 
-#if (!file_exists(CONFIG_FILE_LOCATION) || filesize(CONFIG_FILE_LOCATION) == 0)
 if (!file_exists(CONFIG_FILE_LOCATION) || filesize(CONFIG_FILE_LOCATION) < 800)
 {
     require_once("lib/misc.functions.php");
@@ -148,16 +147,14 @@ if (get_site_preference('enablesitedownmessage') == "1")
 	$smarty->clear_all_cache();
 }
 
-#if ($config["debug"] == true)
-#{
+if ($config["debug"] == true)
+{
 	echo $sql_queries;
 	foreach ($gCms->errors as $error)
 	{
 		echo $error;
 	}
-
-	#xdebug_dump_function_profile(1);
-#}
+}
 
 # vim:ts=4 sw=4 noet
 ?>
