@@ -138,3 +138,23 @@ ul.pageerror { margin: 0px; }
 .clearb { clear: both; }
 .loginerror { color: #CE374E; }
 .logotext { color: #ffffff; font-size: 1.6em; font-weight: bold; margin-left: 15px; vertical-align: 10px; }
+
+ul.sortable {
+  width: 250px;
+  height: 400px;
+  //overflow: auto;
+  border: 1px solid black;
+  border-collapse: collapse;
+  list-style-image:none;
+  list-style-type:none;
+  margin-top:5px;
+  margin:1px;
+  padding:0px;
+}
+
+ul.sortable li {
+  padding:1px;
+  margin:1px;
+  border: 1px solid #cccccc;
+  cursor:move;
+}

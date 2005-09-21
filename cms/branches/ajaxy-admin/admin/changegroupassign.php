@@ -21,6 +21,10 @@
 $CMS_ADMIN_PAGE=1;
 
 require_once("../include.php");
+$xajax = new xajax("ajax_changegroupassign.php");
+$xajax->registerFunction("usersInGroup");
+$xajax->registerFunction("saveChange");
+$xajax->processRequests();
 
 check_login();
 
@@ -73,6 +77,7 @@ if ($access)
 }
 
 include_once("header.php");
+$xajax->printJavascript();
 
 if (!$access) {
 	echo "<div class=\"pageerrorcontainer\"><p class=\"pageerror\">".lang('noaccessto',array(lang('modifygrouppermissions')))."</p></div>";
@@ -92,7 +97,7 @@ else {
 		echo '<div class="pageoverflow">';
 		echo '<p class="pagetext">Group Name:</p>';		
 		echo '<p class="pageinput">';
-		echo '<select name="group_id">';	
+		echo '<select name="group_id" onchange="xajax_usersInGroup(this.options[this.selectedIndex].value);">';
 		echo '<option value="-1">Select a Group</option>';
 		foreach ($groups as $onegroup)
 		{
@@ -103,14 +108,24 @@ else {
 			}
 			echo '>'.$onegroup->name.'</option>';
 		}
-		echo '</select> <input type="submit" value="'.lang('selectgroup').'" />';
+		echo '</select>';
+        // <input type="submit" value="'.lang('selectgroup').'" />';
 		echo '</p>';
-		echo '</div>';
+		echo '<div id="feedback"><br /><div><div style="float:left;"><h1>Members</h1>';
+        echo '<ul class="sortable" id="members"></ul></div>';
+        echo '<div style="float:left;"><h1>Nonmembers</h1>';
+        echo '<ul class="sortable" id="nonmembers"></ul></div></div>';
+        echo '</div>';
 		echo '</form>';
-		echo '<form method="post" action="changegroupassign.php">';
-	}
 
-	if ($group_id != '' && $group_id != '-1')
+	}
+echo '</div>';
+}
+echo '<p class="pageback"><a class="pageback" href="'.$themeObject->BackUrl().'">&#171; '.lang('back').'</a></p>';
+
+include_once("footer.php");
+
+/*	if ($group_id != '' && $group_id != '-1')
 	{
 	$query = "SELECT * FROM ".cms_db_prefix()."users ORDER BY username";
 	$result = $db->Execute($query);
@@ -160,24 +175,9 @@ else {
 	}
 	echo '</tbody>';
 	echo '</table>';
+    */
 
-
-?>
-		<div class="pageoptions">
-			<p class="pageoptions">
-				<input type="hidden" name="group_id" value="<?php echo $group_id?>" />
-				<input type="submit" name="changeassign" value="<?php echo lang('submit')?>" class="pagebutton" onmouseover="this.className='pagebuttonhover'" onmouseout="this.className='pagebutton'" />
-				<input type="submit" name="cancel" value="<?php echo lang('cancel')?>" class="pagebutton" onmouseover="this.className='pagebuttonhover'" onmouseout="this.className='pagebutton'" />
-			</p>
-		</div>
-	</form>
-<?php
-	}
-	echo '</div>';	
-}
-echo '<p class="pageback"><a class="pageback" href="'.$themeObject->BackUrl().'">&#171; '.lang('back').'</a></p>';
-
-include_once("footer.php");
 
 # vim:ts=4 sw=4 noet
 ?>
+

@@ -173,7 +173,7 @@ class AdminTheme
 	       header("Content-Type: text/html; charset=$encoding");
         }
     }
-    
+
     /**
      * MenuListSectionModules
      * This method reformats module information for display in menus. When passed the
@@ -1125,8 +1125,6 @@ class AdminTheme
 </div>
 <?php
     }
-    
-
     /**
      * DisplayDocType
      * If you rewrite the admin section to output pure, beautiful, unadulterated XHTML, you can
@@ -1166,6 +1164,8 @@ class AdminTheme
 <?php
 	}
 ?>
+<script src="/js/prototype.js" type="text/javascript"></script>
+<script src="/js/scriptaculous.js" type="text/javascript"></script>
 <!-- THIS IS WHERE HEADER STUFF SHOULD GO -->
 <?php $this->OutputHeaderJavascript(); ?>
 </head>
