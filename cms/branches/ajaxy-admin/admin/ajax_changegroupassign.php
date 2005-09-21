@@ -52,7 +52,7 @@ function usersInGroup($arg)
 	   $objResponse->addAssign("feedback","innerHTML", $disp);
      $objResponse->addScript('function addMember() {xajax_saveChange('.$arg.', Sortable.serialize(\'members\'));}');
 
-	 $objResponse->addScript('Sortable.create(\'members\',{dropOnEmpty:true,containment:[\'members\',\'nonmembers\'],constraint:false,onUpdate:addMember()});');
+	 $objResponse->addScript('Sortable.create(\'members\',{dropOnEmpty:true,containment:[\'members\',\'nonmembers\'],constraint:false,onUpdate:addMember});');
 	 $objResponse->addScript('Sortable.create(\'nonmembers\',{dropOnEmpty:true,containment:[\'members\',\'nonmembers\'],constraint:false});');
         }
 
