@@ -18,7 +18,7 @@ function usersInGroup($arg)
     if ($arg != -1)
         {
 	    $query = "SELECT u.user_id, u.username, ug.group_id FROM ".cms_db_prefix()."users u LEFT JOIN ".
-            cms_db_prefix()."user_groups ug ON u.user_id = ug.user_id and group_id = ?";
+            cms_db_prefix()."user_groups ug ON u.user_id = ug.user_id and group_id = ? ORDER BY u.username";
         $result = $db->Execute($query,array($arg));
         while($result && $row = $result->FetchRow())
             {
@@ -64,6 +64,8 @@ function usersInGroup($arg)
 function saveChange($gid,$arg)
 {
     global $db;
+	$objResponse = new xajaxResponse();
+
     $userid = get_userid();
     $access = check_permission($userid, 'Modify Group Assignments');
     if (! $access)
@@ -80,6 +82,8 @@ function saveChange($gid,$arg)
             $db->qstr($gid).", ".$db->qstr($thisOne).", '".$db->DBTimeStamp(time())."', '".$db->DBTimeStamp(time())."')";
           $result = $db->Execute($query);
         }
+	return $objResponse->getXML();
+
 }
 
 
