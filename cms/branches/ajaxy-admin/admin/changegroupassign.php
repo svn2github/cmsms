@@ -51,28 +51,11 @@ if ($access)
 		$query = "SELECT group_name FROM ".cms_db_prefix()."groups WHERE group_id = ".$group_id;
 		$result = $db->Execute($query);
 
-		if ($result && $result->RowCount() > 0) {
+		if ($result && $result->RowCount() > 0)
+            {
 			$row = $result->FetchRow();
 			$group_name = $row['group_name'];
-		}
-
-		if (isset($_POST["changeassign"])) {
-
-			$query = "DELETE FROM ".cms_db_prefix()."user_groups WHERE group_id = " . $group_id;
-			$result = $db->Execute($query);
-
-			foreach ($_POST as $key=>$value) {
-				if (strpos($key,"user-") == 0 && strpos($key,"user-") !== false) {
-					$query = "INSERT INTO ".cms_db_prefix()."user_groups (group_id, user_id, create_date, modified_date) VALUES (".$db->qstr($group_id).", ".$db->qstr(substr($key,5)).", '".$db->DBTimeStamp(time())."', '".$db->DBTimeStamp(time())."')";
-					$result = $db->Execute($query);
-				}
-			}
-
-			audit($group_id, $group_name, 'Changed Group Assignments');
-			$message = lang('assignmentschanged');
-			#redirect("listgroups.php");
-			#return;
-		}
+		    }
 	}
 }
 
@@ -110,11 +93,14 @@ else {
 		}
 		echo '</select>';
         // <input type="submit" value="'.lang('selectgroup').'" />';
-		echo '</p>';
-		echo '<div id="feedback"><br /><div><div style="float:left;"><h1>Members</h1>';
-        echo '<ul class="sortable" id="members"></ul></div>';
-        echo '<div style="float:left;"><h1>Nonmembers</h1>';
-        echo '<ul class="sortable" id="nonmembers"></ul></div></div>';
+		echo '</p><br />';
+		echo '<div id="ajaxarea">';
+        /*echo '<div class="ajaxselection"><div style="float:left;"><p class="pagesubtitle">Members</p>';
+        echo '<ul class="sortable" id="members" MULTIPLE><li id="nonmembers_nonmembers1">Fragonard</li><li id="nonmembers_nonmembers2">Grep</li></ul></div>';
+            echo '<div style="float:left;"><p class="pagesubtitle">Nonmembers</p>';
+            echo '<ul class="sortable" id="nonmembers" MULTIPLE></ul></div>';
+        */
+        echo '</div>';
         echo '</div>';
 		echo '</form>';
 
