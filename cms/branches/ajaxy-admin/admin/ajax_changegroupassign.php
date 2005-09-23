@@ -102,7 +102,7 @@ function saveChange($gid,$arg)
 	$query = "DELETE FROM ".cms_db_prefix()."user_groups WHERE group_id = ?";
     $result = $db->Execute($query,array($gid));
     $matches = array();
-    preg_match_all( '/members(\d+)/', $arg, &$matches);
+    preg_match_all( '/members(\d+)/', $arg, $matches);
     foreach ($matches[1] as $thisOne)
         {
           $query = "INSERT INTO ".cms_db_prefix()."user_groups (group_id, user_id, create_date, modified_date) VALUES (".

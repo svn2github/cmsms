@@ -68,20 +68,6 @@ else {
 	<p class="pageheader"><?php echo lang('usersassignedtogroup',array($group_name))?></p>
 <?php
 
-/*
-	if ($group_id != '' && $group_id != '-1')
-	{
-		$query = "SELECT group_name FROM ".cms_db_prefix()."groups WHERE group_id = ".$group_id;
-		$result = $db->Execute($query);
-
-		if ($result && $result->RowCount() > 0)
-            {
-			$row = $result->FetchRow();
-			$group_name = $row['group_name'];
-		    }
-	}
-*/
-
     // always display the group pulldown
     $groups = GroupOperations::LoadGroups();
     if (count($groups) > 0)
@@ -125,10 +111,58 @@ else {
     if ($group_id != -1 && $submitted == -1)
         {
         // a group has been selected
+        echo '<form method="post" action="changegroupassign.php">';
+	    $query = "SELECT u.user_id, u.username, ug.group_id FROM ".cms_db_prefix()."users u LEFT JOIN ".
+            cms_db_prefix()."user_groups ug ON u.user_id = ug.user_id and group_id = ? ORDER BY u.username";
+        $result = $db->Execute($query,array($group_id));
+		echo "<table cellspacing=\"0\" class=\"pagetable\">\n";
+		echo '<thead>';
+		echo "<tr>\n";
+		echo "<th>".lang('assignments')."</th>\n";
+		echo "<th class=\"pagew10\">&nbsp;</th>\n";
+		echo "</tr>\n";
+		echo '</thead>';
+		echo '<tbody>';
+		$currow = "row1";
+        while($result && $row = $result->FetchRow())
+            {
+			echo "<tr class=\"".$currow."\" onmouseover=\"this.className='".$currow.'hover'."';\" onmouseout=\"this.className='".$currow."';\">\n";
+            echo '<td>'.$row['username'].'</td>'."\n";
+			echo '<td><input class="pagecheckbox" type="checkbox" name="user-'.$row['user_id'].'" value="1" '.(isset($row['group_id'])?" checked=\"checked\"":"").'/></td>'."\n";
+			echo "</tr>\n";
+
+			($currow=="row1"?$currow="row2":$currow="row1");	
+			}
+		?>
+		</tbody>
+		</table>
+		<div class="pageoptions">
+			<p class="pageoptions">
+				<input type="hidden" name="group_id" value="<?php echo $group_id?>" />
+				<input type="hidden" name="submitted" value="1" />
+				<input type="submit" name="changeassign" value="<?php echo lang('submit')?>" class="pagebutton" onmouseover="this.className='pagebuttonhover'" onmouseout="this.className='pagebutton'" />
+				<input type="submit" name="cancel" value="<?php echo lang('cancel')?>" class="pagebutton" onmouseover="this.className='pagebuttonhover'" onmouseout="this.className='pagebutton'" />
+			</p>
+		</div>
+		</form>
+		<?php
         }
     else if ($group_id != -1 && $submitted != -1)
         {
         // we have group preferences
+		$query = "DELETE FROM ".cms_db_prefix()."user_groups WHERE group_id = ?";
+		$result = $db->Execute($query, array($group_id));
+		foreach ($_POST as $key=>$value)
+			{
+			if (strpos($key,"user-") == 0 && strpos($key,"user-") !== false)
+				{
+				$query = "INSERT INTO ".cms_db_prefix()."user_groups (group_id, user_id, create_date, modified_date) VALUES (".$db->qstr($group_id).", ".$db->qstr(substr($key,5)).", '".$db->DBTimeStamp(time())."', '".$db->DBTimeStamp(time())."')";
+				$result = $db->Execute($query);
+				}
+			}
+
+		audit($group_id, 'Group ID', 'Changed Group Assignments');
+        echo '<p class="pageheader">'.lang('assignmentschanged').'</p>';
         }
 echo '</div>';
 }
