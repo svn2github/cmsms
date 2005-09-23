@@ -32,29 +32,6 @@ function usersInGroup($arg)
                 }
             }
 
-/*       $disp = '<div class="ajaxselection"><div style="float:left;"><p class="pagesubtitle">Members</p>';
-       $disp .= '<select class="sortable" id="members" MULTIPLE>';
-       foreach ($members as $key=>$val)
-            {
-            $disp .= '<option id="members_members'.$key.'">'.$val.'</option>';
-            }
-       $disp .= "</select></div>";
-       $disp .= '<div style="float:left;"><p class="pagesubtitle">Nonmembers</p>';
-       $disp .= '<select class="sortable" id="nonmembers" MULTIPLE>';
-       foreach ($nonmembers as $key=>$val)
-            {
-            $disp .= '<option id="nonmembers_nonmembers'.$key.'">'.$val.'</option>';
-            }
-       $disp .= "</select></div></div>";
-
-	   // add a command to the response to assign the innerHTML attribute of
-	   // the element with id="SomeElementId" to whatever the new content is
-        $objResponse->addAssign("ajaxarea","innerHTML", $disp);
-        $objResponse->addScript('function addMember() {xajax_saveChange('.$arg.', Sortable.serialize(\'members\'));}');
-
-        $objResponse->addScript('Sortable.create(\'members\',{tag:\'option\',dropOnEmpty:true,containment:[\'members\',\'nonmembers\'],constraint:false,onUpdate:addMember});');
-        $objResponse->addScript('Sortable.create(\'nonmembers\',{tag:\'option\',dropOnEmpty:true,containment:[\'members\',\'nonmembers\'],constraint:false});');
-*/
        $disp = '<div class="ajaxselection"><div style="float:left;"><p class="pagesubtitle">Members</p>';
        $disp .= '<ul class="sortable" id="members" MULTIPLE>';
        foreach ($members as $key=>$val)
@@ -69,13 +46,16 @@ function usersInGroup($arg)
             {
             $disp .= '<li id="nonmembers_nonmembers'.$key.'">'.$val.'</li>';
             }
-       $disp .= "</ul></div></div>";
+       $disp .= "</ul></div>";
+       $disp .= "</div>";
+       $disp .= '<div class="ajaxbutton"><input type="button" value="Add All" onclick="xajax_addAll(1,'.$arg.');" />';
+       $disp .= '&nbsp;<input type="button" value="Remove All" onclick="xajax_addAll(0,'.$arg.');" />';
+       $disp .= '</div>';
 
 	   // add a command to the response to assign the innerHTML attribute of
 	   // the element with id="SomeElementId" to whatever the new content is
         $objResponse->addAssign("ajaxarea","innerHTML", $disp);
         $objResponse->addScript('function addMember() {xajax_saveChange('.$arg.', Sortable.serialize(\'members\'));}');
-
         $objResponse->addScript('Sortable.create(\'members\',{dropOnEmpty:true,containment:[\'members\',\'nonmembers\'],constraint:false,onUpdate:addMember});');
         $objResponse->addScript('Sortable.create(\'nonmembers\',{dropOnEmpty:true,containment:[\'members\',\'nonmembers\'],constraint:false});');
 
@@ -87,6 +67,41 @@ function usersInGroup($arg)
 	return $objResponse->getXML();
 
 }
+
+function addAll($op,$gid)
+{
+    global $db;
+
+    $userid = get_userid();
+    $access = check_permission($userid, 'Modify Group Assignments');
+    if (! $access)
+        {
+        return;
+        }
+    // we remove all users from specified group before adding them (to prevent
+    // duplicates)
+    if ($op == 0 || $op == 1)
+        {
+        $query = "DELETE FROM ".cms_db_prefix()."user_groups WHERE group_id = ?";
+        $result = $db->Execute($query,array($gid));
+        }
+    if ($op == 1)
+        {
+        // add all users into group gid
+        $userlist = UserOperations::LoadUsers();
+        foreach ($userlist as $thisUser)
+            {
+            $query = "INSERT INTO ".cms_db_prefix().
+                "user_groups (group_id, user_id, create_date, modified_date) VALUES (".
+                $db->qstr($gid).", ".$db->qstr($thisUser->id).", '".
+                $db->DBTimeStamp(time())."', '".$db->DBTimeStamp(time())."')";
+            $result = $db->Execute($query);
+            }
+        }
+    audit($gid, 'Group ID', 'Changed Group Assignments');
+	return usersInGroup($gid);
+}
+
 
 function saveChange($gid,$arg)
 {
@@ -120,6 +135,7 @@ require_once(dirname(__FILE__)."/../include.php");
 $xajax = new xajax("ajax_changegroupassign.php");
 $xajax->registerFunction("usersInGroup");
 $xajax->registerFunction("saveChange");
+$xajax->registerFunction("addAll");
 $xajax->processRequests();
 //debug_display($db);
 ?>

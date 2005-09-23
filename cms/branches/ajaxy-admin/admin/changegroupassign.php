@@ -46,6 +46,7 @@ if ($use_ajax)
     $xajax = new xajax("ajax_changegroupassign.php");
     $xajax->registerFunction("usersInGroup");
     $xajax->registerFunction("saveChange");
+    $xajax->registerFunction("addAll");
     $xajax->processRequests();
     }
 
