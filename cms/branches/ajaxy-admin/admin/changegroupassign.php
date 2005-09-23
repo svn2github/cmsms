@@ -21,16 +21,15 @@
 $CMS_ADMIN_PAGE=1;
 
 require_once("../include.php");
-$xajax = new xajax("ajax_changegroupassign.php");
-$xajax->registerFunction("usersInGroup");
-$xajax->registerFunction("saveChange");
-$xajax->processRequests();
 
 check_login();
-
-$group_id="";
+$group_id= - 1;
 if (isset($_POST["group_id"])) $group_id = $_POST["group_id"];
 else if (isset($_GET["group_id"])) $group_id = $_GET["group_id"];
+
+$submitted= - 1;
+if (isset($_POST["submitted"])) $submitted = $_POST["submitted"];
+else if (isset($_GET["submitted"])) $submitted = $_GET["submitted"];
 
 $group_name="";
 
@@ -41,26 +40,22 @@ if (isset($_POST["cancel"])) {
 
 $userid = get_userid();
 $access = check_permission($userid, 'Modify Group Assignments');
+$use_ajax=get_preference($userid, 'ajax', false);
+if ($use_ajax)
+    {
+    $xajax = new xajax("ajax_changegroupassign.php");
+    $xajax->registerFunction("usersInGroup");
+    $xajax->registerFunction("saveChange");
+    $xajax->processRequests();
+    }
 
 $message = '';
 
-if ($access)
-{
-	if ($group_id != '' && $group_id != '-1')
-	{
-		$query = "SELECT group_name FROM ".cms_db_prefix()."groups WHERE group_id = ".$group_id;
-		$result = $db->Execute($query);
-
-		if ($result && $result->RowCount() > 0)
-            {
-			$row = $result->FetchRow();
-			$group_name = $row['group_name'];
-		    }
-	}
-}
-
 include_once("header.php");
-$xajax->printJavascript();
+if ($use_ajax)
+    {
+    $xajax->printJavascript();
+    }
 
 if (!$access) {
 	echo "<div class=\"pageerrorcontainer\"><p class=\"pageerror\">".lang('noaccessto',array(lang('modifygrouppermissions')))."</p></div>";
@@ -73,96 +68,73 @@ else {
 	<p class="pageheader"><?php echo lang('usersassignedtogroup',array($group_name))?></p>
 <?php
 
-	$groups = GroupOperations::LoadGroups();
-	if (count($groups) > 0)
+/*
+	if ($group_id != '' && $group_id != '-1')
 	{
-		echo '<form id="groupname" method="post" action="changegroupassign.php">';
-		echo '<div class="pageoverflow">';
-		echo '<p class="pagetext">Group Name:</p>';		
-		echo '<p class="pageinput">';
-		echo '<select name="group_id" onchange="xajax_usersInGroup(this.options[this.selectedIndex].value);">';
-		echo '<option value="-1">Select a Group</option>';
-		foreach ($groups as $onegroup)
-		{
-			echo '<option value="'.$onegroup->id.'"';
-			if ($onegroup->id == $group_id)
-			{
-				echo ' selected="selected"';
-			}
-			echo '>'.$onegroup->name.'</option>';
-		}
-		echo '</select>';
-        // <input type="submit" value="'.lang('selectgroup').'" />';
-		echo '</p><br />';
-		echo '<div id="ajaxarea">';
-        /*echo '<div class="ajaxselection"><div style="float:left;"><p class="pagesubtitle">Members</p>';
-        echo '<ul class="sortable" id="members" MULTIPLE><li id="nonmembers_nonmembers1">Fragonard</li><li id="nonmembers_nonmembers2">Grep</li></ul></div>';
-            echo '<div style="float:left;"><p class="pagesubtitle">Nonmembers</p>';
-            echo '<ul class="sortable" id="nonmembers" MULTIPLE></ul></div>';
-        */
-        echo '</div>';
-        echo '</div>';
-		echo '</form>';
+		$query = "SELECT group_name FROM ".cms_db_prefix()."groups WHERE group_id = ".$group_id;
+		$result = $db->Execute($query);
 
+		if ($result && $result->RowCount() > 0)
+            {
+			$row = $result->FetchRow();
+			$group_name = $row['group_name'];
+		    }
 	}
+*/
+
+    // always display the group pulldown
+    $groups = GroupOperations::LoadGroups();
+    if (count($groups) > 0)
+        {
+        echo '<form id="groupname" method="post" action="changegroupassign.php">';
+        echo '<div class="pageoverflow">';
+        echo '<p class="pagetext">Group Name:</p>';
+        echo '<p class="pageinput">';
+        echo '<select name="group_id"';
+        if ($use_ajax)
+            {
+            echo 'onchange="xajax_usersInGroup(this.options[this.selectedIndex].value);"';
+            }
+        echo '><option value="-1">Select a Group</option>';
+        foreach ($groups as $onegroup)
+            {
+            echo '<option value="'.$onegroup->id.'"';
+            if ($onegroup->id == $group_id)
+                {
+                echo ' selected="selected"';
+                }
+            echo '>'.$onegroup->name.'</option>';
+            }
+        echo '</select>';
+        echo '<input id="groupsubmit" type="submit" value="'.lang('selectgroup').'" /></p>';
+        if ($use_ajax)
+            {
+            ?>
+            <script type="text/javascript">
+                var item=document.getElementById('groupsubmit');
+                if (item)
+                    {
+                    item.style.visibility = 'hidden';
+                    }
+            </script>
+            <br /><div id="ajaxarea"></div>
+            <?php
+            }
+        echo '</div></form>';
+        }
+    if ($group_id != -1 && $submitted == -1)
+        {
+        // a group has been selected
+        }
+    else if ($group_id != -1 && $submitted != -1)
+        {
+        // we have group preferences
+        }
 echo '</div>';
 }
 echo '<p class="pageback"><a class="pageback" href="'.$themeObject->BackUrl().'">&#171; '.lang('back').'</a></p>';
 
 include_once("footer.php");
-
-/*	if ($group_id != '' && $group_id != '-1')
-	{
-	$query = "SELECT * FROM ".cms_db_prefix()."users ORDER BY username";
-	$result = $db->Execute($query);
-
-	if ($result && $result->RowCount()) {
-
-		while($row = $result->FetchRow()) {
-
-			$users[$row['username']] = false;
-			$ids[$row['username']] = $row['user_id'];
-		}
-
-	}
-
-	$query = "SELECT u.user_id, u.username FROM ".cms_db_prefix()."user_groups ug INNER JOIN ".cms_db_prefix()."users u ON u.user_id = ug.user_id WHERE group_id = " . $group_id;
-	$result = $db->Execute($query);
-
-	if ($result && $result->RowCount()) {
-
-		while($row = $result->FetchRow()) {
-
-			$users[$row['username']] = true; 
-			$ids[$row['username']] = $row['user_id'];
-		}
-
-	}
-
-	echo "<table cellspacing=\"0\" class=\"pagetable\">\n";
-	echo '<thead>';
-	echo "<tr>\n";
-	echo "<th>".lang('assignments')."</th>\n";
-	echo "<th class=\"pagew10\">&nbsp;</th>\n";
-	echo "</tr>\n";
-	echo '</thead>';
-	echo '<tbody>';
-
-	$currow = "row1";
-	
-	foreach ($users as $key => $value)
-	{
-		echo "<tr class=\"".$currow."\" onmouseover=\"this.className='".$currow.'hover'."';\" onmouseout=\"this.className='".$currow."';\">\n";
-		echo '<td>'.$key.'</td>'."\n";
-		echo '<td><input class="pagecheckbox" type="checkbox" name="user-'.$ids[$key].'" value="1" '.($value == true?" checked=\"checked\"":"").'/></td>'."\n";
-		echo "</tr>\n";
-
-		($currow=="row1"?$currow="row2":$currow="row1");	
-	}
-	echo '</tbody>';
-	echo '</table>';
-    */
-
 
 # vim:ts=4 sw=4 noet
 ?>

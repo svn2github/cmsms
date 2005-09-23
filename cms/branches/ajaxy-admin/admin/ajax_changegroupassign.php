@@ -59,7 +59,8 @@ function usersInGroup($arg)
        $disp .= '<ul class="sortable" id="members" MULTIPLE>';
        foreach ($members as $key=>$val)
             {
-            $disp .= '<li id="members_members'.$key.'">'.$val.'</li>';
+            $disp .= '<li id="members_members'.$key.'">';
+            $disp .= $val.'</li>';
             }
        $disp .= "</ul></div>";
        $disp .= '<div style="float:left;"><p class="pagesubtitle">Nonmembers</p>';
