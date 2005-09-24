@@ -67,7 +67,7 @@ class Calendar extends CMSModule
 
 	function GetVersion()
 	{
-		return '0.6';
+		return '0.6.1';
 	}
 
 	function GetDescription($lang = 'en_GB')
@@ -211,7 +211,7 @@ EOT;
 		return <<<EOT
 			<p>Author: Rob Allen &lt;rob@akrabat.com&gt;</p>
 			<dl>
-				<dt>Version: 0.6+</dt>
+				<dt>Version: 0.6.1</dt>
 					<dd>More fixes for multi-day event on calendar. Added new parameter "time_format" so we can make
 					the display of a single day event with a start and stop time look better.
 					Change de_DE's "to" to "bis" as per Mordran's post on the boards.</dd>
