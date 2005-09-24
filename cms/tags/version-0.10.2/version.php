@@ -18,8 +18,8 @@
 #
 #$Id$
 
-$CMS_VERSION = "0.10.1";
-$CMS_VERSION_NAME = "Willoughby";
+$CMS_VERSION = "0.10.2";
+$CMS_VERSION_NAME = "Darkwood";
 $CMS_SCHEMA_VERSION = "10";
 
 # vim:ts=4 sw=4 noet

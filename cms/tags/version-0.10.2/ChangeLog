@@ -1,3 +1,9 @@
+Version 0.10.2 "Darkwood" -- Wed Sep 24 2005
+-----------------
+
+* Fix for image manager not checking for permissions before
+allowing uploads
+
 Version 0.10.1 "Willoughby" -- Wed Aug 31 2005
 -----------------
 
