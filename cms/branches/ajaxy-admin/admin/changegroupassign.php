@@ -163,7 +163,7 @@ else {
 			}
 
 		audit($group_id, 'Group ID', 'Changed Group Assignments');
-        echo '<p class="pageheader">'.lang('assignmentschanged').'</p>';
+        echo '<p class="pageheader">'.lang('assignmentchanged').'</p>';
         }
 echo '</div>';
 }
