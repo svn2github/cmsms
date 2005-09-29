@@ -20,6 +20,9 @@
 
 $CMS_ADMIN_PAGE=1;
 
+require_once("../include.php");
+check_login();
+
 $default_cms_lang = '';
 if (isset($_POST['default_cms_lang'])) $default_cms_lang = $_POST['default_cms_lang'];
 $old_default_cms_lang = '';
@@ -42,10 +45,6 @@ if (isset($_POST['indent'])) $indent = $_POST['indent'];
 
 $ajax = 0;
 if (isset($_POST['ajax'])) $ajax = $_POST['ajax'];
-
-require_once("../include.php");
-
-check_login();
 
 $error = "";
 
