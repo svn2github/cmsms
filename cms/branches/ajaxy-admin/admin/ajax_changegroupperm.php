@@ -134,6 +134,7 @@ function saveChange($gid,$arg)
 
 
 require_once(dirname(__FILE__)."/../include.php");
+check_login();
 $xajax = new xajax("ajax_changegroupperm.php");
 $xajax->registerFunction("permsForGroup");
 $xajax->registerFunction("saveChange");

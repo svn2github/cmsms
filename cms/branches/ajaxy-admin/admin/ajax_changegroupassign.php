@@ -132,6 +132,7 @@ function saveChange($gid,$arg)
 
 
 require_once(dirname(__FILE__)."/../include.php");
+check_login();
 $xajax = new xajax("ajax_changegroupassign.php");
 $xajax->registerFunction("usersInGroup");
 $xajax->registerFunction("saveChange");

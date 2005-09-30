@@ -633,8 +633,8 @@ class ContentBase
 		#Figure out the item_order (if necessary)
 		if ($this->mItemOrder < 1)
 		{
-			$query = "SELECT ".$db->IfNull('max(item_order)','0')." as new_order FROM ".cms_db_prefix()."content WHERE parent_id = ".$this->mParentId;
-			$dbresult = $db->Execute($query);
+			$query = "SELECT ".$db->IfNull('max(item_order)','0')." as new_order FROM ".cms_db_prefix()."content WHERE parent_id = ?";
+			$dbresult = $db->Execute($query,array($this->mParentId));
 
 			if ($dbresult && (1 == $dbresult->RowCount()))
 			{
@@ -683,8 +683,8 @@ class ContentBase
 		if ($this->mOldParentId != $this->mParentId)
 		{
 			#Fix the item_order if necessary
-			$query = "UPDATE ".cms_db_prefix()."content SET item_order = item_order - 1 WHERE parent_id = ".$this->mOldParentId." AND item_order > ".$this->mOldItemOrder;
-			$result = $db->Execute($query);
+			$query = "UPDATE ".cms_db_prefix()."content SET item_order = item_order - 1 WHERE parent_id = ? AND item_order > ?";
+			$result = $db->Execute($query, array($this->mOldParentId,$this->mOldItemOrder));
 
 			$this->mOldParentId = $this->mParentId;
 			$this->mOldItemOrder = $this->mItemOrder;
@@ -692,8 +692,8 @@ class ContentBase
 
 		if (isset($this->mAdditionalEditors))
 		{
-			$query = "DELETE FROM ".cms_db_prefix()."additional_users WHERE content_id = ".$this->Id();
-			$db->Execute($query);
+			$query = "DELETE FROM ".cms_db_prefix()."additional_users WHERE content_id = ?";
+			$db->Execute($query, array($this->Id()));
 
 			foreach ($this->mAdditionalEditors as $oneeditor)
 			{
@@ -734,8 +734,8 @@ class ContentBase
 		#Figure out the item_order
 		if ($this->mItemOrder < 1)
 		{
-			$query = "SELECT max(item_order) as new_order FROM ".cms_db_prefix()."content WHERE parent_id = ".$this->mParentId;
-			$dbresult = $db->Execute($query);
+			$query = "SELECT max(item_order) as new_order FROM ".cms_db_prefix()."content WHERE parent_id = ?";
+			$dbresult = $db->Execute($query, array($this->mParentId));
 
 			if ($dbresult && (1 == $dbresult->RowCount()))
 			{
@@ -871,8 +871,8 @@ class ContentBase
 			}
 
 			#Fix the item_order if necessary
-			$query = "UPDATE ".cms_db_prefix()."content SET item_order = item_order - 1 WHERE parent_id = ".$this->ParentId()." AND item_order > ".$this->ItemOrder();
-			$result = $db->Execute($query);
+			$query = "UPDATE ".cms_db_prefix()."content SET item_order = item_order - 1 WHERE parent_id = ? AND item_order > ?";
+			$result = $db->Execute($query,array($this->ParentId(),$this->ItemOrder()));
 
 			if (NULL != $this->mProperties)
 			{
@@ -1002,8 +1002,8 @@ class ContentBase
 
 		$result = false;
 
-		$query = "SELECT content_id FROM ".cms_db_prefix()."content WHERE parent_id = ".$this->mId;
-		$dbresult = $db->Execute($query);
+		$query = "SELECT content_id FROM ".cms_db_prefix()."content WHERE parent_id = ?";
+		$dbresult = $db->Execute($query, array($this->mId));
 
 		if ($dbresult && $dbresult->RowCount() > 0)
 		{
@@ -1022,8 +1022,8 @@ class ContentBase
 
 			$this->mAdditionalEditors = array();
 
-			$query = "SELECT user_id FROM ".cms_db_prefix()."additional_users WHERE content_id = ".$this->mId;
-			$dbresult = $db->Execute($query);
+			$query = "SELECT user_id FROM ".cms_db_prefix()."additional_users WHERE content_id = ?";
+			$dbresult = $db->Execute($query,array($this->mId));
 
 			if ($dbresult && $dbresult->RowCount() > 0)
 			{
