@@ -63,7 +63,7 @@ class Calendar extends CMSModule
 
 	function GetVersion()
 	{
-		return '0.7';
+		return '0.7alpha1';
 	}
 
 	function GetDescription($lang = 'en_US')
