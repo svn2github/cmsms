@@ -20,6 +20,9 @@
 
 $CMS_ADMIN_PAGE=1;
 
+require_once("../include.php");
+check_login();
+
 $default_cms_lang = '';
 if (isset($_POST['default_cms_lang'])) $default_cms_lang = $_POST['default_cms_lang'];
 $old_default_cms_lang = '';
@@ -36,10 +39,6 @@ if (isset($_POST['admintheme'])) $admintheme = $_POST['admintheme'];
 
 $bookmarks = 0;
 if (isset($_POST['bookmarks'])) $bookmarks = $_POST['bookmarks'];
-
-require_once("../include.php");
-
-check_login();
 
 $error = "";
 

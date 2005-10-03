@@ -74,6 +74,10 @@ if ($page == "")
 {
 	$page = ContentManager::GetDefaultContent();
 }
+else
+{
+    $page = preg_replace('/\</','',$page);
+}
 
 if (get_site_preference('enablecustom404') == "0" && (!$config['debug']))
 {

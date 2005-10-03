@@ -100,17 +100,19 @@ if (isset($type) && "template" == $type)
 #******************************************************************************
 # displaying erros if any
 #******************************************************************************
-if (isset($_GET["message"]))
-{
-	echo '<div class="pagemcontainer"><p class="pagemessage">'.$_GET["message"].'</p></div>';
+if (isset($_GET["message"])) {
+	$message = preg_replace('/\</','',$_GET['message']);
+	echo '<div class="pagemcontainer"><p class="pagemessage">'.$message.'</p></div>';
 }
+
 if ("" != $error)
 {
 	echo "<div class=\"pageerrorcontainer\"><p class=\"pageerror\">".$error."</p></div>";
 }
 
-if (!$addasso) {
-		echo "<div class=\"pageerrorcontainer\"><p class=\"pageerror\">".lang('noaccessto', array(lang('addcssassociation')))."</p></div>";
+if (!$addasso)
+{
+	echo "<div class=\"pageerrorcontainer\"><p class=\"pageerror\">".lang('noaccessto', array(lang('addcssassociation')))."</p></div>";
 }
 
 #******************************************************************************
