@@ -1,6 +1,8 @@
 Version 0.10.3 "Ebenezer" -- Wed Oct 03 2005
 -----------------
 
+* Fixed a security bug where pages were succeptable to cross
+browser attack as per BugTraq
 * More security fixes and other safeguards
 
 Version 0.10.2 "Darkwood" -- Wed Sep 24 2005
