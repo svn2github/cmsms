@@ -24,28 +24,28 @@ class Calendar extends CMSModule
 	var $events_to_categories_table_name;
 	var $events_table_name;
 	var $language;
-	
+
 	function Calendar()
 	{
 		$this->CMSModule();
-		
+
 		$this->categories_table_name = cms_db_prefix() . 'module_calendar_categories';
 		$this->events_to_categories_table_name = cms_db_prefix().'module_calendar_events_to_categories';
 		$this->events_table_name = cms_db_prefix().'module_calendar_events';
-		
+
 		$this->language = $this->GetPreference('Calendar-language', 'en_US');
 	}
-	
+
 	function GetName()
 	{
 		return 'Calendar';
 	}
-	
+
 	function GetAuthor()
 	{
 		return 'Rob Allen';
 	}
-	
+
 	function GetAuthorEmail()
 	{
 		return 'rob@akrabat.com';
@@ -77,7 +77,7 @@ class Calendar extends CMSModule
 	{
 		return $this->Lang('cal_description');
 	}
-	
+
 	function GetAdminSection()
 	{
 		return 'content';
@@ -97,14 +97,14 @@ class Calendar extends CMSModule
 			    <dt>Version: 0.7</dt>
                     <dd>Complete rewrite to fit into 0.10.x better. Also support language for day and month
                      names and use smarty templates for controlling the display.
-                     Rewrite the SQL used to select the events to hopefully be more maintainable. 
+                     Rewrite the SQL used to select the events to hopefully be more maintainable.
                      Note that the language files are not fully updated for this version!</dd>
 				<dt>Version: 0.6.1</dt>
 					<dd>More fixes for multi-day event on calendar. Added new parameter "time_format" so we can make
 					the display of a single day event with a start and stop time look better.
 					Change de_DE's "to" to "bis" as per Mordran's post on the boards.</dd>
 				<dt>Version: 0.6</dt>
-					<dd>Fix event display so that if the end date is not set, we don't display "to". 
+					<dd>Fix event display so that if the end date is not set, we don't display "to".
 					Filter by category when displaying an upcominglist.
 					Fix End date setting that was off by one.
 					Fix odd behaviour of year when transitioning from Jan to Dec or Dec to Jan in the calendar view.
@@ -130,7 +130,7 @@ EOT;
 	{
 		$db = $this->cms->db;				/* @var $db ADOConnection */
 		$dict = NewDataDictionary($db); 	/* @var $dict ADODB_DataDict */
-	
+
 		$table_options = array('mysql' => 'TYPE=MyISAM');
 
 		// create categories table
@@ -141,9 +141,9 @@ EOT;
 		";
 		$sql_array = $dict->CreateTableSQL($this->categories_table_name, $fields, $table_options);
 		$dict->ExecuteSQLArray($sql_array);
-	
+
 		$db->CreateSequence($this->categories_table_name . '_seq');
-	
+
 		// create events table
 		$fields = "
 			event_id I KEY,
@@ -158,9 +158,9 @@ EOT;
 		";
 		$sql_array = $dict->CreateTableSQL($this->events_table_name, $fields, $table_options);
 		$dict->ExecuteSQLArray($sql_array);
-	
+
 		$db->CreateSequence($this->events_table_name.'_seq');
-	
+
 		// create events_to_categories table
 		$fields = "
 			category_id I KEY,
@@ -168,22 +168,22 @@ EOT;
 		";
 		$sql_array = $dict->CreateTableSQL($this->events_to_categories_table_name, $fields, $table_options );
 		$dict->ExecuteSQLArray( $sql_array );
-	
+
 		$this->CreatePermission('Modify Calendar', 'Modify Calendar');
-		
+
 		// set up a General category
 		$new_id = $db->GenID($this->categories_table_name.'_seq');
-	
+
 		$sql = 'INSERT INTO ' . $this->categories_table_name . " (category_id, category_name, category_order)
 						VALUES ($new_id, 'General', 50)";
 		$db->Execute($sql);
-		
+
 		// templates
 		$this->SetTemplate('calendar', $this->GetDefaultTemplate('calendar'));
 		$this->SetTemplate('list', $this->GetDefaultTemplate('list'));
 		$this->SetTemplate('upcominglist', $this->GetDefaultTemplate('upcominglist'));
 		$this->SetTemplate('event', $this->GetDefaultTemplate('event'));
-		
+
 	}
 
 	function InstallPostMessage()
@@ -196,19 +196,19 @@ EOT;
 		// 0.3 introduces new event_date_start and event_date_end
 		$db = $this->cms->db;				/* @var $db ADOConnection */
 		$dict = NewDataDictionary($db); 	/* @var $dict ADODB_DataDict */
-		
+
 		if(version_compare($oldversion, 0.3, "<"))
 		{
 			// this is version 0.2 or 0.1
 			$sqlarray = $dict->RenameColumnSQL($this->events_table_name, "event_date", "event_date_start", "event_date_start T");
 			$dict->ExecuteSQLArray($sqlarray);
 			$sqlarray = $dict->AddColumnSQL($this->events_table_name, "event_date_end T");
-			$dict->ExecuteSQLArray($sqlarray);			
-			
+			$dict->ExecuteSQLArray($sqlarray);
+
 			$sql = "UPDATE {$this->events_table_name} SET event_date_end = event_date_start";
 			$db->Execute($sql);
 		}
-		
+
 		if(version_compare($oldversion, 0.7, "<"))
 		{
 		    // less than 0.7
@@ -217,39 +217,39 @@ EOT;
             $this->SetTemplate('upcominglist', $this->GetDefaultTemplate('upcominglist'));
             $this->SetTemplate('event', $this->GetDefaultTemplate('event'));
 		}
-		
+
 	}
 
 	function Uninstall()
 	{
 		$db = $this->cms->db; /* @var $db ADOConnection */
 		$dict = NewDataDictionary($db);
-	
+
 		$sqlarray = $dict->DropTableSQL($this->events_table_name);
 		$dict->ExecuteSQLArray($sqlarray);
-	
+
 		$sqlarray = $dict->DropTableSQL($this->events_to_categories_table_name);
 		$dict->ExecuteSQLArray($sqlarray);
-	
+
 		$sqlarray = $dict->DropTableSQL($this->categories_table_name);
 		$dict->ExecuteSQLArray($sqlarray);
-	
+
 		$db->DropSequence($this->events_table_name.'_seq');
 		$db->DropSequence($this->categories_table_name.'_seq');
 		$this->RemovePermission('Modify Calendar');
-		
+
 		// templates
 		$this->DeleteTemplate('calendar');
 		$this->DeleteTemplate('list');
 		$this->DeleteTemplate('upcominglist');
 		$this->DeleteTemplate('event');
 	}
-		
+
 
 	function GetEvent($event_id)
 	{
 		$db = $this->cms->db; /* @var $db ADOConnection */
-		
+
 		$sql = 'SELECT * FROM ' . $this->events_table_name .' WHERE event_id = ' . $event_id;
 		$rs = $db->Execute($sql);
 		if($rs->RowCount() > 0)
@@ -282,11 +282,11 @@ EOT;
 			$result['event_modified_date'] = NULL;
 			$result['categories'] = array();
 		}
-	
+
 		return $result;
 	}
 
-		
+
 	function GetCategories($order_by='category_order, category_name')
 	{
 		$db = $this->cms->db; /* @var $db ADOConnection */
@@ -296,14 +296,14 @@ EOT;
 	    {
 	        $sql .= " ORDER BY $order_by";
 	    }
-	
+
 	    $result = array();
 	    $rs = $db->Execute($sql);
 	    if($rs && $rs->RowCount() > 0)
 	        $result = $rs->GetArray();
 	    return $result;
-	}	
-	
+	}
+
 	function AllowAccess($permission='Modify Calendar')
 	{
 		$access = $this->CheckPermission($permission);
@@ -312,9 +312,9 @@ EOT;
 			return false;
 		}
 		else return true;
-	
+
 	}
-	
+
 	function DoAction($name, $id, $parameters, $returnid='')
 	{
 		switch($name)
@@ -322,21 +322,21 @@ EOT;
 			case 'default':  // default user front end page
 				$this->UserDisplay($id, $parameters, $returnid);
 				break;
-				
+
 			case 'defaultadmin': // default admin page
 				if($this->AllowAccess())
 				{
 					$this->AdminDisplayDefaultAdminPage($id, $parameters, $returnid, $name);
 				}
 				break;
-				
+
 			case 'admin_categories_update':
 				if($this->AllowAccess())
 				{
 					$this->AdminUpdateCategories($id, $parameters, $returnid);
 				}
 				break;
-				
+
 			case 'admin_add_event':
 			case 'admin_edit_event':
 				if($this->AllowAccess())
@@ -344,43 +344,43 @@ EOT;
 					$this->AdminDisplayAddEvent($id, $parameters, $returnid);
 				}
 				break;
-				
+
 			case 'admin_event_update':
 				if($this->AllowAccess())
 				{
 					$this->AdminUpdateEvent($id, $parameters, $returnid);
 					$url = $this->CreateLink($id, 'defaultadmin', $returnid, $contents='', $params=array('result'=>'1'), '', true);
 					$url = str_replace('&amp;', '&', $url);
-					
+
 					redirect($url);
 				}
 				break;
-				
+
 			case 'admin_delete_event':
 				if($this->AllowAccess())
 				{
 					$this->AdminDeleteEvent($id, $parameters, $returnid);
 					$url = $this->CreateLink($id, 'defaultadmin', $returnid, $contents='', $params=array('result'=>'1'), '', true);
 					$url = str_replace('&amp;', '&', $url);
-					
+
 					redirect($url);
 				}
 				break;
-				
+
 			case 'admin_settings_update':
 				if($this->AllowAccess())
 				{
 					$this->AdminUpdateSettings($id, $parameters, $returnid);
 				}
 				break;
-				
+
 			case 'admin_update_template':
 				if($this->AllowAccess())
 				{
 					$this->AdminUpdateTemplate($id, $parameters, $returnid);
 				}
 				break;
-			
+
 			// tab handling in admin
 			case 'admin_manage_categories':
 			case 'admin_manage_settings':
@@ -390,17 +390,17 @@ EOT;
             case 'admin_event_template':
 				if($this->AllowAccess())
 				{
-				    
+
 					$this->AdminDisplayDefaultAdminPage($id, $parameters, $returnid, $name);
 				}
-                break;            
-				
+                break;
+
 			default:
     			die("UNKNOWN ACTION: $name");
 				break;
 		}
 	}
-	
+
 	function AdminDisplayDefaultAdminPage($id, $parameters, $returnid, $name='')
 	{
 	    // use tabs for default admin page
@@ -420,7 +420,7 @@ EOT;
 		echo $this->StartTab("defaultadmin");
 		$this->AdminDisplayManageEvents($id, $parameters, $returnid);
         echo $this->EndTab();
-        
+
         echo $this->StartTab("admin_manage_categories");
 		$this->AdminDisplayCategories($id, $parameters, $returnid);
 		echo $this->EndTab();
@@ -448,10 +448,10 @@ EOT;
 		echo $this->EndTabContent();
 
 	}
-	
+
 	function AdminDisplayAddEvent($id, $parameters, $returnid)
 	{
-			
+
 		$db = $this->cms->db; /* @var $db ADOConnection */
 		$categories = $this->GetCategories();
 		$event_id = get_parameter_value($parameters, 'event_id', -1);
@@ -466,13 +466,13 @@ EOT;
 
 		echo <<<EOT
 		<h4 class="admintitle">$button_text Event</h4>
-	
+
 EOT;
 
 		echo $this->CreateFormStart($id, 'admin_event_update', $returnid, $method='post', $enctype='');
 		echo $this->CreateInputHidden($id, 'event_id', $event_id);
 		echo <<<EOT
-	
+
 	<table border=0 cellpadding=5 cellspacing=0>
 	    <tr>
 	        <td align="right">Start Date of Event:</td>
@@ -522,7 +522,7 @@ EOT;
 			$event_date_start_year = date('Y', $event_date_start_time);
 		}
 		else
-		{ 
+		{
 			$event_date_start_minute = 0; //date('i');
 			$event_date_start_hour = 0; //date('H');
 			$event_date_start_day = date('d');
@@ -556,14 +556,14 @@ EOT;
 			$event_date_end_year = date('Y', $event_date_end_time);
 		}
 		else
-		{ 
+		{
 			$event_date_end_minute = 0;
 			$event_date_end_hour = 0;
 			$event_date_end_day = 0;
 			$event_date_end_month = 0;
 			$event_date_end_year = 0;
 		}
-		
+
 		$day_array[''] = 0;
 		$month_array[''] = 0;
 		$year_array[''] = 0;
@@ -577,10 +577,10 @@ EOT;
 		echo $this->CreateInputDropdown($id, 'event_date_end_hour', $hour_array, -1, $event_date_end_hour);
 		echo ':';
 		echo $this->CreateInputDropdown($id, 'event_date_end_minute', $minute_array, -1, $event_date_end_minute);
-		
+
 	    echo <<<EOT
 	        </td>
-	    </tr>   
+	    </tr>
 	    <tr>
 	        <td align="right">Title:</td>
 	        <td colspan=3>
@@ -621,7 +621,7 @@ EOT;
 				echo "</td><td valign='top' style='padding-left: 40px;' >\n";
 				$padding = 0;
 			}
-	
+
 			if($i < $num_cats)
 			{
 				$category = $categories[$i];
@@ -632,7 +632,7 @@ EOT;
 					$checked = $cat_id;
 				echo "<div>";
 				echo $this->CreateInputCheckbox($id, 'event_categories[]', $cat_id, $checked);
-				echo $cat_name; 
+				echo $cat_name;
 				echo "</div>\n";
 			}
 		}
@@ -642,33 +642,33 @@ EOT;
 	    </tr>
 	    <tr>
 	    	<td></td>
-	        <td align="left">	            
+	        <td align="left">
 EOT;
 
 		echo $this->CreateInputSubmit($id, '', $button_text);
-		
+
 		echo <<<EOT
 
-	            <input type="button" value="Cancel" onclick='javascript:window.history.go(-1)' />		
+	            <input type="button" value="Cancel" onclick='javascript:window.history.go(-1)' />
 		</td>
 	    </tr>
 	</table>
-	
+
 EOT;
 
 		echo $this->CreateFormEnd();
 	}
-	
+
 	function AdminDisplayCategories($id, $parameters, $returnid)
 	{
-		
+
 		$db = $this->cms->db; /* @var $db ADOConnection */
 		$categories = $this->GetCategories();
 		$num_cats = count($categories);
-		
+
 		echo $this->CreateFormStart($id, 'admin_categories_update', $returnid, $method='post', $enctype='');
 	    echo <<<EOT
-	
+
 		<table border=0 cellspacing=0 cellpadding=3>
 		<tr>
 			<th>Name</th>
@@ -680,10 +680,10 @@ EOT;
 		$categories[$num_cats]['category_name'] = '';
 		$categories[$num_cats]['category_order'] = 50;
 		$num_cats ++;
-	
+
 		$num_cols = 2;
 		$rows_per_col = intval($num_cats / $num_cols);
-	
+
 		$count = 1;
 		for($i = 0; $i < $num_cats; $i++,$count ++)
 		{
@@ -693,7 +693,7 @@ EOT;
 				$category_id = $category['category_id'];
 				$category_name = (empty($category['category_name']) && $id > 0) ? '== NOT SET ==' : $category['category_name'];
 				$category_order = $category['category_order'];
-				
+
 				echo '<tr><td>';
 				echo $this->CreateInputHidden($id, 'category_ids[]', $category_id);
 				echo $this->CreateInputText($id, 'category_names[]', $category_name);
@@ -703,14 +703,14 @@ EOT;
 
 			}
 		}
-				
+
 		// submit button
 		echo "<tr><td valign='top' colspan='2' align='center'>";
 		echo $this->CreateInputSubmit($id, '', 'Update Categories');
 		echo '</td></tr></table>';
 		echo $this->CreateFormEnd();
 	}
-	
+
 	function AdminUpdateCategories($id, $parameters, $returnid)
 	{
 	    $db = $this->cms->db; /* @var $db ADOConnection */
@@ -719,7 +719,7 @@ EOT;
 		$ids = $parameters['category_ids'];
 		$names = $parameters['category_names'];
 		$orders = $parameters['category_orders'];
-	
+
 		$num_records = count($ids);
 		for($i = 0; $i < $num_records; $i++)
 		{
@@ -734,7 +734,7 @@ EOT;
 					// delete this category - remove the links first though.
 					$sql = 'DELETE FROM ' . $this->events_to_categories_table_name . ' WHERE category_id = ' . $category_id;
 					$db->Execute($sql);
-	
+
 					$sql = 'DELETE FROM ' . $this->categories_table_name . ' WHERE category_id = ' . $category_id;
 					$db->Execute($sql);
 				}
@@ -752,39 +752,39 @@ EOT;
 			{
 				$category_name = $db->quote($names[$i], get_magic_quotes_runtime());
 				$new_id = $db->GenID($this->categories_table_name.'_seq');
-	
+
 				$sql = 'INSERT INTO ' . $this->categories_table_name . " (category_id, category_name, category_order)
 						VALUES ($new_id, $category_name, $category_order)";
 				$db->Execute($sql);
 			}
-		}		
-		
+		}
+
 		$url = $this->CreateLink($id, 'admin_manage_categories', $returnid, $contents='', $params=array('categories_result'=>'1'), '', true);
 		$url = str_replace('&amp;', '&', $url);
 		redirect($url);
 	}
-	
+
 	function AdminUpdateEvent($id, $parameters, $returnid)
 	{
 		$db = $this->cms->db; /* @var $db ADOConnection */
 		$events_to_categories_table_name = cms_db_prefix().'module_events_to_categories';
 
-	
+
 		/* @var $rs ADORecordset */
 		$user_id = $this->cms->variables['user_id'];
 		$categories = get_parameter_value($parameters, 'event_categories');
-		
+
 		$event_id = get_parameter_value($parameters, 'event_id', -1);
 		$event_title = $db->quote(get_parameter_value($parameters, 'event_title'), get_magic_quotes_runtime());
 		$event_summary = $db->quote(get_parameter_value($parameters, 'event_summary'), get_magic_quotes_runtime());
-		$event_details = $db->quote(get_parameter_value($parameters, 'event_details'), get_magic_quotes_runtime());	
+		$event_details = $db->quote(get_parameter_value($parameters, 'event_details'), get_magic_quotes_runtime());
 		$event_date_start_minute = get_parameter_value($parameters, 'event_date_start_minute', date('i'));
 		$event_date_start_hour = get_parameter_value($parameters, 'event_date_start_hour', date('H'));
 		$event_date_start_day = get_parameter_value($parameters, 'event_date_start_day', date('d'));
 		$event_date_start_month = get_parameter_value($parameters, 'event_date_start_month', date('m'));
 		$event_date_start_year = get_parameter_value($parameters, 'event_date_start_year', date('Y'));
-		
-		$event_date_start = sprintf("'%04d-%02d-%02d %02d:%02d'", $event_date_start_year, $event_date_start_month, $event_date_start_day, 
+
+		$event_date_start = sprintf("'%04d-%02d-%02d %02d:%02d'", $event_date_start_year, $event_date_start_month, $event_date_start_day,
 								$event_date_start_hour, $event_date_start_minute);
 
 		$event_date_end_minute = get_parameter_value($parameters, 'event_date_end_minute', 0);
@@ -792,11 +792,11 @@ EOT;
 		$event_date_end_day = get_parameter_value($parameters, 'event_date_end_day', 0);
 		$event_date_end_month = get_parameter_value($parameters, 'event_date_end_month', 0);
 		$event_date_end_year = get_parameter_value($parameters, 'event_date_end_year', 0);
-		
+
 		if($event_date_end_year == 0)
 			$event_date_end = 'NULL';
 		else
-			$event_date_end = sprintf("'%04d-%02d-%02d %02d:%02d'", $event_date_end_year, $event_date_end_month, $event_date_end_day, 
+			$event_date_end = sprintf("'%04d-%02d-%02d %02d:%02d'", $event_date_end_year, $event_date_end_month, $event_date_end_day,
 								$event_date_end_hour, $event_date_end_minute);
 		if($event_id > -1)
 		{
@@ -814,7 +814,7 @@ EOT;
 		else
 		{
 			$event_id = $db->GenID(cms_db_prefix()."module_events_seq");
-	
+
 			$sql = "INSERT INTO " . $this->events_table_name . " (
 						event_id
 						,event_title
@@ -838,11 +838,11 @@ EOT;
 					)";
 			$db->Execute($sql);
 		}
-	
+
 		// delete current events_to_categories records for this event
 		$sql = "DELETE FROM " . $this->events_to_categories_table_name . " WHERE event_id = $event_id";
 		$db->Execute($sql);
-	
+
 		// update events_to_categories
 		if(count($categories) > 0)
 		{
@@ -858,33 +858,33 @@ EOT;
 					$db->Execute($sql);
 				}
 			}
-		}		
-	
+		}
+
 	}
-	
+
 	function AdminDeleteEvent($id, $parameters, $returnid)
 	{
 		$db = $this->cms->db; /* @var $db ADOConnection */
 		$events_table_name = $this->events_table_name;
 		$events_to_categories_table_name = $this->events_to_categories_table_name;
-	
+
 		$event_id = get_parameter_value($parameters, 'event_id', -1);
-	
+
 		// delete current events_to_categories records for this event
 		$sql = "DELETE FROM $events_to_categories_table_name WHERE event_id = $event_id";
 		$db->Execute($sql);
-	
+
 		// delete this event
 		$sql = "DELETE FROM $events_table_name WHERE event_id = $event_id";
 		$db->Execute($sql);
 	}
-	
+
 	function AdminDisplayManageEvents($id, $parameters, $returnid)
 	{
 		$keyword = get_parameter_value($parameters, 'keyword', '', 'Calendar-keyword');
 		$category_filter = get_parameter_value($parameters, 'category_filter', -1, 'Calendar-category_filter');
 		$not_approved_only = get_parameter_value($parameters, 'not_approved_only', 0, 'Calendar-not_approved_only');
-	
+
 		echo "<p>", $this->CreateFormStart($id, 'defaultadmin', $returnid, $method='get', $enctype='');
 		echo <<<EOT
 	<table border=0 cellpadding=1 cellspacing=0 style='margin: 10px'>
@@ -902,7 +902,7 @@ EOT;
 EOT;
 
 		$categories = $this->GetCategories();
-		
+
 		//debug_display($cats ,'$cats');
 		$category_array = array('Any Category'=>-1);
 		foreach($categories as $category)
@@ -916,30 +916,30 @@ EOT;
 			<td><input type="submit" value="Go"></td>
 	    </tr>
 	</table>
-	
-	
+
+
 EOT;
 		echo $this->CreateFormEnd();
-		
+
 		global $gCms;
 		echo $this->CreateLink($id, 'admin_add_event', $returnid, $gCms->variables['admintheme']->DisplayImage('icons/system/newobject.gif', $this->Lang('cal_add_event'),'','','systemicon'), array(), '', false, false, '') .' '. $this->CreateLink($id, 'admin_add_event', $returnid, $this->Lang('cal_add_event'), array(), '', false, false, 'class="pageoptions"');
 
 		$db = $this->cms->db;
 		$db->debug = false;
 		$where = 'WHERE';
-	
+
 		$sql = "SELECT ". $this->events_table_name . ".*
 			FROM ". $this->events_table_name . " ";
-		
-		if($category_filter != -1)	
+
+		if($category_filter != -1)
 		{
-			
+
 			$sql .= 'LEFT JOIN ' . $this->events_to_categories_table_name . ' ON ' .
 							$this->events_to_categories_table_name . '.event_id = ' . $this->events_table_name . ".event_id \n" .
 					$where . ' ' .$this->events_to_categories_table_name . '.category_id = ' . $category_filter . ' ';
 			$where = 'AND';
 		}
-		
+
 		if(!empty($keyword))
 		{
 			$sql .= "$where ". $this->events_table_name . ".event_title LIKE '%$keyword%'
@@ -958,35 +958,35 @@ EOT;
 		}
 
 		$rs = $db->Execute($sql);
-	
+
 		if ($rs && $rs->RowCount() > 0)
 		{
 			$number_of_columns = get_parameter_value($parameters, 'columns', 2);
-	
+
 			$num_rows = $rs->RecordCount();
 			$rows_per_column = intval($num_rows / $number_of_columns) + 0; /* 10 is a fudge factor to make it look better! */
-	
+
 			$row_count = 0;
 
 			echo "<table cellspacing=0 class='pagetable'><thead>\n";
 			echo "<tr><th>Title</th><th>From Date</th><th>To Date</th><th>Summary</th><th class=\"pageicon\"></th><th class=\"pageicon\"></th></tr></thead>\n";
-		
+
 			while( ($row = $rs->FetchRow()) )
 			{
 				$row_count++;
 				$row_class = ($row_count % 2) ? 'row1' : 'row2';
-	
+
 				$event_id = $row['event_id'];
 				//$category_name = $row['category_name'];
 				$event_title = $row['event_title'];
-				
+
 				$event_date_start = $row['event_date_start'];
 				$event_date_start_time = strtotime($row['event_date_start']);
 				if(strftime('%H%M', $event_date_start_time)== '0000')
 					$event_date_start_string = strftime('%d/%b/%Y', $event_date_start_time);
 				else
 					$event_date_start_string = strftime('%d/%b/%Y %H:%M', $event_date_start_time);
-					
+
 				$event_date_end = $row['event_date_end'];
 				if($event_date_end)
 				{
@@ -996,25 +996,25 @@ EOT;
 					else
 						$event_date_end_string = strftime('%d/%b/%Y %H:%M', $event_date_end_time);
 				}
-				else 
+				else
 				{
 					$event_date_end_string = '&nbsp;';
 				}
-					
+
 				$event_summary = $row['event_summary'];
 				$event_created_by = $row['event_created_by'];
 				$create_date = $row['event_create_date'];
 				$modified_date = $row['event_modified_date'];
-	
+
 				$edit_url = $this->CreateLink($id, 'admin_edit_event', $returnid, $contents='Manage Events', $params=array('event_id'=>$event_id), '', true);
-	
+
 				echo <<<EOT
 					<tr class="$row_class">
 						<td><a href='$edit_url'>$event_title</a></td>
 						<td>$event_date_start_string</td>
 						<td>$event_date_end_string</td>
 						<td>$event_summary </td>
-						
+
 EOT;
 				// edit and delete icons - borrowed from content list for consistency
 				$editlink = $this->CreateLink($id, 'admin_edit_event', $returnid, $gCms->variables['admintheme']->DisplayImage('icons/system/edit.gif', $this->Lang('cal_edit'),'','','systemicon'), array('event_id'=>$event_id));
@@ -1022,23 +1022,23 @@ EOT;
 
 				echo "\t\t\t\t<td>$editlink</td>\n";
 				echo "\t\t\t\t<td>$deletelink</td>\n";
-				
+
 				echo <<<EOT
 					</tr>
-	
+
 EOT;
 			}
-	
+
 			// close off final column
 			echo "\t\t</ul>\n";
 			echo "\t</td>\n";
 			echo "</tr>\n";
 			echo "</table>\n";
 			echo "<!-- End of Events Module -->\n";
-			
-		}		
+
+		}
 	}
-	
+
 	function AdminUpdateSettings($id, $parameters, $returnid)
 	{
 		$submit = get_parameter_value($parameters, 'submit');
@@ -1046,20 +1046,20 @@ EOT;
 		{
 			$language = get_parameter_value($parameters, 'language');
 			$this->SetPreference('Calendar-language', $language);
-		}	    
+		}
 
 		$url = $this->CreateLink($id, 'admin_manage_settings', $returnid, $contents='', $params=array('settings_result'=>'1'), '', true);
 		$url = str_replace('&amp;', '&', $url);
 		redirect($url);
-		exit;	
+		exit;
 	}
-	
+
 	function AdminManageSettings($id, $parameters, $returnid)
 	{
 		$language = $this->GetPreference('Calendar-language', 'en_US');
-		
+
 		echo $this->CreateFormStart($id, 'admin_settings_update', $returnid, $method='post', $enctype='');
-		
+
 		echo <<<EOT
 
 	    <table border=0 cellspacing=0 cellpadding=3>
@@ -1068,12 +1068,12 @@ EOT;
 	        <td colspan=3>
 EOT;
 		$language_array = array();
-		
-		// find all the current languages		
+
+		// find all the current languages
 		$dir = dirname(__FILE__)."/lang";
 		$ls = dir($dir);
 		while (($file = $ls->read()) != "") {
-			if (is_file("$dir/$file") && strpos($file, ".php") != 0) 
+			if (is_file("$dir/$file") && strpos($file, ".php") != 0)
 			{
 				$this_lang = str_replace('.php', '', $file);
 				$language_array[$this_lang] = $this_lang;
@@ -1091,10 +1091,10 @@ EOT;
 		echo $this->CreateInputSubmit($id, 'submit', 'Update Settings');
 		echo '</td></tr></table>';
 		echo $this->CreateFormEnd();
-		
+
 	}
-	
-	
+
+
 	function AdminDisplayTemplate($template, $id, $parameters, $returnid)
 	{
         echo $this->CreateFormStart($id, 'admin_update_template');
@@ -1103,7 +1103,7 @@ EOT;
         echo '<p style="margin-top: 5px">'.$this->CreateInputSubmit($id, 'submitbutton', $this->Lang('cal_update_template')) .' </p>';
         echo $this->CreateFormEnd();
 	}
-	
+
 	function AdminUpdateTemplate($id, $parameters, $returnid)
 	{
 	    if(isset($parameters['template_name']))
@@ -1116,12 +1116,12 @@ EOT;
     		redirect($url);
 	    }
 	    else
-	    { 
+	    {
             $this->Redirect($id, 'defaultadmin');
 	    }
 	    exit;
 	}
-	
+
 	function UserDisplay($id, $parameters, $returnid)
 	{
 	    $lang = get_parameter_value($parameters, 'lang');
@@ -1133,34 +1133,34 @@ EOT;
 	    }
 	    $display = get_parameter_value($parameters, 'display', 'calendar');
 	    unset($this->langhash);
-		
+
 		switch($display)
 		{
 		    case 'calendar':
                 $this->DisplayCalendar($id, $parameters, $returnid);
                 break;
-		      
+
             case 'event':
                 $this->DisplayEvent($id, $parameters, $returnid);
                 break;
-		      
+
             case 'list':
                 $this->DisplayList($id, $parameters, $returnid);
                 break;
-                
+
             case 'upcominglist':
                 $this->DisplayUpcomingList($id, $parameters, $returnid);
                 break;
-                
+
             default:
                 echo "Calendar: unknown display attribute '$display'!";
             break;
 		}
-		
+
 		unset($this->langhash); // force the original language to be reloaded
 		$this->curlang = $old_curlang;
 	}
-	
+
 	function DisplayCalendar($id, $parameters, $returnid)
 	{
 	    $category = get_parameter_value($parameters, 'category', '');
@@ -1170,14 +1170,14 @@ EOT;
 		$events_table_name = $this->events_table_name;
 		$first_day_of_week = get_parameter_value($parameters, 'first_day_of_week', 1);
 		$table_id = get_parameter_value($parameters, 'table_id', 'calendar-'.$id.$returnid);
-		
+
 		$use_session = get_parameter_value($parameters, 'use_session', true);
 		if($use_session)
 		{
 			$month = get_parameter_value($parameters, 'month', date('n'), 'calendar-month'.$id.$returnid);
 			$year = get_parameter_value($parameters, 'year', date('Y'), 'calendar-year'.$id.$returnid);
 		}
-		else 
+		else
 		{
 			$month = get_parameter_value($parameters, 'month', date('n'));
 			$year = get_parameter_value($parameters, 'year', date('Y'));
@@ -1193,7 +1193,7 @@ EOT;
 
 		$last_day_of_month = mktime(0, 0, 0, $next_month['month'], 0, $next_month['year']);
 
-		
+
 		$db = $this->cms->db;
         $where = 'WHERE';
 		$sql = "SELECT DISTINCT $events_table_name.*
@@ -1209,12 +1209,12 @@ EOT;
 
         $start = sprintf('%04d-%02d-01 00:00:00', $year, $month);
         $end = sprintf('%04d-%02d-%02d 23:59:59', date('Y', $last_day_of_month), date('m', $last_day_of_month), date('d', $last_day_of_month));
-        
+
         $sql .= "$where ($events_table_name.event_date_start >= '$start' \n\tOR $events_table_name.event_date_end >= '$start')\n";
         $sql .= "AND ($events_table_name.event_date_start <= '$end' \n\tOR $events_table_name.event_date_end <= '$end')\n";
-        		
+
 		$where = ' AND ';
-						
+
 		if($category)
 		{
 			$cats = explode(',', $category);
@@ -1233,16 +1233,16 @@ EOT;
 			$sql .=	') ';
 			$where = ' AND ';
 		}
-		$sql .= " ORDER BY $events_table_name.event_date_start ASC";	
-		
-		$rs = $db->Execute($sql); /* @var $rs ADOConnection */	
+		$sql .= " ORDER BY $events_table_name.event_date_start ASC";
+
+		$rs = $db->Execute($sql); /* @var $rs ADOConnection */
 		//debug_display($sql);
 		$number_of_days_in_month = date('d', $last_day_of_month);
-		
+
 		$days = array();
-		for($i = 1; $i < $number_of_days_in_month; $i++)
+		for($i = 1; $i <= $number_of_days_in_month; $i++)
 		{
-		    $days[$i]['url'] = $this->CreateLink($id, 'default', $returnid, $contents='', 
+		    $days[$i]['url'] = $this->CreateLink($id, 'default', $returnid, $contents='',
 		          $params=array('year'=>$year, 'month'=>$month, 'day'=>$i, 'display'=>'list','return_link'=>1,'detail'=>1, 'lang'=>$this->curlang), '', true);
 		    $days[$i]['events'] = array();
 		}
@@ -1252,19 +1252,19 @@ EOT;
 			{
 			    //debug_display($row, '$row');
 			    $start_date = strtotime($row['event_date_start']);
-			    
+
 			    if(empty($row['event_date_end']))
 			    {
 			        $end_date = $start_date;
 			    }
-			    else 
+			    else
 			    {
                     $end_date = strtotime($row['event_date_end']);
 			    }
 
                 $start_month = date('n', $start_date);
                 $end_month = date('n', $end_date);
-                
+
                 // find out where the event starts within this month
                 $first_day_of_event_in_this_month = date('j', $start_date);
 			    if($start_month < $month)
@@ -1281,7 +1281,7 @@ EOT;
 
                 $url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'event_id'=>$row['event_id'], 'display'=>'event', 'lang'=>$this->curlang), '', true);
                 $row['url'] = $url;
-                
+
                 // stick the event into the $days array
                 for($i = $first_day_of_event_in_this_month; $i <= $last_day_of_event_in_this_month; $i++)
                 {
@@ -1289,7 +1289,7 @@ EOT;
                 }
 			}
 		}
-	
+
 		if($year == date('Y') && $month == date('m'))
 		{
 			// month being displayed is this month. Therefore today exists
@@ -1297,11 +1297,11 @@ EOT;
 			$days[$today]['class'] .= ' calendar-today';
 		}
 
-		
+
 		$navigation['next'] = $this->CreateReturnLink($id, $returnid, '', array('year'=>$next_month['year'], 'month'=>$next_month['month']), true);
 		$navigation['prev'] = $this->CreateReturnLink($id, $returnid, '', array('year'=>$prev_month['year'], 'month'=>$prev_month['month']), true);
-		
-				
+
+
 		$day_names[0] = $this->Lang('cal_sunday');
 		$day_names[1] = $this->Lang('cal_monday');
 		$day_names[2] = $this->Lang('cal_tuesday');
@@ -1338,7 +1338,7 @@ EOT;
 		$month_names["07"] = $this->Lang('cal_july');
 		$month_names["08"] = $this->Lang('cal_august');
 		$month_names["09"] = $this->Lang('cal_september');
-		
+
 		if($first_day_of_week != 0)
 		{
 		    for($i = 0; $i < $first_day_of_week; $i++)
@@ -1349,7 +1349,7 @@ EOT;
     		    $day_short_names[] = $first;
 		    }
 		}
-		
+
 		// calendar stuff
         $first_of_month = gmmktime(0,0,0,$month,1,$year);
         $first_of_month_weekday_number = gmstrftime('%w',$first_of_month);
@@ -1379,11 +1379,11 @@ EOT;
 			{
 			    $this->SetTemplate('calendar', $this->GetDefaultTemplate('calendar'));
 			}
-			
+
 			echo $this->ProcessTemplateFromDatabase('calendar');
 		}
 	}
-	
+
 	function DisplayEvent($id, $parameters, $returnid)
 	{
 		$categories_table_name = $this->categories_table_name;
@@ -1401,39 +1401,39 @@ EOT;
 		    echo '<div class="calendar-error">Cannot find event</div>';
     		return;
 		}
-		
+
 		$use_session = get_parameter_value($parameters, 'use_session', true);
 		if($use_session)
 		{
 			$month = get_parameter_value($parameters, 'month', date('n'), 'calendar-month'.$id.$returnid);
 			$year = get_parameter_value($parameters, 'year', date('Y'), 'calendar-year'.$id.$returnid);
 		}
-		else 
+		else
 		{
 			$month = get_parameter_value($parameters, 'month', date('n'));
 			$year = get_parameter_value($parameters, 'year', date('Y'));
 		}
-		
-		
+
+
 		$db = $this->cms->db;
         $where = 'WHERE';
 		$sql = "SELECT DISTINCT $events_table_name.*
 				FROM $events_table_name
                 WHERE event_id = $event_id";
-		
-        $rs = $db->Execute($sql);	
+
+        $rs = $db->Execute($sql);
         if($rs->RecordCount() != 1)
         {
 		    // something's wrong
 		    echo '<div class="calendar-error">Either event_id is not in the database, or there is more than one event with this id! ('.$event_id.')</div>';
     		return;
         }
-        
+
         $event = $rs->FetchRow();
-		
+
 		// pick up categories
 	    $sql = "SELECT DISTINCT $categories_table_name.*
-                FROM $categories_table_name 
+                FROM $categories_table_name
                 LEFT JOIN $events_to_categories_table_name
                 ON $events_to_categories_table_name.category_id = $categories_table_name.category_id
                 WHERE $events_to_categories_table_name.event_id = $event_id";
@@ -1443,7 +1443,7 @@ EOT;
 	    {
 	        $categories = $rs->GetArray();
 	    }
-			
+
         $return_url = $this->CreateReturnLink($id, $returnid, $this->lang('cal_return'));
 
 		$day_names[0] = $this->Lang('cal_sunday');
@@ -1483,7 +1483,7 @@ EOT;
 		$month_names["07"] = $this->Lang('cal_july');
 		$month_names["08"] = $this->Lang('cal_august');
 		$month_names["09"] = $this->Lang('cal_september');
-		
+
 		if($first_day_of_week != 0)
 		{
 		    for($i = 0; $i < $first_day_of_week; $i++)
@@ -1493,26 +1493,26 @@ EOT;
     		    $first = array_shift($day_short_names);
     		    $day_short_names[] = $first;
 		    }
-		}        
-        
+		}
+
 		// other language fields
         $lang['date'] = $this->Lang('cal_date');
         $lang['summary'] = $this->Lang('cal_summary');
         $lang['details'] = $this->Lang('cal_details');
         $lang['return'] = $this->Lang('cal_return');
         $lang['to'] = $this->Lang('cal_to');
-        
+
         // assign to Smarty
         $this->smarty->assign_by_ref('month_names', $month_names);
         $this->smarty->assign_by_ref('day_names', $day_names);
-        $this->smarty->assign_by_ref('day_short_names', $day_short_names);        
+        $this->smarty->assign_by_ref('day_short_names', $day_short_names);
         $this->smarty->assign_by_ref('event', $event);
         $this->smarty->assign_by_ref('categories', $categories);
         $this->smarty->assign_by_ref('return_url', $return_url);
         $this->smarty->assign_by_ref('table_id', $table_id);
         $this->smarty->assign_by_ref('lang', $lang);
         $this->smarty->assign_by_ref('mo', $lang);
-        
+
 		// Display template
 		if (isset($params['eventtemplate']))
 		{
@@ -1525,12 +1525,12 @@ EOT;
 			{
 			    $this->SetTemplate('event', $this->GetDefaultTemplate('event'));
 			}
-			
+
 			echo $this->ProcessTemplateFromDatabase('event');
 		}
-		
+
 	}
-	
+
 	function DisplayList($id, $parameters, $returnid)
 	{
 	    $category = get_parameter_value($parameters, 'category', '');
@@ -1543,19 +1543,19 @@ EOT;
 		$table_id = get_parameter_value($parameters, 'table_id', 'calendar-'.$id.$returnid);
 		$return_link = get_parameter_value($parameters, 'return_link', 0);
 		$limit = get_parameter_value($parameters, 'limit', -1);
-		
+
 		$use_session = get_parameter_value($parameters, 'use_session', true);
 		if($use_session)
 		{
 			$month = get_parameter_value($parameters, 'month', date('n'), 'calendar-month'.$id.$returnid);
 			$year = get_parameter_value($parameters, 'year', date('Y'), 'calendar-year'.$id.$returnid);
 		}
-		else 
+		else
 		{
 			$month = get_parameter_value($parameters, 'month', date('n'));
 			$year = get_parameter_value($parameters, 'year', date('Y'));
 		}
-		
+
 		$day = get_parameter_value($parameters, 'day', -1);
 
 		$db = $this->cms->db;
@@ -1570,13 +1570,13 @@ EOT;
 				   ON $events_to_categories_table_name.category_id = $categories_table_name.category_id
 			";
 		}
-		
+
 		if($day > 0)
 		{
 		    $start = sprintf('%04d-%02d-%02d 00:00:00', $year, $month, $day);
             $end = sprintf('%04d-%02d-%02d 23:59:59', $year, $month, $day);
 		}
-		else 
+		else
 		{
 		    $start = sprintf('%04d-%02d-01 00:00:00', $year, $month);
             $end = sprintf('%04d-%02d-%02d 23:59:59', date('Y', $last_day_of_month), date('m', $last_day_of_month), date('d', $last_day_of_month));
@@ -1584,7 +1584,7 @@ EOT;
         $sql .= "$where ($events_table_name.event_date_start >= '$start' \n\tOR $events_table_name.event_date_end >= '$start')\n";
         $sql .= "AND ($events_table_name.event_date_start <= '$end' \n\tOR $events_table_name.event_date_end <= '$end')\n";
 		$where = ' AND ';
-        
+
 		if($category)
 		{
 			$cats = explode(',', $category);
@@ -1603,15 +1603,15 @@ EOT;
 			$sql .=	') ';
 			$where = ' AND ';
 		}
-		$sql .= " ORDER BY $events_table_name.event_date_start ASC";	
-		
+		$sql .= " ORDER BY $events_table_name.event_date_start ASC";
+
 		if($limit > 0)
 		{
             $rs = $db->SelectLimit($sql, $limit);
 		}
 		else
 		{
-		  $rs = $db->Execute($sql); /* @var $rs ADOConnection */	
+		  $rs = $db->Execute($sql); /* @var $rs ADOConnection */
 		}
 
 		$events = array();
@@ -1619,15 +1619,15 @@ EOT;
 		{
 			while($row = $rs->FetchRow())
 			{
-			    
+
 			    // debug_display($row, '$row');
                 $url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'event_id'=>$row['event_id'], 'display'=>'event', 'lang'=>$this->curlang), '', true);
                 $row['url'] = $url;
-                
+
                 $events[] = $row;
 			}
 		}
-		
+
 		$day_names[0] = $this->Lang('cal_sunday');
 		$day_names[1] = $this->Lang('cal_monday');
 		$day_names[2] = $this->Lang('cal_tuesday');
@@ -1664,7 +1664,7 @@ EOT;
 		$month_names["07"] = $this->Lang('cal_july');
 		$month_names["08"] = $this->Lang('cal_august');
 		$month_names["09"] = $this->Lang('cal_september');
-		
+
 		if($first_day_of_week != 0)
 		{
 		    for($i = 0; $i < $first_day_of_week; $i++)
@@ -1675,20 +1675,20 @@ EOT;
     		    $day_short_names[] = $first;
 		    }
 		}
-		
+
 		$return_url = '';
 		if($return_link == 1)
 		{
             $return_url = $this->CreateReturnLink($id, $returnid, $this->lang('cal_return'));
 		}
-		
+
 		// other language fields
         $lang['date'] = $this->Lang('cal_date');
         $lang['summary'] = $this->Lang('cal_summary');
         $lang['details'] = $this->Lang('cal_details');
         $lang['return'] = $this->Lang('cal_return');
         $lang['to'] = $this->Lang('cal_to');
-		
+
         // assign to Smarty
         $this->smarty->assign_by_ref('month_names', $month_names);
         $this->smarty->assign_by_ref('day_names', $day_names);
@@ -1715,11 +1715,11 @@ EOT;
 			{
 			    $this->SetTemplate('list', $this->GetDefaultTemplate('list'));
 			}
-			
+
 			echo $this->ProcessTemplateFromDatabase('list');
 		}
 	}
-	
+
 	function DisplayUpcomingList($id, $parameters, $returnid)
 	{
 	    $category = get_parameter_value($parameters, 'category', '');
@@ -1732,19 +1732,19 @@ EOT;
 		$table_id = get_parameter_value($parameters, 'table_id', 'calendar-'.$id.$returnid);
 		$return_link = get_parameter_value($parameters, 'return_link', 0);
 		$limit = get_parameter_value($parameters, 'limit', -1);
-		
+
 		$use_session = get_parameter_value($parameters, 'use_session', true);
 		if($use_session)
 		{
 			$month = get_parameter_value($parameters, 'month', date('n'), 'calendar-month'.$id.$returnid);
 			$year = get_parameter_value($parameters, 'year', date('Y'), 'calendar-year'.$id.$returnid);
 		}
-		else 
+		else
 		{
 			$month = get_parameter_value($parameters, 'month', date('n'));
 			$year = get_parameter_value($parameters, 'year', date('Y'));
 		}
-		
+
 		$day = get_parameter_value($parameters, 'day', -1);
 
 		$db = $this->cms->db;
@@ -1759,12 +1759,12 @@ EOT;
 				   ON $events_to_categories_table_name.category_id = $categories_table_name.category_id
 			";
 		}
-		
+
 		$start = date('Y-m-d H:i:s'); // start now !
-		
+
         $sql .= "$where ($events_table_name.event_date_start >= '$start' \n\tOR $events_table_name.event_date_end >= '$start')\n";
 		$where = ' AND ';
-        
+
 		if($category)
 		{
 			$cats = explode(',', $category);
@@ -1784,14 +1784,14 @@ EOT;
 			$where = ' AND ';
 		}
 		$sql .= " ORDER BY $events_table_name.event_date_start ASC";
-		
+
 		if($limit > 0)
 		{
             $rs = $db->SelectLimit($sql, $limit);
 		}
 		else
 		{
-		  $rs = $db->Execute($sql); /* @var $rs ADOConnection */	
+		  $rs = $db->Execute($sql); /* @var $rs ADOConnection */
 		}
 
 		$events = array();
@@ -1802,11 +1802,11 @@ EOT;
 			    // debug_display($row, '$row');
                 $url = $this->CreateLink($id, 'default', $returnid, $contents='', $params=array('year'=>$year, 'month'=>$month, 'event_id'=>$row['event_id'], 'display'=>'event', 'lang'=>$this->curlang), '', true);
                 $row['url'] = $url;
-                
+
                 $events[] = $row;
 			}
 		}
-		
+
 		$day_names[0] = $this->Lang('cal_sunday');
 		$day_names[1] = $this->Lang('cal_monday');
 		$day_names[2] = $this->Lang('cal_tuesday');
@@ -1843,7 +1843,7 @@ EOT;
 		$month_names["07"] = $this->Lang('cal_july');
 		$month_names["08"] = $this->Lang('cal_august');
 		$month_names["09"] = $this->Lang('cal_september');
-		
+
 		if($first_day_of_week != 0)
 		{
 		    for($i = 0; $i < $first_day_of_week; $i++)
@@ -1854,13 +1854,13 @@ EOT;
     		    $day_short_names[] = $first;
 		    }
 		}
-		
+
 		$return_url = '';
 		if($return_link == 1)
 		{
             $return_url = $this->CreateReturnLink($id, $returnid, $this->lang('cal_return'));
 		}
-		
+
 		// other language fields
         $lang['date'] = $this->Lang('cal_date');
         $lang['summary'] = $this->Lang('cal_summary');
@@ -1868,7 +1868,7 @@ EOT;
         $lang['return'] = $this->Lang('cal_return');
         $lang['to'] = $this->Lang('cal_to');
         $lang['upcoming_events'] = $this->Lang('cal_upcoming_events');
-		
+
         // assign to Smarty
         $this->smarty->assign_by_ref('month_names', $month_names);
         $this->smarty->assign_by_ref('day_names', $day_names);
@@ -1895,11 +1895,11 @@ EOT;
 			{
 			    $this->SetTemplate('upcominglist', $this->GetDefaultTemplate('upcominglist'));
 			}
-			
+
 			echo $this->ProcessTemplateFromDatabase('upcominglist');
 		}
 	}
-	
+
 	function GetDefaultTemplate($template)
 	{
 	    switch($template)
@@ -1907,7 +1907,7 @@ EOT;
 	        case 'calendar':
                 return '{strip}
 <table class="calendar" id="{$table_id}">
-<caption class="calendar-month"><span class="calendar-prev"><a href="{$navigation.prev}">&laquo;</a></span>&nbsp;{$month_names[$month]}&nbsp;2005&nbsp;<span class="calendar-next"><a href="{$navigation.next}">&raquo;</a></span></caption>
+<caption class="calendar-month"><span class="calendar-prev"><a href="{$navigation.prev}">&laquo;</a></span>&nbsp;{$month_names[$month]}&nbsp;{$year}&nbsp;<span class="calendar-next"><a href="{$navigation.next}">&raquo;</a></span></caption>
 <tbody><tr>
 {foreach from=$day_names item=day key=key}
 <th abbr="{$day}">{$day_short_names[$key]}</th>
@@ -1960,7 +1960,7 @@ EOT;
 {foreach from=$events key=key item=event}
     <div class="calendar-event">
     <h2>{$event.event_title}</h2>
-    
+
     {assign var=month_number value=$event.event_date_start|date_format:"%m"}
     {assign var=end_month_number value=$event.event_date_end|date_format:"%m"}
     {if $event.event_date_start == $event.event_date_end || $event.event_date_end == ""}
@@ -1982,7 +1982,7 @@ EOT;
     {else}
         <a href="{$event.url}">{$lang.details}</a>
     {/if}
-    
+
     <div>
 {/foreach}
 
@@ -2001,7 +2001,7 @@ EOT;
 {foreach from=$events key=key item=event}
     <div class="calendar-event">
     <h2>{$event.event_title}</h2>
-    
+
     {assign var=month_number value=$event.event_date_start|date_format:"%m"}
     {assign var=end_month_number value=$event.event_date_end|date_format:"%m"}
     {if $event.event_date_start == $event.event_date_end || $event.event_date_end == ""}
