@@ -171,6 +171,13 @@ class Smarty_Preview extends Smarty {
 			}
 		}
 
+		#So no one can do anything nasty, take out the php smarty tags.  Use a user
+		#defined plugin instead.
+		if (!(isset($config["use_smarty_php_tags"]) && $config["use_smarty_php_tags"] == true))
+		{
+			$tpl_source = ereg_replace("\{\/?php\}", "", $tpl_source);
+		}
+
 		return true;
 	}
 

@@ -18,8 +18,8 @@
 #
 #$Id$
 
-$CMS_VERSION = "0.10.3";
-$CMS_VERSION_NAME = "Ebenezer";
+$CMS_VERSION = "0.10.4";
+$CMS_VERSION_NAME = "Hawksbill";
 $CMS_SCHEMA_VERSION = "10";
 
 # vim:ts=4 sw=4 noet

@@ -1,3 +1,8 @@
+Version 0.10.4 "Hawksbill" -- Wed Nov 09 2005
+-----------------
+
+* Fix for a possible secuirty risk in preview functionality
+
 Version 0.10.3 "Ebenezer" -- Wed Oct 03 2005
 -----------------
 
