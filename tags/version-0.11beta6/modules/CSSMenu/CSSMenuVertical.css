@@ -1,0 +1,77 @@
+#primary-nav, #primary-nav ul {
+  margin: 0;
+  padding: 0;
+  width: 100%; /* Width of Menu Items */
+  border-bottom: 1px solid #006699;
+  background: #006699; /* IE6 Bug */
+  }
+
+#primary-nav li {
+  position: relative;
+  list-style: none;
+  }
+
+#primary-nav li a {
+  display: block;
+  text-decoration: none;
+  padding: 5px;
+  border: 1px solid #006699;
+  border-bottom: 0;
+  color: White;
+  }
+
+/* Fix IE. Hide from IE Mac \*/
+* html #primary-nav li { float: left; height: 1%; }
+* html #primary-nav li a { height: 1%; }
+/* End */
+
+#primary-nav ul {
+  position: absolute;
+  display: none;
+  left: 99%; /* Set 1px less than menu width */
+  top: 0;
+  }
+
+#primary-nav li ul li a { padding: 5px 5px; } /* Sub Menu Styles */
+
+#primary-nav li:hover ul ul,
+#primary-nav li:hover ul ul ul,
+#primary-nav li.over ul ul,
+#primary-nav li.over ul ul ul { display: none; } /* Hide sub-menus initially */
+
+#primary-nav li:hover ul,
+#primary-nav li li:hover ul,
+#primary-nav li li li:hover ul,
+#primary-nav li.over ul,
+#primary-nav li li.over ul,
+#primary-nav li li li.over ul { display: block; } /* The magic */
+
+.cssmenu-vertical ul, #primary-nav li.menuparent { background: #006699 url(modules/CSSMenu/images/arrow.gif) no-repeat right center; }
+/* fixed image flicker by adding .cssmenu-vertical ul */
+
+#primary-nav li.menuparent:hover, #primary-nav li.over { 
+	background-color: #FF9900;  
+    color: White;
+}
+
+#primary-nav li a:hover {
+	background-color: #FF9900;
+    color: White;
+}
+
+#primary-nav .sectionheader { font-weight: bold;  background: #006699;  color: White; }
+
+.currentpage
+{
+	list-style-type: square;
+	display: inline;
+	background-color: Black;
+}
+
+.cssmenu-vertical {
+	font-size: Medium;
+}
+
+.cssmenu-vertical a {
+	color: #99CCCC;
+}
