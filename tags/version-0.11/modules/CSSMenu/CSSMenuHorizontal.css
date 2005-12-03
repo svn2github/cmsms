@@ -1,0 +1,34 @@
+/* Horizontal menu for the CMS CSS Menu Module */
+/* by Alexander Endresen */
+
+/* The wrapper clears the floating elements of the menu */
+#menuwrapper { overflow: hidden; }
+
+/* Set the width of the menu elements */
+#primary-nav li { width: 200px; }
+
+/* Unless you know what you do, do not touch this */ 
+#primary-nav, #primary-nav ul { list-style: none; margin: 0px; padding: 0px; }
+#primary-nav ul { position: absolute; top: auto; display: none; }
+#primary-nav ul ul { left: 100%; top: 0px; }
+#primary-nav li { float: left; }
+#primary-nav li li { float: none; position: relative; }
+
+/* Styling the basic apperance of the menu elements */
+#primary-nav a { border: 1px solid black; display: block; margin: 0px; padding: 1px 3px; text-decoration: none; }
+#primary-nav li, #primary-nav li.menuparent { background-color: #ececec; }
+
+/* Styling the basic apperance of the active page elements (shows what page in the menu is being displayed) */
+#primary-nav li.menuactive { background-color: #C7C7C7; }
+
+/* Styling the basic apperance of the menuparents - here styled the same on hover (fixes IE bug) */
+#primary-nav ul li.menuparent, #primary-nav ul li.menuparent:hover, #primary-nav ul li.menuparenth { background-image: url(modules/CSSMenu/images/arrow.gif); background-position: center right; background-repeat: no-repeat; }
+
+/* Styling the apperance of menu items on hover */
+#primary-nav li:hover, #primary-nav li.menuh, #primary-nav li.menuparenth, #primary-nav li.menuactiveh { background-color: orange; }
+
+/* The magic - set to work for up to a 3 level menu, but can be increased unlimited */
+#primary-nav ul, #primary-nav li:hover ul, #primary-nav li:hover ul ul, 
+#primary-nav li.menuparenth ul, #primary-nav li.menuparenth ul ul { display: none; }
+#primary-nav li:hover ul, #primary-nav ul li:hover ul, #primary-nav ul ul li:hover ul, 
+#primary-nav li.menuparenth ul, #primary-nav ul li.menuparenth ul, #primary-nav ul ul li.menuparenth ul { display: block; }
