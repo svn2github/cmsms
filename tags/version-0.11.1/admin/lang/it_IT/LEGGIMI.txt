@@ -1,0 +1,1 @@
+Scompattere l'archivio (compreso di directory) nella relativa directory "lang" (di admin o del relativo modulo)
