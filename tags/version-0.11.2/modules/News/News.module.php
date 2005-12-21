@@ -42,7 +42,7 @@ class News extends CMSModule
 
 	function GetVersion()
 	{
-		return '2.0';
+		return '2.0.1';
 	}
 
 	function MinimumCMSVersion()
@@ -140,7 +140,7 @@ class News extends CMSModule
 
 {if $entry->summary}
 	<div class="NewsSummarySummary">
-		{$entry->summary}
+		{eval var=$entry->summary}
 	</div>
 
 	<div class="NewsSummaryMorelink">
@@ -150,7 +150,7 @@ class News extends CMSModule
 {else if $entry->content}
 
 	<div class="NewsSummaryContent">
-		{$entry->content}
+		{eval var=$entry->content}
 	</div>
 {/if}
 
@@ -179,13 +179,13 @@ class News extends CMSModule
 {if $entry->summary}
 	<div id="NewsPostDetailSummary">
 		<strong>
-			{$entry->summary}
+			{eval var=$entry->summary}
 		</strong>
 	</div>
 {/if}
 
 <div id="NewsPostDetailContent">
-	{$entry->content}
+	{eval var=$entry->content}
 </div>
 
 <div>
@@ -294,9 +294,9 @@ class News extends CMSModule
 				$dict->ExecuteSQLArray($sqlarray);
 				$current_version = "1.6";
 			case "1.6":
-				# Setup display template
-				#$this->SetTemplate('displayhtml', $this->GetDisplayHtmlTemplate());
-				#$this->SetTemplate('displayrss', $this->GetDisplayRSSTemplate());
+				$this->SetTemplate('displaysummary', $this->GetSummaryHtmlTemplate());
+				$this->SetTemplate('displaydetail', $this->GetDetailHtmlTemplate());
+
 				$current_version = "1.7";
 			case '1.7':
 				#Makey new tables....
@@ -671,6 +671,8 @@ class News extends CMSModule
 				{
 					$onerow = new stdClass();
 
+					$sendtodetail = array('articleid'=>$row['news_id']);
+					$onerow->link = $this->CreateLink($id, 'detail', $returnid, $moretext, $sendtodetail,'',true,false,'',true);
 					$onerow->id = $row['news_id'];
 					$onerow->title = $row['news_title'];
 					$onerow->content = $row['news_data'];
@@ -694,9 +696,16 @@ class News extends CMSModule
 				$this->smarty->assign_by_ref('query_var', $gCms->config['query_var']);
 
 				#Display template
-				$variables = &$this->cms->variables;
-				#$variables['content-type'] = 'application/rss+xml';
-				$variables['content-filename'] = 'feed.xml';
+				$variables =& $gCms->variables;
+                                if( preg_match( '/Mozilla/', $_SERVER["HTTP_USER_AGENT"] ) )
+                                {
+				   $variables['content-type'] = 'text/xml';
+                                }
+                                else 
+                                {
+				   $variables['content-type'] = 'application/rss+xml';
+                                }
+				//$variables['content-filename'] = 'feed.xml';
 
 				echo $this->ProcessTemplate('rssfeed.tpl');
 
@@ -1440,11 +1449,19 @@ class News extends CMSModule
 		<li>
 		<p>Version 1.5</p>
 		<p>Merged into the trunk News module</p>
-        </li>
+                </li>
 		<li>
 		<p>Version 1.6</p>
 		<p>Added pagination, and moved the add button to the top (calguy)</p>
-        </li>
+                </li>
+		<li>
+		<p>Version 2.0</p>
+		<p>Re-written to use smarty templates, and several other significant improvements</p>
+               </li>
+		<li>
+		<p>Version 2.0.1</p>
+		<p>Minor tweaks to the RSS output to allow it to work correctly on different browsers, and to support non alpha numeric characters in the description.</p>
+               </li>
 		</ul>
 		<?php
 	}
@@ -1591,38 +1608,45 @@ class NewsModule extends CMSModuleContentType
 		}
 	}
 
-	function Show()
+	function Show($param = 'content_en')
 	{
-		global $gCms;
-		$variables = &$gCms->variables;
-
-		$log =& LoggerManager::getLogger('News.module.php');
-		$log->debug('Starting Show');
-
-		$params = array();
-
-		if (strlen($this->GetPropertyValue('number')) > 0)
+		if ($param == 'content_en')
 		{
-			$params['number'] = $this->GetPropertyValue('number');
-		}
+			global $gCms;
+			$variables = &$gCms->variables;
 
-		if (strlen($this->GetPropertyValue('category')) > 0)
+			$log =& LoggerManager::getLogger('News.module.php');
+			$log->debug('Starting Show');
+
+			$params = array();
+
+			if (strlen($this->GetPropertyValue('number')) > 0)
+			{
+				$params['number'] = $this->GetPropertyValue('number');
+			}
+
+			if (strlen($this->GetPropertyValue('category')) > 0)
+			{
+				$params['category'] = $this->GetPropertyValue('category');
+			}
+
+			$params['moretext'] = $this->GetPropertyValue('moretext');
+			$params['sortasc'] = $this->GetPropertyValue('sortasc');
+
+			$newnews = new News();
+
+			//Buffer all this crap spit out by the News module and return it
+			@ob_start();
+			$newnews->DoAction('default', 'newsmodule', $params, $variables['page_id']);
+			$text = @ob_get_contents();
+			@ob_end_clean();
+			#return $text;
+			return '{literal}'.$text.'{/literal}';
+		}
+		else
 		{
-			$params['category'] = $this->GetPropertyValue('category');
+			return '';
 		}
-
-		$params['moretext'] = $this->GetPropertyValue('moretext');
-		$params['sortasc'] = $this->GetPropertyValue('sortasc');
-
-		$newnews = new News();
-
-		//Buffer all this crap spit out by the News module and return it
-		@ob_start();
-		$newnews->DoAction('default', 'newsmodule', $params, $variables['page_id']);
-		$text = @ob_get_contents();
-		@ob_end_clean();
-		#return $text;
-		return '{literal}'.$text.'{/literal}';
 	}
 
 	function GetURL()

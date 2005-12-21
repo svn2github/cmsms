@@ -8,12 +8,13 @@
 		{foreach from=$items item=entry}
 		<item>
 			<title>{$entry->title}</title>
+			<link>{$entry->link}</link><!-- Every item needs a link for livebookmarks -->
 			<pubDate>{$entry->gmdate}</pubDate>
 			<category>{$entry->category}</category>
-			<description>{$entry->strippedsummary}
-			{$entry->strippedcontent}</description>
-			<content:encoded><![CDATA[{$entry->summary}
-			{$entry->content}]]></content:encoded>
+			<description>{eval var=$entry->strippedsummary}
+			{eval var=$entry->strippedcontent}</description>
+			<content:encoded><![CDATA[{eval var=$entry->summary}
+			{eval var=$entry->content}]]></content:encoded>
 		</item>
 		{/foreach}
 	</channel>
