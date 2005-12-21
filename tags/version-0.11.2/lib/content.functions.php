@@ -372,10 +372,22 @@ class Smarty_CMS extends Smarty {
 				if (isset($templateobj) && $templateobj !== FALSE)
 				{
 					#Time to fill our template content
-					#If it's in print mode, then just create a simple stupid template
+					#If it's in print mode, then just create a simple stupid template, or template without button :)
 					if (isset($_GET["print"]))
 					{
-						$tpl_source = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'."\n".'<html><head><title>{title}</title><meta name="robots" content="noindex"></meta>{stylesheet}{literal}<style type="text/css" media="print">#back {display: none;}</style>{/literal}</head><body style="background-color: white; color: black; background-image: none;"><form action="index.php?page='.$tpl_name.'" method="post"><input type="submit" value="Go Back"></form>{content}</body></html>';
+						$script = '';
+
+						if (isset($_GET["js"]) and $_GET["js"] == 1)
+							$script = '<script language="JavaScript">window.print();</script>';
+
+						if (isset($_GET["goback"]) and $_GET["goback"] == 0)
+						{
+							$tpl_source = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'."\n".'<html><head><title>{title}</title><meta name="robots" content="noindex"></meta>{stylesheet}{literal}<style type="text/css" media="print">#back {display: none;}</style>{/literal}</head><body style="background-color: white; color: black; background-image: none;">{content}</body></html>';
+						}
+						else
+						{
+							$tpl_source = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'."\n".'<html><head><title>{title}</title><meta name="robots" content="noindex"></meta>{stylesheet}{literal}<style type="text/css" media="print">#back {display: none;}</style>{/literal}</head><body style="background-color: white; color: black; background-image: none;"><form action="index.php?page='.$tpl_name.'" method="post"><input type="submit" value="Go Back"></form>{content}'.$script.'</body></html>';
+						}
 					}
 					else
 					{
@@ -671,10 +683,22 @@ class Smarty_CMS extends Smarty {
 				}
 
 				#Time to fill our template content
-				#If it's in print mode, then just create a simple stupid template
+				#If it's in print mode, then just create a simple stupid template, or template without button :)
 				if (isset($_GET["print"]))
 				{
-					$tpl_source = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'."\n".'<html><head><title>{title}</title><meta name="robots" content="noindex"></meta>{stylesheet}{literal}<style type="text/css" media="print">#back {display: none;}</style>{/literal}</head><body style="background-color: white; color: black; background-image: none;"><form action="index.php?page='.$tpl_name.'" method="post"><input type="submit" value="Go Back"></form>{content}</body></html>';
+					$script = '';
+
+					if (isset($_GET["js"]) and $_GET["js"] == 1)
+						$script = '<script language="JavaScript">window.print();</script>';
+
+					if (isset($_GET["goback"]) and $_GET["goback"] == 0)
+					{
+						$tpl_source = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'."\n".'<html><head><title>{title}</title><meta name="robots" content="noindex"></meta>{stylesheet}{literal}<style type="text/css" media="print">#back {display: none;}</style>{/literal}</head><body style="background-color: white; color: black; background-image: none;">{content}</body></html>';
+					}
+					else
+					{
+						$tpl_source = '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">'."\n".'<html><head><title>{title}</title><meta name="robots" content="noindex"></meta>{stylesheet}{literal}<style type="text/css" media="print">#back {display: none;}</style>{/literal}</head><body style="background-color: white; color: black; background-image: none;"><form action="index.php?page='.$tpl_name.'" method="post"><input type="submit" value="Go Back"></form>{content}'.$script.'</body></html>';
+					}
 				}
 				else
 				{
@@ -943,7 +967,7 @@ function load_plugins(&$smarty)
 
 		$query = "SELECT * FROM ".cms_db_prefix()."userplugins";
 		$result = &$db->Execute($query);
-		while (!$result->EOF)
+		while (isset($result) && !$result->EOF)
 		{
 			if (!in_array($result->fields['userplugin_name'], $plugins))
 			{

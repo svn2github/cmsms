@@ -266,7 +266,14 @@ function showPageThree($errorMessage='')
 	}
 	$adminusername = $_POST['adminusername'];
 	$adminemail = $_POST['adminemail'];
-	$adminpassword = md5($_POST['adminpassword']);
+	if (isset($_POST['page']) && $_POST['page'] == '4')
+	{
+		$adminpassword = $_POST['adminpassword'];
+	}
+	else
+	{
+		$adminpassword = md5($_POST['adminpassword']);
+	}
 
 ?>
 
@@ -565,7 +572,7 @@ function showPageFive() {
 	$newconfig["persistent_db_conn"] = true;
 	$newconfig["default_upload_permission"] = '664';
     $newconfig["page_extension"] = ".html";
-	$newconfig["locale"] = "en_US";
+	$newconfig["locale"] = "";
 	$newconfig["admin_encoding"] = "utf-8";
 
     $configfile = CONFIG_FILE_LOCATION;

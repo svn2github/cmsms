@@ -74,7 +74,7 @@ $config['previews_path'] = str_replace('smarty/cms', 'tmp', $config['previews_pa
 $gCms->config = &$config;
 
 #Set the locale if it's set
-if (isset($config['locale']))
+if (isset($config['locale']) && $config['locale'] != '')
 {
 	@setlocale(LC_ALL, $config['locale']);
 }
@@ -116,7 +116,7 @@ function count_sql_execs($db, $sql, $inputarray)
 if (!isset($DONT_LOAD_DB)) {
 	#global $ADODB_COUNTRECS;
 	#$ADODB_COUNTRECS = false;
-	$db = &ADONewConnection($config['dbms'], 'pear:date');
+	$db = &ADONewConnection($config['dbms'], 'date:pear');
 	if (isset($config['persistent_db_conn']) && $config['persistent_db_conn'] == true)
 	{
 		$db->PConnect($config["db_hostname"],$config["db_username"],$config["db_password"],$config["db_name"]);

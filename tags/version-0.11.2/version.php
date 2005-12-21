@@ -18,8 +18,8 @@
 #
 #$Id: version.php 2293 2005-12-05 20:52:48Z wishy $
 
-$CMS_VERSION = "0.11.1";
-$CMS_VERSION_NAME = "Tobago";
+$CMS_VERSION = "0.11.2";
+$CMS_VERSION_NAME = "Scarborough";
 $CMS_SCHEMA_VERSION = "14";
 
 # vim:ts=4 sw=4 noet

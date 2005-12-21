@@ -27,6 +27,28 @@ function smarty_cms_function_print($params, &$smarty)
 		$text = $params['text'];
 	}
 
+	$js = '';
+	if (!empty($params['script']) and $params['script'])
+	{
+		$js = '&js=1';
+	}
+
+	$target = '';
+	if (!empty($params['popup']) and $params['popup'])
+	{
+		$target = ' target="_blank"';
+		$goback = '&goback=0';
+	}
+	else
+	{
+		$goback = '';
+		if (!empty($params['goback']) and $params['goback'])
+		{
+		$goback = '&goback=1';
+		}
+	}
+	  
+	//will this work if using htaccess? (Yes! -Wishy)
 	if (isset($params["showbutton"]))
 	{
 		return '<a href="'.$gCms->config['root_url'].'/index.php?page='.$gCms->variables['content_id'].'&amp;print=true' . $goback . $js . '"'. $target . '><img border="0" src="'.$gCms->config['root_url'].'/images/cms/printbutton.gif" alt="'.$text.'"/></a>';
@@ -55,7 +77,7 @@ function smarty_cms_help_function_print() {
 
 function smarty_cms_about_function_print() {
 	?>
-	<p>Author: Brett Batie&lt;brett-cms@provisiontech.net&gt;</p>
+	<p>Author: Brett Batie&lt;brett-cms@classicwebdevelopment.com&gt;</p>
 	<p>Version: 1.0</p>
 	<p>
 	Change History:<br/>
