@@ -672,7 +672,7 @@ class News extends CMSModule
 					$onerow = new stdClass();
 
 					$sendtodetail = array('articleid'=>$row['news_id']);
-					$onerow->link = $this->CreateLink($id, 'detail', $returnid, $moretext, $sendtodetail,'',true,false,'',true);
+					$onerow->link = $this->CreateLink($id, 'detail', $returnid, '', $sendtodetail,'',true,false,'',true);
 					$onerow->id = $row['news_id'];
 					$onerow->title = $row['news_title'];
 					$onerow->content = $row['news_data'];
