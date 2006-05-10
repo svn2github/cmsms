@@ -18,7 +18,7 @@
 #
 #$Id: version.php 2667 2006-03-25 16:33:48Z wishy $
 
-$CMS_VERSION = "0.12.1";
+$CMS_VERSION = "0.12.2";
 $CMS_VERSION_NAME = "Savusavu";
 $CMS_SCHEMA_VERSION = "18";
 

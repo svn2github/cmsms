@@ -18,6 +18,9 @@
  * 		Frederico Caldeira Knabben (fredck@fckeditor.net)
  */
 
+require_once(dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))))))) . '/include.php');
+check_login();
+
 include('config.php') ;
 include('util.php') ;
 include('io.php') ;
