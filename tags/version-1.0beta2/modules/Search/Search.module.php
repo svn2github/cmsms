@@ -1,0 +1,530 @@
+<?php
+#CMS - CMS Made Simple
+#(c)2004 by Ted Kulp (wishy@users.sf.net)
+#This project's homepage is: http://cmsmadesimple.sf.net
+#
+#This program is free software; you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation; either version 2 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#$Id: News.module.php 2114 2005-11-04 21:51:13Z wishy $
+
+include_once(dirname(__FILE__) . '/PorterStemmer.class.php');
+
+class SearchItemCollection
+{
+	var $_ary;
+	var $maxweight;
+
+	function SearchItemCollection()
+	{
+		$this->_ary = array();
+		$this->maxweight = 1;
+	}
+
+	function AddItem($title, $url, $txt, $weight = 1)
+	{
+		if( $txt == '' ) { $txt = $url; }
+		$exists = false;
+
+		foreach ($this->_ary as $oneitem)
+		{
+			if ($url == $oneitem->url)
+			{
+				$exists = true;
+				break;
+			}
+		}
+
+		if (!$exists)
+		{
+			$newitem = new StdClass();
+			$newitem->url = $url;
+			$newitem->urltxt = $txt;
+			$newitem->title = $title;
+			$newitem->intweight = intval($weight);
+			if (intval($weight) > $this->maxweight)
+			$this->maxweight = intval($weight);
+			array_push($this->_ary, $newitem);
+		}
+	}
+	
+	function CalculateWeights()
+	{
+		reset($this->_ary);
+		while (list($key) = each($this->_ary))
+		{
+			$oneitem =& $this->_ary[$key];
+			$oneitem->weight = intval(($oneitem->intweight / $this->maxweight) * 100);
+		}
+	}
+}
+
+class Search extends CMSModule
+{
+	function GetName()
+	{
+		return 'Search';
+	}
+
+	function GetFriendlyName()
+	{
+		return $this->Lang('search');
+	}
+
+	function IsPluginModule()
+	{
+		return true;
+	}
+
+	function HasAdmin()
+	{
+		return true;
+	}
+
+	/*---------------------------------------------------------
+	 HandlesEvents()
+	 ---------------------------------------------------------*/
+	function HandlesEvents ()
+	{
+	  return true;
+	}
+
+	function GetVersion()
+	{
+		return '1.0.2';
+	}
+
+	function MinimumCMSVersion()
+	{
+		return '1.0-svn';
+	}
+
+	function GetAdminDescription()
+	{
+		return $this->Lang('description');
+	}
+
+    function VisibleToAdminUser()
+    {
+      return true;
+    }
+
+	function Install()
+	{
+		$db =& $this->GetDb();
+
+	    $db_prefix = cms_db_prefix();
+		$dict = NewDataDictionary($db);
+		$flds= "
+			module_name C(100),
+			content_id I,
+			extra_attr C(100),
+			word C(255),
+			count I
+		";
+
+		$taboptarray = array('mysql' => 'TYPE=MyISAM');
+		$sqlarray = $dict->CreateTableSQL(cms_db_prefix().'module_search_index', $flds, $taboptarray);
+		$dict->ExecuteSQLArray($sqlarray);
+		
+        $sqlarray = $dict->CreateIndexSQL('module_name', $db_prefix."module_search_index", 'module_name');
+        $dict->ExecuteSQLArray($sqlarray);
+		
+        $sqlarray = $dict->CreateIndexSQL('content_id', $db_prefix."module_search_index", 'content_id');
+        $dict->ExecuteSQLArray($sqlarray);
+		
+        $sqlarray = $dict->CreateIndexSQL('extra_attr', $db_prefix."module_search_index", 'extra_attr');
+        $dict->ExecuteSQLArray($sqlarray);
+		
+        $sqlarray = $dict->CreateIndexSQL('count', $db_prefix."module_search_index", 'count');
+        $dict->ExecuteSQLArray($sqlarray);
+		
+		$this->SetPreference('stopwords', $this->DefaultStopWords());
+		$this->SetPreference('usestemming', 'false');
+		
+		$this->SetTemplate('displaysearch', $this->GetSearchHtmlTemplate());
+		$this->SetTemplate('displayresult', $this->GetResultsHtmlTemplate());
+		
+		$this->CreateEvent('SearchInitiated');
+		$this->CreateEvent('SearchCompleted');
+		$this->CreateEvent('SearchItemAdded');
+		$this->CreateEvent('SearchItemDeleted');
+		$this->CreateEvent('SearchAllItemsDeleted');
+		
+		$this->RegisterEvents();
+
+		$this->Reindex();
+	}
+
+	function Uninstall()
+	{
+		$db =& $this->GetDb();
+		$dict = NewDataDictionary($db);
+
+		$sqlarray = $dict->DropTableSQL(cms_db_prefix().'module_search_index');
+		$dict->ExecuteSQLArray($sqlarray);
+		
+		$this->RemoveEvent('SearchInitiated');
+		$this->RemoveEvent('SearchCompleted');
+		$this->RemoveEvent('SearchItemAdded');
+		$this->RemoveEvent('SearchItemDeleted');
+		$this->RemoveEvent('SearchAllItemsDeleted');
+	}
+	
+	function Upgrade($oldversion, $newversion)
+	{
+		if ($oldversion == '1.0')
+		{
+			$this->CreateEvent('SearchInitiated');
+			$this->CreateEvent('SearchCompleted');
+			$this->CreateEvent('SearchItemAdded');
+			$this->CreateEvent('SearchItemDeleted');
+			$this->CreateEvent('SearchAllItemsDeleted');
+			
+			$this->RegisterEvents();
+			
+			$oldversion = '1.0.1';
+		}
+		
+		if ($oldversion = '1.0.1')
+		{
+			$this->SetTemplate('displaysearch', $this->GetSearchHtmlTemplate());
+			$this->SetTemplate('displayresult', $this->GetResultsHtmlTemplate());
+			
+			$oldversion = '1.0.2';
+		}
+		
+		$this->Reindex();
+	}
+
+	function SetParameters()
+	{
+	  $this->CreateParameter('resultpage', 'null', $this->Lang('param_resultpage'));
+	}
+
+	function GetSearchHtmlTemplate()
+	{
+		return '{$startform}
+
+{$inputbox} {$submitbutton} {$hidden}
+
+{$endform}';
+	}
+	
+	function GetResultsHtmlTemplate()
+	{
+		return '<h3>{$searchresultsfor} &quot;{$phrase}&quot;</h3>
+{if $itemcount > 0}
+	<ul>
+	{foreach from=$results item=entry}
+		<li>{$entry->title} - <a href="{$entry->url}">{$entry->urltxt}</a> ({$entry->weight}%)</li>
+	{/foreach}
+	</ul>
+
+	<p>{$timetaken}: {$timetook}</p>
+{else}
+	<p><strong>{$noresultsfound}</strong></p>
+{/if}';
+	}
+	
+	function DefaultStopWords()
+	{
+		return 'i, me, my, myself, we, our, ours, ourselves, you, your, yours, 
+yourself, yourselves, he, him, his, himself, she, her, hers, 
+herself, it, its, itself, they, them, their, theirs, themselves, 
+what, which, who, whom, this, that, these, those, am, is, are, 
+was, were, be, been, being, have, has, had, having, do, does, 
+did, doing, a, an, the, and, but, if, or, because, as, until, 
+while, of, at, by, for, with, about, against, between, into, 
+through, during, before, after, above, below, to, from, up, down, 
+in, out, on, off, over, under, again, further, then, once, here, 
+there, when, where, why, how, all, any, both, each, few, more, 
+most, other, some, such, no, nor, not, only, own, same, so, 
+than, too, very';
+	}
+
+	function RemoveStopWordsFromArray($words)
+	{
+		$stop_words = preg_split("/[\s,]+/", $this->GetPreference('stopwords', $this->DefaultStopWords()));
+		return array_diff($words, $stop_words);
+	}
+
+	function StemPhrase($phrase)
+	{
+		// strip out smarty tags
+		$phrase = preg_replace('/\{.*?\}/', '', $phrase);
+
+		// strip out html and php stuff
+		$phrase = strip_tags($phrase);
+
+		// split into words
+		$words = str_word_count(strtolower($phrase), 1);
+
+		// ignore stop words
+		$words = $this->RemoveStopWordsFromArray($words);
+
+		$stemmer = new PorterStemmer();
+
+		// stem words
+		$stemmed_words = array();
+		$stem_pref = $this->GetPreference('usestemming', 'false');
+		foreach ($words as $word)
+		{
+			//trim words get rid of wrapping quotes
+			$word = trim($word, ' \'"');
+			
+			// ignore 1 and 2 letter words
+			if (strlen($word) <= 2)
+			{
+				continue;
+			}
+
+			if ($stem_pref == 'true')
+				$stemmed_words[] = $stemmer->stem($word, true);
+			else
+				$stemmed_words[] = $word;
+		}
+
+		return $stemmed_words;
+	}
+
+	function AddWords($module = 'Search', $id = -1, $attr = '', $content = '')
+	{
+		$this->DeleteWords($module, $id, $attr);
+		$db =& $this->GetDb();
+		
+		@$this->SendEvent('SearchItemAdded', array($module, $id, $attr, &$content));
+		
+		if ($content != "")
+		{		
+			//Clean up the content
+			$stemmed_words = $this->StemPhrase($content);
+			$words = array_count_values($stemmed_words);
+		
+			foreach ($words as $word=>$count)
+			{
+				$db->Execute('INSERT INTO '.cms_db_prefix().'module_search_index (module_name, content_id, extra_attr, word, count) VALUES (?,?,?,?,?)', array($module, $id, $attr, $word, $count));
+			}
+		}
+	}
+
+	function DeleteWords($module = 'Search', $id = -1, $attr = '')
+	{
+	   $db =& $this->GetDb();
+           $parms = array( $module );
+           $q = "DELETE FROM ".cms_db_prefix().'module_search_index WHERE module_name=?';
+           if( $id != -1 )
+             {
+                $q .= " AND content_id=?";
+                $parms[] = $id;
+             }
+           if( $attr != '' )
+             {
+                $q .= " AND extra_attr=?";
+                $parms[] = $attr;
+             }
+	   $db->Execute($q, $parms);
+	   @$this->SendEvent('SearchItemDeleted', array($module, $id, $attr));
+	}
+	
+	function DeleteAllWords()
+	{
+		$db =& $this->GetDb();
+		$db->Execute('DELETE FROM '.cms_db_prefix().'module_search_index');
+		
+		@$this->SendEvent('SearchAllItemsDeleted');
+	}
+
+	function GetHelp($lang='en_US')
+	{
+		return $this->Lang('help');
+	}
+
+	function GetAuthor()
+	{
+		return 'Ted Kulp';
+	}
+
+	function GetAuthorEmail()
+	{
+		return 'ted@cmsmadesimple.org';
+	}
+
+	function GetChangeLog()
+	{
+		return $this->Lang('changelog');
+	}
+	
+	function RegisterEvents()
+	{
+		$this->AddEventHandler( 'Core', 'ContentEditPost', false );
+		$this->AddEventHandler( 'Core', 'ContentDeletePost', false );
+		$this->AddEventHandler( 'Core', 'AddTemplatePost', false );
+		$this->AddEventHandler( 'Core', 'EditTemplatePost', false );
+		$this->AddEventHandler( 'Core', 'DeleteTemplatePost', false );
+		$this->AddEventHandler( 'Core', 'AddGlobalContentPost', false );
+		$this->AddEventHandler( 'Core', 'EditGlobalContentPost', false );
+		$this->AddEventHandler( 'Core', 'DeleteGlobalContentPost', false );
+	}
+
+	function Reindex()
+	{
+		$this->DeleteAllWords();
+		
+		$allcontent =& ContentManager::GetAllContent(false);
+		reset($allcontent);
+		while (list($key) = each($allcontent))
+		{
+			$onecontent =& $allcontent[$key];
+			//$this->ContentEditPost($onecontent);
+			$params = array('content' => &$onecontent);
+			$this->DoEvent('Core', 'ContentEditPost', $params);
+		}
+
+		$alltemplates = TemplateOperations::LoadTemplates();
+		reset($alltemplates);
+		while (list($key) = each($alltemplates))
+		{
+			$onetemplate =& $alltemplates[$key];
+			//$this->EditTemplatePost($onetemplate);
+			$params = array('template' => &$onetemplate);
+			$this->DoEvent('Core', 'EditTemplatePost', $params);
+		}
+
+		$allblobs = HtmlBlobOperations::LoadHtmlBlobs();
+		reset($allblobs);
+		while (list($key) = each($allblobs))
+		{
+			$oneblob =& $allblobs[$key];
+			//$this->EditHtmlBlobPost($oneblob);
+			$params = array('global_content' => &$oneblob);
+			$this->DoEvent('Core', 'EditHtmlBlobPost', $params);
+		}
+		
+		global $gCms;
+		foreach($gCms->modules as $key=>$value)
+		{
+			if ($gCms->modules[$key]['installed'] == true &&
+				$gCms->modules[$key]['active'] == true)
+			{
+				if (method_exists($gCms->modules[$key]['object'], 'SearchReindex'))
+				{
+					$gCms->modules[$key]['object']->SearchReindex($this);
+				}
+			}
+		}
+	}
+
+	function GetEventDescription( $eventname )
+	{
+		return $this->lang('eventdesc-' . $eventname);
+	}
+
+	function GetEventHelp( $eventname )
+	{
+		return $this->lang('eventhelp-' . $eventname);
+	}
+	
+	function DoEvent( $originator, $eventname, &$params )
+	{
+		if ($originator == 'Core')
+		{
+			switch ($eventname)
+			{
+				case 'ContentEditPost':
+					$content =& $params['content'];
+					
+					//Only index content if it's active
+					if ($content->Active()) {
+
+						//Weight the title and menu text higher
+						$text = str_repeat(' '.$content->Name(), 2) . ' ';
+						$text .= str_repeat(' '.$content->MenuText(), 2) . ' ';
+
+						$props = $content->Properties();
+						foreach ($props->mPropertyValues as $k=>$v)
+						{
+							$text .= $v;
+						}
+
+						$this->AddWords($this->GetName(), $content->Id(), 'content', $text);
+					}
+					else
+					{
+						//Just in case the active flag was turned off
+						$this->DeleteWords($this->GetName(), $content->Id(), 'content');
+					}
+					
+					break;
+
+				case 'ContentDeletePost':
+					$content =& $params['content'];
+
+					$this->DeleteWords($this->GetName(), $content->Id(), 'content');
+
+					break;
+					
+				case 'AddTemplatePost':
+					$template =& $params['template'];
+					
+					if( $template->active != false )
+						$this->AddWords($this->GetName(), $template->id, 'template', $template->content);
+					else
+						$this->DeleteWords($this->GetName(), $template->id, 'template');
+				
+					break;
+					
+				case 'EditTemplatePost':
+					$template =& $params['template'];
+
+					if( $template->active != false )
+						$this->AddWords($this->GetName(), $template->id, 'template', $template->content);
+					else
+						$this->DeleteWords($this->GetName(), $template->id, 'template');
+
+					break;
+					
+				case 'DeleteTemplatePost':
+					$template =& $params['template'];
+
+					$this->DeleteWords($this->GetName(), $template->id, 'template');
+
+					break;
+					
+				case 'AddGlobalContentPost':
+					$global_content =& $params['global_content'];
+
+					$this->AddWords($this->GetName(), $global_content->id, 'global_content', $global_content->content);
+
+					break;
+					
+				case 'EditGlobalContentPost':
+					$global_content =& $params['global_content'];
+
+					$this->AddWords($this->GetName(), $global_content->id, 'global_content', $global_content->content);
+
+					break;
+					
+				case 'DeleteGlobalContentPost':
+					$global_content =& $params['global_content'];
+
+					$this->DeleteWords($this->GetName(), $global_content->id, 'global_content');
+
+					break;
+			}
+		}
+	}
+}
+
+# vim:ts=4 sw=4 noet
+?>
