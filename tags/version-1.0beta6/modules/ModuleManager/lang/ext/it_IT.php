@@ -1,0 +1,55 @@
+<?php
+$lang['error_checksum'] = 'Errore checksum. Indica probabilmente un file corrotto quando fu inviato al repository o un problema nel download alla vostra macchina.';
+$lang['cantdownload'] = 'Non posso effettuare il download';
+$lang['download'] = 'Download';
+$lang['error_moduleinstallfailed'] = 'Installazione Modulo fallita';
+$lang['error_connectnomodules'] = 'Sebbene una connessione fu effettuata con successo allo specifico module repository, appare che il repository non sta ancora condividendo questi moduli';
+$lang['submit'] = 'Inoltra';
+$lang['text_repository_url'] = 'L&#039;indirizzo dovrebbe essere della forma http://www.mycmssite.com/path/soap.php?module=ModuleRepository';
+$lang['prompt_repository_url'] = 'Indirizzo del ModuleRepository:';
+$lang['availmodules'] = 'Moduli utilizzabili';
+$lang['preferences'] = 'Preferenze';
+$lang['repositorycount'] = 'Moduli trovati nel repository';
+$lang['instcount'] = 'Moduli correntemente installati';
+$lang['availablemodules'] = 'Il corrente stato dei moduli utilizzabile dal corrente repository';
+$lang['helptxt'] = 'Aiuto';
+$lang['abouttxt'] = 'About';
+$lang['xmltext'] = 'File XML';
+$lang['nametext'] = 'Nome Modulo';
+$lang['vertext'] = 'Versione';
+$lang['sizetext'] = 'Dimensione (bytes)';
+$lang['statustext'] = 'Stato/Azione';
+$lang['uptodate'] = 'Installato';
+$lang['install'] = 'installa';
+$lang['newerversion'] = 'Nuova versione installata';
+$lang['upgrade'] = 'Aggiornamento';
+$lang['error_nosoapconnect'] = 'Non posso connettermi al server SOAP';
+$lang['error_soaperror'] = 'Problemi SOAP';
+$lang['error_norepositoryurl'] = 'L&#039;indirizzo del Module Repository non &egrave; stato specificato';
+$lang['friendlyname'] = 'Modulo Manager';
+$lang['postinstall'] = 'Post Install Message, (e.g., Be sure to set &quot;&quot; permissions to use this module!)';
+$lang['postuninstall'] = 'Post Uninstall Message, e.g., &quot;Curses! Foiled Again!&quot;';
+$lang['really_uninstall'] = 'Really? You&#039;re sure you want to uninstall this fine module?';
+$lang['uninstalled'] = 'Modulo disinstallato.';
+$lang['installed'] = 'Versione del modulo %s installato.';
+$lang['upgraded'] = 'Modulo aggiornato alla versione %s.';
+$lang['moddescription'] = 'Un client per il ModuleRepository, questo modulo permette di installare moduli da siti remoti senza la necessit&agrave; di ftp, o estarre archivi zip. I file moduli XML sono scaricati usando SOAP, verificati la loro integrit&agrave; e poi espansi automaticamente.';
+$lang['error'] = 'Errore!';
+$lang['admindescription'] = 'Una utilit&agrave; per prelevare e installare moduli da server remoti.';
+$lang['accessdenied'] = 'Accesso negato. Si prega di controllare i vostri permissi.';
+$lang['changelog'] = '<ul>
+<li>Version 1.0. 10 January 2006. Initial Release.</li>
+<li>Version 1.1. July, 2006. Released with the 1.0- beta</li>
+<li>Version 1.1.1 August, 2006.  Require 1.0.1 of nuSOAP</li>
+</ul>';
+$lang['help'] = '<h3>What Does This Do?</h3>
+<p>A client for the ModuleRepository, this module allows previewing, and installing modules from remote sites without the need for ftping, or unzipping archives.  Module XML files are downloaded using SOAP, integrity verified, and then expanded automatically.</p>
+<h3>How Do I Use It</h3>
+<p>In order to use this module, you will need the &#039;Modify Modules&#039; permission, and you will also need the complete, and full URL to a &#039;Module Repository&#039; installation.  You can specify this url in the &#039;Site Admin&#039; --> &#039;Global Settings&#039; page.</p><br/>
+<p>You can find the interface for this module under the &#039;Extensions&#039; menu.  When you select this module, the &#039;Module Repository&#039; installation will automatically be queried for a list of it&#039;s available xml modules.  This list will be cross referenced with the list of currently installed modules, and a summary page displayed.  From here, you can view the descriptive information, the help, and the about information for a module without physically installing it.  You can also choose to upgrade or install modules.</p>
+<h3>Support</h3>
+<p>As per the GPL, this software is provided as-is. Please read the text of the license for the full disclaimer.</p>
+<h3>Copyright and License</h3>
+<p>Copyright &copy; 2006, calguy1000 <a href=&quot;mailto:calguy1000@hotmail.com&quot;><calguy1000@hotmail.com></a>. All Rights Are Reserved.</p>
+<p>This module has been released under the <a href=&quot;http://www.gnu.org/licenses/licenses.html#GPL&quot;>GNU Public License</a>. You must agree to this license before using the module.</p>';
+?>
