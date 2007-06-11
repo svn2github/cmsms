@@ -1,5 +1,6 @@
 <?php
 if (!isset($gCms)) exit;
+if (!$this->CheckPermission('Manage Menu')) exit;
 
 $error = '';
 $tplname = '';
