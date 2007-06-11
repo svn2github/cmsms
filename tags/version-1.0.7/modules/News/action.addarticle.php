@@ -48,7 +48,11 @@ if (!isset($gCms)) exit;
 		$summary = $params['summary'];
 	}
 
-	$status = 'published';
+$status = 'draft';
+if( $this->CheckPermission('Approve News') )
+  {
+    $status = 'published';
+  }
 	if (isset($params['status']))
 	{
 		$status = $params['status'];
@@ -146,6 +150,7 @@ if (!isset($gCms)) exit;
 		$categorylist[$row['long_name']] = $row['news_category_id'];
 	}
 
+$onchangetext='onChange="document'.$id.'moduleform_1.submit()"';
 	#Display template
 	$this->smarty->assign('authortext', '');
 	$this->smarty->assign('inputauthor', '');
@@ -163,8 +168,16 @@ if (!isset($gCms)) exit;
 	$this->smarty->assign('startdateprefix', $id.'startdate_');
 	$this->smarty->assign_by_ref('enddate', $enddate);
 	$this->smarty->assign('enddateprefix', $id.'enddate_');
-	$this->smarty->assign('status', $this->CreateInputDropdown($id, 'status', $statusdropdown, -1, $status));
-	$this->smarty->assign('inputcategory', $this->CreateInputDropdown($id, 'category', $categorylist, -1, $usedcategory));
+if( $this->CheckPermission('Approve News') )
+  {
+    $this->smarty->assign('statustext', lang('status'));
+    $this->smarty->assign('status', $this->CreateInputDropdown($id, 'status', $statusdropdown, -1, $status));
+  }
+else
+  {
+    $smarty->assign('status',$this->CreateInputHidden($id,'status',$status));
+  }
+$this->smarty->assign('inputcategory', $this->CreateInputDropdown($id, 'category', $categorylist, -1, $usedcategory, $onchangetext));
 	$this->smarty->assign('submit', $this->CreateInputSubmit($id, 'submit', lang('submit')));
 	$this->smarty->assign('cancel', $this->CreateInputSubmit($id, 'cancel', lang('cancel')));
 
@@ -173,7 +186,6 @@ if (!isset($gCms)) exit;
 	$this->smarty->assign('summarytext', $this->Lang('summary'));
 	$this->smarty->assign('contenttext', $this->Lang('content'));
 	$this->smarty->assign('postdatetext', $this->Lang('postdate'));
-	$this->smarty->assign('statustext', lang('status'));
 	$this->smarty->assign('useexpirationtext', $this->Lang('useexpiration'));
 	$this->smarty->assign('startdatetext', $this->Lang('startdate'));
 	$this->smarty->assign('enddatetext', $this->Lang('enddate'));

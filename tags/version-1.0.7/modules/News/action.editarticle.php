@@ -49,6 +49,10 @@
 				}
 
 				$status = 'draft';
+if( $this->CheckPermission('Approve News') )
+  {
+    $status = 'published';
+  }
 				if (isset($params['status']))
 				{
 					$status = $params['status'];
@@ -200,7 +204,15 @@
 				$this->smarty->assign('startdateprefix', $id.'startdate_');
 				$this->smarty->assign_by_ref('enddate', $enddate);
 				$this->smarty->assign('enddateprefix', $id.'enddate_');
-				$this->smarty->assign('status', $this->CreateInputDropdown($id, 'status', $statusdropdown, -1, $status));
+if( $this->CheckPermission('Approve News') )
+  {
+    $this->smarty->assign('statustext', lang('status'));
+    $this->smarty->assign('status', $this->CreateInputDropdown($id, 'status', $statusdropdown, -1, $status));
+  }
+else
+  {
+    $smarty->assign('status',$this->CreateInputHidden($id,'status',$status));
+  }
 				$this->smarty->assign('inputcategory', $this->CreateInputDropdown($id, 'category', $categorylist, -1, $usedcategory));
 				$this->smarty->assign('hidden', $this->CreateInputHidden($id, 'articleid', $articleid).$this->CreateInputHidden($id, 'author_id', $author_id));
 				$this->smarty->assign('submit', $this->CreateInputSubmit($id, 'submit', lang('submit')));
@@ -211,7 +223,6 @@
 				$this->smarty->assign('summarytext', $this->Lang('summary'));
 				$this->smarty->assign('contenttext', $this->Lang('content'));
 				$this->smarty->assign('postdatetext', $this->Lang('postdate'));
-				$this->smarty->assign('statustext', lang('status'));
 				$this->smarty->assign('useexpirationtext', $this->Lang('useexpiration'));
 				$this->smarty->assign('startdatetext', $this->Lang('startdate'));
 				$this->smarty->assign('enddatetext', $this->Lang('enddate'));
