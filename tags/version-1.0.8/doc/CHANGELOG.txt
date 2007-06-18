@@ -1,3 +1,8 @@
+Version 1.0.8 "Kona" -- Jun 18 2007
+-----------------
+- Fixes a security flaw in the login checking for the admin panel (THANKS:
+  [dren] and Rift!
+
 Version 1.0.7 "Kahoolawe" -- Jun 11 2007
 -----------------
 - Fixes potential security issue with processing of smarty templates

@@ -18,8 +18,8 @@
 #
 #$Id: version.php 3877 2007-04-24 16:21:31Z wishy $
 
-$CMS_VERSION = "1.0.7";
-$CMS_VERSION_NAME = "Kahoolawe";
+$CMS_VERSION = "1.0.8";
+$CMS_VERSION_NAME = "Kona";
 $CMS_SCHEMA_VERSION = "28";
 
 # vim:ts=4 sw=4 noet
