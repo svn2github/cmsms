@@ -97,6 +97,10 @@ switch($current_version)
 		$this->CreateEvent('NewsCategoryEdited');
 		$this->CreateEvent('NewsCategoryDeleted');
 		$current_version = '2.1';
+ case '2.1':
+ case '2.2':
+	 $this->CreatePermission('Approve News', 'Approve News For Frontend Display');
+
 }
 
 ?>

@@ -46,6 +46,7 @@ $db->CreateSequence(cms_db_prefix()."module_news_categories_seq");
 
 #Set Permission
 $this->CreatePermission('Modify News', 'Modify News');
+$this->CreatePermission('Approve News', 'Approve News For Frontend Display');
 
 # Setup summary template
 $this->SetTemplate('displaysummary', $this->GetSummaryHtmlTemplate());

@@ -42,7 +42,7 @@ class News extends CMSModule
 
 	function GetVersion()
 	{
-		return '2.2';
+		return '2.2.1';
 	}
 
 	function MinimumCMSVersion()

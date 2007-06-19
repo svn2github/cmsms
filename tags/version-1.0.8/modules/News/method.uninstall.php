@@ -18,6 +18,7 @@ $db->DropSequence( cms_db_prefix()."module_news_seq" );
 $db->DropSequence( cms_db_prefix()."module_news_categories_seq" );
 
 $this->RemovePermission('Modify News');
+$this->RemovePermission('Approve News');
 
 #Setup events
 $this->RemoveEvent('NewsArticleAdded');
