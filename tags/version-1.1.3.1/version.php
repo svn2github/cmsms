@@ -18,7 +18,7 @@
 #
 #$Id: version.php 4114 2007-09-03 18:01:02Z calguy1000 $
 
-$CMS_VERSION = "1.1.3";
+$CMS_VERSION = "1.1.3.1";
 $CMS_VERSION_NAME = "Apia";
 $CMS_SCHEMA_VERSION = "28";
 
