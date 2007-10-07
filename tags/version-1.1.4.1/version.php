@@ -18,7 +18,7 @@
 #
 #$Id: version.php 4114 2007-09-03 18:01:02Z calguy1000 $
 
-$CMS_VERSION = "1.1.4";
+$CMS_VERSION = "1.1.4.1";
 $CMS_VERSION_NAME = "Taga";
 $CMS_SCHEMA_VERSION = "28";
 

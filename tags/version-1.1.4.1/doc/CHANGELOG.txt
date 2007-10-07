@@ -1,4 +1,8 @@
-Version 1.1.4 "Taga" -- October 07. 2007
+Version 1.1.4.1 "Taga" -- October 07 2007
+-----------------
+- Fix one issue in adodb_lite that cropped up after release
+
+Version 1.1.4 "Taga" -- October 07 2007
 -----------------
 - Fixes an XSS issue in the anchor tag
 - Fixes an XSS issue in listtags
@@ -6,17 +10,17 @@ Version 1.1.4 "Taga" -- October 07. 2007
 - More fixes for potential security issues with adodb_lite
 - Added a permission check to view the admin log
 
-Version 1.1.3.1 "Apia" -- September 22. 2007
+Version 1.1.3.1 "Apia" -- September 22 2007
 -----------------
 - Yes two versions in one day, thank god it's a Saturday
 - Fixes an issue with stylesheet.php that popped up because of the
   security fixes to adodb lite.
 
-Version 1.1.3 "Apia" -- September 22. 2007
+Version 1.1.3 "Apia" -- September 22 2007
 -----------------
 - Fixes a potential security hole in adodb lite.
 
-Version 1.1.2 "Savaii" -- September 3, 2007
+Version 1.1.2 "Savaii" -- September 03 2007
 -----------------
 - Fixes the order of buttons in the edit template page
 - Fixes so that you can now uninstall and remove modules even
