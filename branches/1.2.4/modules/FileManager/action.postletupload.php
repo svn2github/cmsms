@@ -1,5 +1,6 @@
 <?php
 @include(dirname(__FILE__)."/../../include.php");
+
 $module =& $gCms->modules["FileManager"]['object'];
 
 $message=$module->GetPreference("postletmessage","");

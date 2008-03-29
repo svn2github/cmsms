@@ -3,11 +3,21 @@
  The following file enables the uploading of each image from the java applet.
  */
 
+foreach ($_POST as $key=>$val)
+   {
+   if ($key == 'cms_admin_user_id' || $key == 'cms_passhash' || substr($key,0,9) == 'CMSSESSID')
+      {
+      $_COOKIE[$key]=$val;
+      }
+   }
 
 @include(dirname(dirname(dirname($_SERVER["SCRIPT_FILENAME"])))."/include.php");
+if (!get_userid()) exit;
+
 $module =&$gCms->modules["FileManager"]['object'];
 //$message = $module->GetPreference("postletmessage","");
 //$error = $module->GetPreference("postleterror","");
+
 
 $error="";
 if (isset($_SESSION["postleterror"])) $error=$_SESSION["postleterror"];

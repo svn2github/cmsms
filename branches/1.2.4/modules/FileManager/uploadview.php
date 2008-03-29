@@ -53,8 +53,13 @@ switch ($uploadmethod) {
 
   }
   case 3 : {
+      $mycook = array();
+      foreach ($_COOKIE as $key=>$val)
+         {
+         array_push($mycook,"$key=$val");
+         }
+  
 ?>
-
 <applet code="Main.class" width="600" height="300"
 	archive="<?php echo $config["root_url"]?>/modules/FileManager/postlet/postlet.jar" > 
 	<param name="maxthreads" value="5" />
@@ -64,7 +69,7 @@ switch ($uploadmethod) {
 	<param name="scriptable" value="false" />
 	<param name="failedfilesmessage" value="true" />
 	<param name="destination"
-		value="<?php echo $config["root_url"]?>/modules/FileManager/postletupload.php?path=<?php echo $path?>" />
+		value="<?php echo $config["root_url"]?>/modules/FileManager/postletupload.php?path=<?php echo $path?>&amp;<?php echo implode('&amp;',$mycook); ?>" />
 	<param name="endpage"
 		value="<?php echo $config["root_url"]."/".$config['admin_dir']?>/moduleinterface.php?mact=FileManager,<?php echo $id?>,defaultadmin,<?php echo $returnid?>&amp;<?php echo $id?>path=<?php echo $path?>&amp;<?php echo $id?>postletupload=yes&amp;<?php echo $id?>" />
 	<param name="red" value="255" />
