@@ -1,0 +1,3 @@
+When upgrading tcpdf remember:
+	- Check Image function for gif hack
+	- Only vera-font
