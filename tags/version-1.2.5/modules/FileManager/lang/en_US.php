@@ -1,14 +1,14 @@
 <?php
-$lang['friendlyname']="FileManager";
+$lang['friendlyname']="File Manager";
 $lang['permission']="Usage of the the File Manager module";
 $lang['permissionadvanced']="Advanced usage of the the File Manager module";
 
 $lang['moddescription']="Handling of files and directories in the upload-filesection of cmsms";
-$lang['installed']="FileManager version %s installed";
-$lang['postinstall']="FileManager module was installed";
-$lang['uninstalled']="FileManager module uninstalled";
-$lang['really_uninstall']="Are you sure the FileManager module should be uninstalled?";
-$lang['upgraded']="FileManager module was upgraded to version %s";
+$lang['installed']="File Manager version %s installed";
+$lang['postinstall']="File Manager module was installed";
+$lang['uninstalled']="File Manager module uninstalled";
+$lang['really_uninstall']="Are you sure the File Manager module should be uninstalled?";
+$lang['upgraded']="File Manager module was upgraded to version %s";
 $lang['fileview']="File view";
 $lang["switchtofileview"]="Switch to file view";
 $lang['settings']="Settings";
