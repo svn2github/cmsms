@@ -18,8 +18,8 @@
 #
 #$Id: version.php 4302 2008-01-03 02:53:10Z wishy $
 
-$CMS_VERSION = "1.2.4";
-$CMS_VERSION_NAME = "Greenland";
+$CMS_VERSION = "1.2.5";
+$CMS_VERSION_NAME = "Free Hill";
 $CMS_SCHEMA_VERSION = "29";
 
 define('CMS_VERSION', $CMS_VERSION);
