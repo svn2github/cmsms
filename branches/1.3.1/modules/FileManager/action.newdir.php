@@ -6,7 +6,7 @@ if(!isset($params["newdirname"]) || !isset($params["path"])) {
 	$this->Redirect($id, 'defaultadmin');
 }
 
-global $config;
+$config =& $gCms->GetConfig();
 $newdir=$this->Slash($params["path"],$params["newdirname"]);
 $newdir=$this->Slash($config["root_path"],$newdir);
 

@@ -21,7 +21,8 @@ if (!$somefound) {
 	exit;
 }
 
-global $config;
+global $gCms;
+$config =& $gCms->GetConfig();
 
 //print_r($_FILES);die();
 

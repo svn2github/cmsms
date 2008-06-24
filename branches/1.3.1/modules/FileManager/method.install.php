@@ -5,7 +5,6 @@ $this->CreatePermission('Use FileManager Advanced',$this->Lang("permissionadvanc
 
 $this->SetPreference("iconsize","32px");
 $this->SetPreference("uploadboxes","5");
-$this->SetPreference("uploadmethod","1");
 $this->SetPreference("advancedmode","false");
 $this->SetPreference("showhiddenfiles","false");
 //$this->SetPreference("confirmsingledelete","false");

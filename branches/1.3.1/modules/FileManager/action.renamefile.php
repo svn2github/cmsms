@@ -6,7 +6,7 @@ if(!isset($params["filename"]) || !isset($params["path"])) {
 	$this->Redirect($id, 'defaultadmin');
 }
 
-global $config;
+$config =& $gCms->GetConfig();
 $fullname=$this->Slash($params["path"],$params["filename"]);
 $fullname=$this->Slash($config["root_path"],$fullname);
 

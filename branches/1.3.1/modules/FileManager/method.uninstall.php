@@ -13,7 +13,6 @@
 $this->RemovePermission('Use Filemanager'); //Used in some old versions
 $this->RemovePermission('Use Filemanager Advanced');
 
-$this->RemovePreference("uploadmethod");
 $this->RemovePreference("uploadboxes");
 $this->RemovePreference("iconsize");
 $this->RemovePreference("advancedmode");

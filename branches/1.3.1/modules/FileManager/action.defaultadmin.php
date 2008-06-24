@@ -10,7 +10,6 @@ $showthumbnails=$this->GetPreference("showthumbnails",1);
 //$confirmsingledelete=$this->GetPreference("confirmsingledelete",0);
 $iconsize=$this->GetPreference("iconsize",0);
 $uploadboxes=$this->GetPreference("uploadboxes",5);
-$uploadmethod=$this->GetPreference("uploadmethod",1);
 $permissionstyle=$this->GetPreference("permissionstyle","xxx");
 $thousanddelimiter=$this->GetPreference("thousanddelimiter",".");
 $path="";

@@ -125,9 +125,6 @@ $lang["nothinguploaded"]="Nothing uploaded";
 $lang["unsupportedarchive"]="Unsupported archive format";
 $lang["uploadmethod"]="Upload method";
 $lang["uploaderstandard"]="Standard html input-method (allows unpacking)";
-$lang["uploaderpostlet"]="Postlet, Java-based, allows multiple file-selection";
-$lang["uploaderswf"]="Fancy Flash-uploader";
-
 $lang["enableadvanced"]="Enable advanced mode?";
 $lang["advancedhelp"]="Lets you gain access to whole cmsms filesystem, not just /uploads/ (if allowed)";
 $lang["showhiddenfileshelp"]="Only effective with advanced mode on";
@@ -144,6 +141,12 @@ EOF;
 
 $lang['changelog']=<<<EOF
 		<ul>
+                  <li><b>Version 0.3.2</b> <em>(calguy1000)</em></li>
+                  <li>Is now an admin only module</li>
+                  <li>Completely remove the java postlet stuff</li>
+		  <li>Added some security with javaapplet upload</li>
+		  <li><b>Version 0.3.1</b></li>
+		  <li>Added some security with javaapplet upload</li>
 		  <li><b>Version 0.3.0</b></li>
 		  <li>Released with CMSMS 1.3</li>
 		  <li><b>Version 0.3.0b2</b></li>

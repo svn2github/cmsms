@@ -25,10 +25,6 @@ for($i=1; $i<11; $i++) $boxes["$i"]="$i";
 $this->smarty->assign('uploadboxestext',$this->Lang("uploadboxes"));
 $this->smarty->assign('uploadboxesinput',$this->CreateInputDropDown($id,"uploadboxes",$boxes,"",$uploadboxes));
 
-$uploaders=array($this->Lang("uploaderstandard")=>1/*,$this->Lang("uploaderdom")=>2*/,$this->Lang("uploaderpostlet")=>3);
-$this->smarty->assign('uploadmethodtext',$this->Lang("uploadmethod"));
-$this->smarty->assign('uploadmethodinput',$this->CreateInputDropDown($id,"uploadmethod",$uploaders,"",$uploadmethod));
-
 $permstyles=array($this->Lang("rwxstyle")=>"xxxxxxxxx",$this->Lang("755style")=>"xxx");
 $this->smarty->assign('permissionstyletext',$this->Lang("permissionstyle"));
 $this->smarty->assign('permissionstyleinput',$this->CreateInputDropDown($id,"permissionstyle",$permstyles,"",$permissionstyle));

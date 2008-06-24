@@ -86,7 +86,7 @@ for ($i=0; $i<count($filelist);$i++) {
     											$this->GetFileIcon($filelist[$i]["ext"],$filelist[$i]["dir"]),
     											array("newdir"=>$filelist[$i]["name"],"path"=>$path,"sortby"=>$sortby));
   } else {
-    $onerow->iconlink="<a href='".$this->Slashes($filelist[$i]["url"])."' target='_blank'>".$this->GetFileIcon($filelist[$i]["ext"])."</a>";    			     		
+    $onerow->iconlink="<a href=\"".$this->Slashes($filelist[$i]["url"])."\" target=\"_blank\">".$this->GetFileIcon($filelist[$i]["ext"])."</a>";    			     		
   }
   //echo "<pre>".$onerow->iconlink."</pre>";
 
@@ -101,7 +101,7 @@ for ($i=0; $i<count($filelist);$i++) {
   } else {
   	$countfiles++;
   	$countfilesize+=$filelist[$i]["size"];
-    $onerow->txtlink="<a href='".$this->Slashes($filelist[$i]["url"])."' target='_blank'>".$link."</a>";
+    $onerow->txtlink="<a href=\"".$this->Slashes($filelist[$i]["url"])."\" target=\"_blank\">".$link."</a>";
   }
   $onerow->fileinfo=$filelist[$i]["fileinfo"];
   if ($filelist[$i]["name"]=="..") {
@@ -155,7 +155,7 @@ for ($i=0; $i<count($filelist);$i++) {
          }
 		  }
 		} else {
-		  $onerow->writeprotected="<img src='../modules/FileManager/icons/themes/default/actions/padlock.gif' alt='".$this->Lang("notwritable")."' />\n";
+		  $onerow->writeprotected="<img src=\"../modules/FileManager/icons/themes/default/actions/padlock.gif\" alt=\"".$this->Lang("notwritable")."\" />\n";
 		}
   }
   array_push($files, $onerow);

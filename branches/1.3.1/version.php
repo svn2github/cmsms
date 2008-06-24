@@ -18,8 +18,8 @@
 #
 #$Id: version.php 4570 2008-06-07 14:37:21Z wishy $
 
-$CMS_VERSION = "1.3";
-$CMS_VERSION_NAME = "Cuba";
+$CMS_VERSION = "1.3.1";
+$CMS_VERSION_NAME = "Havana";
 $CMS_SCHEMA_VERSION = "29";
 
 define('CMS_VERSION', $CMS_VERSION);

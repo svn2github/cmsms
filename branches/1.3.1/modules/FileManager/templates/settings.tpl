@@ -32,10 +32,6 @@
 </div>
 
 <div class="pageoverflow">
-  <p class="pagetext">{$uploadmethodtext}</p>
-  <p class="pageinput">{$uploadmethodinput}</p>
-</div>
-<div class="pageoverflow">
   <p class="pagetext">{$permissionstyletext}</p>
   <p class="pageinput">{$permissionstyleinput}</p>
 </div>

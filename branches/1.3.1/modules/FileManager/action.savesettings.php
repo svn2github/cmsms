@@ -40,10 +40,6 @@ if (isset($params["uploadboxes"])) {
   $this->SetPreference("uploadboxes",$params["uploadboxes"]);
 }
 
-if (isset($params["uploadmethod"])) {
-  $this->SetPreference("uploadmethod",$params["uploadmethod"]);
-}
-
 if (isset($params["permissionstyle"])) {
   $this->SetPreference("permissionstyle",$params["permissionstyle"]);
 }

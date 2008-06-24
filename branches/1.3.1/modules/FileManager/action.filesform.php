@@ -3,7 +3,6 @@ if (!isset($gCms)) exit;
 if (!$this->CheckPermission("Modify Files") && !$this->AdvancedAccessAllowed()) exit;
 
 
-
 $messages="";
 $errors="";
 if(!isset($params["selectedaction"]) || !isset($params["path"])) {
@@ -23,7 +22,7 @@ if (!$somethingselected) {
 }
 
 $returntomain=true;
-global $config;
+$config =& $gCms->GetConfig();
 switch ($params["selectedaction"]) {
 	case "deleteselected" : {		
 		if (isset($params["confirmed"]) && $params["confirmed"]=="ayesir") {			

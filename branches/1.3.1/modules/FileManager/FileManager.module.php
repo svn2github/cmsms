@@ -49,7 +49,7 @@ class FileManager extends CMSModule {
 	}
 
 	function GetVersion() {
-		return '0.3.0';
+		return '0.3.2';
 	}
 
 	function GetHelp() {
@@ -76,6 +76,11 @@ class FileManager extends CMSModule {
 		return true;
 	}
 
+	function IsAdminOnly()
+	{
+	  return true;
+	}
+
 	function GetAdminSection() {
 		return 'content';
 	}
@@ -85,71 +90,14 @@ class FileManager extends CMSModule {
 	}
 
 	function MinimumCMSVersion() {
-		return "1.2.1";
+		return "1.3";
 	}
 
 	function VisibleToAdminUser() {
 		return ($this->AccessAllowed() || $this->AdvancedAccessAllowed());
 	}
 
-	function GetHeaderHTML() {
-		/*global $config;
-		 if ($this->GetPreference("uploadmethod",1)==2) {
-		 return '<script src="../modules/FileManager/multifile_compressed.js"></script>';
-		 }
-		 if ($this->GetPreference("uploadmethod",1)==4) {
-
-		 foreach ($_GET as $param=>$value) {
-		 if (stripos($param,'path')>0) {
-		 $path=$value;
-		 break;
-		 }
-		 }
-
-		 return '
-
-		 <script	type="text/javascript" src="'.$config["root_url"].'/modules/FileManager/swfupload/SWFUpload.js"></script>
-		 <script	type="text/javascript" src="'.$config["root_url"].'/modules/FileManager/swfupload/callbacks.js"></script>
-
-		 <script type="text/javascript">
-		 var swfu;
-
-		 //window.onload = function() {
-		 function InitSwfUpload() {
-
-		 swfu = new SWFUpload({
-		 upload_script : "'.$config["root_url"].'/modules/FileManager/swfupload.php?path='.$path.'",
-		 target : "SWFUploadTarget",
-		 flash_path : "'.$config["root_url"].'/modules/FileManager/swfupload/SWFUpload.swf",
-		 allowed_filesize : 30720,	// 30 MB
-		 allowed_filetypes : "*.*",
-		 allowed_filetypes_description : "All files...",
-		 browse_link_innerhtml : "Browse",
-		 upload_link_innerhtml : "Upload queue",
-			flash_loaded_callback : "swfu.flashLoaded",
-			browse_link_class : "swfuploadbtn browsebtn",
-			upload_link_class : "swfuploadbtn uploadbtn",
-			flash_loaded_callback : "swfu.flashLoaded",
-			upload_file_queued_callback : "fileQueued",
-			upload_file_start_callback : "uploadFileStart",
-			upload_progress_callback : "uploadProgress",
-			upload_file_complete_callback : "uploadFileComplete",
-			upload_file_cancel_callback : "uploadFileCancelled",
-			upload_queue_complete_callback : "uploadQueueComplete",
-			upload_error_callback : "uploadError",
-			upload_cancel_callback : "uploadCancel",
-			auto_upload : false,
-			debug : true,
-			create_ui : true
-			});
-
-			};
-			</script>
-			';
-			}*/
-	}
-
-
+	
 
 	function InstallPostMessage() {
 		return $this->Lang('postinstall');
@@ -168,18 +116,20 @@ class FileManager extends CMSModule {
 
 
 	function GetActionIcon($action) {
-		global $config;
+	  global $gCms;
+	  $config =& $gCms->GetConfig();
 		//$iconsize=$this->GetPreference("iconsize","32px");
 		//if (file_exists($config["root_path"].
 		//$iconsize="16px";
-		return "<img style='border:0;' src='".$config["root_url"]."/modules/FileManager/icons/themes/default/actions/".strtolower($action).".gif' ".
-						 "alt='".$this->Lang($action)."' />";
+		return "<img style=\"border:0;\" src=\"".$config["root_url"]."/modules/FileManager/icons/themes/default/actions/".strtolower($action).".gif\" ".
+						 "alt=\"".$this->Lang($action)."\" />";
 		//				 "align='middle' />";
 	}
 
 	function GetFileIcon($extension,$isdir=false) {
 
-		$config=$this->cms->GetConfig();
+	  global $gCms;
+	  $config =& $gCms->GetConfig();
 		$iconsize=$this->GetPreference("iconsize","32px");
 		///for valid xhtml
 		$iconsizeHeight=str_replace("px","",$iconsize);
@@ -187,25 +137,25 @@ class FileManager extends CMSModule {
 		$result="";
 		if ($isdir) {
 			//echo hi;
-			$result="<img height='".$iconsizeHeight."' style='border:0;' src='".$config["root_url"]."/modules/FileManager/icons/themes/default/extensions/".$iconsize."/dir.png' ".
-						 "alt='directory' ".
-						 "align='middle' />";
+			$result="<img height=\"".$iconsizeHeight."\" style=\"border:0;\" src=\"".$config["root_url"]."/modules/FileManager/icons/themes/default/extensions/".$iconsize."/dir.png\" ".
+						 "alt=\"directory\" ".
+						 "align=\"middle\" />";
 			return $result;
 		}
 		//$extension=array_pop(explode('.', $filename));
 
 		if (file_exists($config["root_path"]."/modules/FileManager/icons/themes/default/extensions/".$iconsize."/".strtolower($extension).".png")) {
-			$result="<img height='".$iconsizeHeight."' style='border:0;' src='".$config["root_url"]."/modules/FileManager/icons/themes/default/extensions/".$iconsize."/".strtolower($extension).".png' ".
-						 "alt='".$extension."-file' ".
-						 "align='middle' />";
+			$result="<img height=\"".$iconsizeHeight."\" style=\"border:0;\" src=\"".$config["root_url"]."/modules/FileManager/icons/themes/default/extensions/".$iconsize."/".strtolower($extension).".png\" ".
+						 "alt=\"".$extension."-file\" ".
+						 "align=\"middle\" />";
 		} else {
 			
-			$result="<img height='".$iconsizeHeight."' style='border:0;' src='".$config["root_url"]."/modules/FileManager/icons/themes/default/extensions/".$iconsize."/0.png' ".
-						 "alt='".$extension."-file' ".
-						 "align='middle' />";
+			$result="<img height=\"".$iconsizeHeight."\" style=\"border:0;\" src=\"".$config["root_url"]."/modules/FileManager/icons/themes/default/extensions/".$iconsize."/0.png\" ".
+						 "alt=\"".$extension."-file\" ".
+						 "align=\"middle\" />";
 		}
 		return $result;
-		//return str_replace("/",DIRECTORY_SEPARATOR,$result);
+
 	}
 
 	function Slash($str,$str2="",$str3="") {
@@ -318,7 +268,8 @@ class FileManager extends CMSModule {
 	}
 
 	function upDir() {
-		global $config;
+	  global $gCms;
+	  $config =& $gCms->GetConfig();
 		//static $udir="";
 		//if ($udir!="") return $udir;
 		$udir=substr($config["uploads_path"],strlen($config["root_path"]));
@@ -328,7 +279,8 @@ class FileManager extends CMSModule {
 	}
 
 	function SetMode($mode,$path,$file) {
-		global $config;
+	  global $gCms;
+	  $config =& $gCms->GetConfig();
 		$realpath=$this->Slash($config["root_path"],$path);
 		$realfile=$this->Slash($realpath,$file);
 		//echo $realfile;die();
@@ -338,14 +290,16 @@ class FileManager extends CMSModule {
 	}
 
 	function GetPermissions($path,$file) {
-		global $config;
+	  global $gCms;
+	  $config =& $gCms->GetConfig();
 		$realpath=$this->Slash($config["root_path"],$path);
 		$statinfo=stat($this->Slash($realpath,$file));
 		return $statinfo["mode"];
 	}
 
 	function GetMode($path,$file) {
-		global $config;
+	  global $gCms;
+	  $config =& $gCms->GetConfig();
 		$realpath=$this->Slash($config["root_path"],$path);
 		$statinfo=stat($this->Slash($realpath,$file));
 		return $this->FormatPermissions($statinfo["mode"]);
@@ -407,7 +361,8 @@ class FileManager extends CMSModule {
 	}
 
 	function IntruderCheck($path,$advancedmode) {
-		$config=$this->cms->config;
+	  global $gCms;
+	  $config =& $gCms->GetConfig();
 		if (!$advancedmode) {
 			
 			if (stripos($this->Slashes($path),$this->Slashes($config["uploads_path"]))===FALSE) {				
@@ -422,7 +377,8 @@ class FileManager extends CMSModule {
 		$globals["filemanager_sortby"]=$sortby;
 		$showhiddenfiles=$this->GetPreference("showhiddenfiles","1");
 		$result=array();
-		$config=$this->cms->GetConfig();
+	  global $gCms;
+	  $config =& $gCms->GetConfig();
 		$realpath=$this->Slash($config["root_path"],$path);
 		if ($this->IntruderCheck($realpath,$advancedmode)) {
 			$realpath=$config["uploads_path"];
@@ -499,12 +455,12 @@ class FileManager extends CMSModule {
 	}
 	
 	function GetThumbnailLink($file,$path) {
-		//echo $path;
-		$config=$this->cms->GetConfig();
+	  global $gCms;
+	  $config =& $gCms->GetConfig();
 		$filepath=$config["root_path"].$path;
 		$url=$config["root_url"].$path;
 		//echo $url;
-		$result="<a href='".$file["url"]."' target='_blank'>";
+		$result="<a href=\"".$file["url"]."\" target=\"_blank\">";
 		$image="";
 //		$pos=strrpos($file["url"],"/");
 					 
@@ -514,7 +470,7 @@ class FileManager extends CMSModule {
 			if (!file_exists($imagepath)) {
 				$image=$this->GetFileIcon($file["ext"],$file["dir"]);
 			} else {
-				$image="<img src='".$imageurl."' alt='".$file["name"]."' title='".$file["name"]."' />";
+				$image="<img src=\"".$imageurl."\" alt=\"".$file["name"]."\" title=\"".$file["name"]."\" />";
 			}
 		
 		$result.=$image;
