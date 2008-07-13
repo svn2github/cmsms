@@ -1,0 +1,166 @@
+<?php
+#CMS - CMS Made Simple
+#(c)2004 by Ted Kulp (wishy@users.sf.net)
+#This project's homepage is: http://cmsmadesimple.sf.net
+#
+#This program is free software; you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation; either version 2 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#You should have received a copy of the GNU General Public License
+#along with this program; if not, write to the Free Software
+#Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+#$Id$
+
+$CMS_ADMIN_PAGE=1;
+
+require_once("../include.php");
+
+check_login();
+$group_id= - 1;
+if (isset($_POST["group_id"])) $group_id = $_POST["group_id"];
+else if (isset($_GET["group_id"])) $group_id = $_GET["group_id"];
+
+$submitted= - 1;
+if (isset($_POST["submitted"])) $submitted = $_POST["submitted"];
+else if (isset($_GET["submitted"])) $submitted = $_GET["submitted"];
+
+$group_name="";
+
+if (isset($_POST["cancel"])) {
+	redirect("topusers.php");
+	return;
+}
+
+$userid = get_userid();
+$access = check_permission($userid, 'Modify Group Assignments');
+if (!$access) {
+	die('Permission Denied');
+return;
+}
+$message = '';
+
+include_once("header.php");
+
+global $gCms;
+$db =& $gCms->GetDb();
+
+
+    // always display the group pulldown
+	global $gCms;
+	$groupops =& $gCms->GetGroupOperations();
+	$userops =& $gCms->GetUserOperations();
+   $groups = $groupops->LoadGroups();
+	$allgroups = new stdClass();
+	$allgroups->name = lang('all_groups');
+	$allgroups->id=-1;
+   $groups = array($allgroups);
+
+	$group_list = $groupops->LoadGroups();
+	$groups = array_merge($groups,$group_list);
+	$smarty->assign_by_ref('group_list',$groups);
+
+	// because it's easier in PHP than Javascript:
+	$groupidlist = array();
+	foreach ($groups as $thisGroup)
+		{
+		array_push($groupidlist,$thisGroup->id);
+		}
+	$smarty->assign('groupidlist',implode(',',$groupidlist));
+
+    if ($submitted == 1)
+        {
+        
+        foreach($groups as $thisGroup)
+            {
+		      #Send the ChangeGroupAssignPre event
+		      Events::SendEvent('Core', 'ChangeGroupAssignPre',
+               array('group' => $thisGroup,
+               'users' => $userops->LoadUsersInGroup($thisGroup->id)));
+		      $query = "DELETE FROM ".cms_db_prefix()."user_groups WHERE group_id = ?";
+		      $result = $db->Execute($query, array($thisGroup->id));
+            $iquery = "INSERT INTO ".cms_db_prefix().
+               "user_groups (group_id, user_id, create_date, modified_date) VALUES (?,?,?,?)";
+
+		      foreach ($_POST as $key=>$value)
+			      {
+			      if (strpos($key,"ug") == 0 && strpos($key,"ug") !== false)
+				     {
+				     $keyparts = explode('_',$key);
+				     if ($keyparts[2] == $thisGroup->id && $value == '1')
+					    {
+    			        $result = $db->Execute($iquery, array($thisGroup->id,
+                        $keyparts[1],$db->DBTimeStamp(time()),$db->DBTimeStamp(time())));
+					    }
+				     }
+			      }
+
+		       Events::SendEvent('Core', 'ChangeGroupAssignPost',
+                array('group' => $thisGroup,
+                'users' => $userops->LoadUsersInGroup($thisGroup->id)));
+		       audit($group_id, 'Group ID', lang('assignmentchanged'));
+            }
+
+        $smarty->assign('message',lang('assignmentchanged'));
+        }
+	$query = "SELECT u.user_id, u.username, ug.group_id FROM ".
+       	cms_db_prefix()."users u LEFT JOIN ".cms_db_prefix().
+       	"user_groups ug ON u.user_id = ug.user_id ORDER BY u.username";
+
+	$result = $db->Execute($query);
+
+	$user_struct = array();
+
+	while($result && $row = $result->FetchRow())
+		{
+		if (isset($user_struct[$row['user_id']]))
+			{
+			$str = &$user_struct[$row['user_id']];
+			$str->group[$row['group_id']]=1;
+			}
+		else
+			{
+			$thisUser = new stdClass();
+			$thisUser->group = array();
+			if (!empty($row['group_id']))
+				{
+				$thisUser->group[$row['group_id']] = 1;
+				}
+			$thisUser->id = $row['user_id'];
+			$thisUser->name = $row['username'];
+			$user_struct[$row['user_id']] = $thisUser;
+			}
+		}
+	$smarty->assign_by_ref('users',$user_struct);
+
+
+$smarty->assign('admin_group_warning',$themeObject->ShowErrors(lang('adminspecialgroup')));
+$smarty->assign('form_start','<form id="groupname" method="post" action="changegroupassign.php">');
+$smarty->assign('form_end','</form>');
+$smarty->assign('selectgroup',lang('selectgroup'));
+$smarty->assign('title_user',lang('user'));
+$smarty->assign('hidden','<input type="hidden" name="submitted" value="1" />');
+$smarty->assign('submit','<input type="submit" name="changegrp" value="'.lang('submit').
+	'" class="pagebutton" onmouseover="this.className=\'pagebuttonhover\'" onmouseout="this.className=\'pagebutton\'" />');
+$smarty->assign('cancel','<input type="submit" name="cancel" value="'.lang('cancel').
+	'" class="pagebutton" onmouseover="this.className=\'pagebuttonhover\'" onmouseout="this.className=\'pagebutton\'" />');
+
+
+# begin output
+echo '<div class="pagecontainer">'.$themeObject->ShowHeader('grouppermissions',array($group_name));
+echo $smarty->fetch('changeusergroup.tpl');
+echo '</div>';
+echo '<p class="pageback"><a class="pageback" href="'.$themeObject->BackUrl().'">&#171; '.lang('back').'</a></p>';
+
+
+include_once("footer.php");
+
+# vim:ts=4 sw=4 noet
+?>
+
