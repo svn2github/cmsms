@@ -1,0 +1,13 @@
+Version 1.1
+-----------------
+- Added username in header (wellcome: username)
+- Added icons View site and Logout admin
+- Imported from class.template the helplinks block
+- Css Improvements
+- Logo in PNG (Fireworks) image for ppl
+  
+
+
+Version 1.0
+-----------------
+- Inicial

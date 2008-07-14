@@ -1,0 +1,5 @@
+1) Fix IE6 menu icons                                               - DONE
+
+2) compress all css for next beta
+
+3) if have time design new installer vs NcleanGrey
