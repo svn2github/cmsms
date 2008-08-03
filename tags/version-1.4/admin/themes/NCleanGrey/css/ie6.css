@@ -1,0 +1,14 @@
+/* CMS Made Simple - NCleanGrey Theme version 1.2*/
+/* 2008 (c) Nuno Costa - nuno.mfcosta@sapo.pt */
+/* CSS for OLD and  NO standart browser IE6 */
+
+
+ul#nav li ul  {
+filter: alpha(opacity=95);
+}
+.group_memberships
+{
+     width: 15em;
+	/*background:red;*/  /*DEBUG*/
+	
+}

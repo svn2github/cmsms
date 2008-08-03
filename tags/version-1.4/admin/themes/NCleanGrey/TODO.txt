@@ -1,0 +1,11 @@
+1) Fix IE6 menu icons                                               - DONE
+
+2) compress all css for next beta                                   - STANDBY
+
+3) if have time design new installer vs NcleanGrey                  - DONE
+
+4) check css3 validation                                            - DONE
+
+5) fix front shearch styles                                        - DONE
+
+6) if have time design new front themes vs NcleanGrey (but if we have 1.5 or..) 
