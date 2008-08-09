@@ -1,0 +1,26 @@
+Version 1.2.1
+-----------------
+- out for cmsms 1.4.1
+- Cleanup the css
+
+
+Version 1.2
+-----------------
+- minor fixes
+- Css Improvements
+- Implemented on Installer
+- Added small image Original Screen Design (/NCleanGrey/docs/screenNCleanGrey.jpg)
+
+Version 1.1
+-----------------
+- Added username in header (wellcome: username)
+- Added icons View site and Logout admin
+- Imported from class.template the helplinks block
+- Css Improvements
+- Logo in PNG (Fireworks) image for ppl
+  
+
+
+Version 1.0
+-----------------
+- Inicial
