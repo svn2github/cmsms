@@ -1,0 +1,29 @@
+INSTALLATION NOTES
+====================================================
+
+PHP Enabled Webserver
+---------------------
+1. Upload the following to a webserver which is PHP
+   enabled, changing the values in index.html to 
+   reflect the location of your webserver, and
+   in javaUpload.php to reflect where on the 
+   webserver the files are to be uploaded to.
+	- index.html
+	- javaUpload.php
+	- Postlet.jar
+2. Browse to the location of index.html, and all 
+   being well, you should be given an option to 
+   accept a certificate (signed by myself), you
+   should accept this for testing purposes.
+   Ideally, the applet should be signed by Verisign
+   or similar.
+3. If prefered, you can sign the JAR file yourself,
+   instructions will be on 
+   http://postlet.sourceforge.net shortly.
+   
+Alternative Webserver
+---------------------
+I currently only have a script suitable for the 
+upload of files to a php enabled server.  If anyone 
+would like to write one for ASP or similar, please
+feel free to, and email me the results.
