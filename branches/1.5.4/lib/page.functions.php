@@ -523,7 +523,7 @@ function remove_site_preference($prefname,$uselike=false)
 {
 	global $gCms;
 	$db =& $gCms->GetDb();
-$db->debug = true;
+	//$db->debug = true;
 	$siteprefs = &$gCms->siteprefs;
 
 	$query = "DELETE from ".cms_db_prefix()."siteprefs WHERE sitepref_name = ?";
