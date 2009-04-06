@@ -1,6 +1,6 @@
 Version 1.5.4 - Carolina
 -----------------------------
-- Fix the stupid logout/session issue once and for all.
+- Fix the logout/session issue once and for all.
 - Fix the canonical expressions in default templates.
 
 Version 1.5.3 - Arecibo
