@@ -18,8 +18,8 @@
 #
 #$Id: version.php 5465 2009-03-02 18:44:01Z calguy1000 $
 
-$CMS_VERSION = "1.5.3";
-$CMS_VERSION_NAME = "Arecibo";
+$CMS_VERSION = "1.5.4";
+$CMS_VERSION_NAME = "Carolina";
 $CMS_SCHEMA_VERSION = "31";
 
 define('CMS_VERSION', $CMS_VERSION);

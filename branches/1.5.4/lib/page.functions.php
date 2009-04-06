@@ -16,7 +16,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
-#$Id: page.functions.php 5431 2009-02-10 19:03:46Z calguy1000 $
+#$Id: page.functions.php 5533 2009-04-05 15:13:17Z calguy1000 $
 
 /**
  * Page related functions.  Generally these are functions not necessarily
@@ -94,9 +94,9 @@ function check_login($no_redirect = false)
 	    if( !isset($_SESSION[CMS_USER_KEY]) )
 	      {
 		// it's not in the session, try to grab something from cookies
-		if( isset($_COOKIE[CMS_SECURE_PARAM_NAME]) )
+		if( isset($_COOKIE['sec'.CMS_SECURE_PARAM_NAME]) )
 		  {
-		    $_SESSION[CMS_USER_KEY] = $_COOKIE[CMS_SECURE_PARAM_NAME];
+		    $_SESSION[CMS_USER_KEY] = $_COOKIE['sec'.CMS_SECURE_PARAM_NAME];
 		  }
 	      }
 
