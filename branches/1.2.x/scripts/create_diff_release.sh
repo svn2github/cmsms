@@ -210,9 +210,13 @@ while read line ; do
   _n=`echo $line | grep -c '^Only in to_full'`
   _d=`echo $line | grep -c '^Only in from_full'`
   _f=`echo $line | cut -d' ' -f4 | cut -d/ -f2-`
-  if [ $_c = 1 ]; then
+
+  _ci=`echo $line | grep -c 'install/'`
+  _ni=`echo $line | grep -c 'install/'`
+
+  if [ $_c = 1 -a $_ci = 0 ]; then
     _changedfiles="$_f $_changedfiles"
-  elif [ $_n = 1 ]; then
+  elif [ $_n = 1 -a $_ni = 0 ]; then
     _p=`echo $line | cut -d' ' -f3 | cut -d: -f1 | cut -d/ -f2-`
     _f=$_p/$_f
     _newfiles="$_f $_newfiles"
