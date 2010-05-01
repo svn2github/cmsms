@@ -1,0 +1,23 @@
+----------------------------
+CMSMS Version 1.7.1 - Escade
+----------------------------
+
+This version of CMSMS fixes numerous minor bugs and adds some important features.  We didn't feel that the list of changes were extensive enough to call it 1.8 even though we attempted to attack as many issues that would have the biggest bang for the least bucks as possible.  That meant we tackled changes that were probably easy to implement, had smaller impacts on existing sites but would make things alot easier for our user base.
+
+One of the biggest things this version adds is better support for SSL.  There is now an (optional) ssl_url parameter in the config.php and a checkbox in each edit content page to turn on HTTPS support on an individual page basis.  This was a long time coming.
+
+We tweaked the module API so that any form element created by a module (form tag, text input, checkbox etc) has classes associated with the tag.  This will make it much easier for designers to style forms.
+
+We have also added preferences to control the default imagemanager thumbnail size instead of having to edit a config file.  There are new user preferences to aide in pagination for GCB, stylesheet, and template lists. As well, the core modules have had minor tweaks and bug fixes to generally solve a few problems and make life just a little bit simpler.  TinyMCE has been upgraded to the latest version again (hopefully we'll avoid the normal pain with upgrading and TinyMCE this time).
+
+There has been a schema change this version to accomodate the SSL changes so no diff releases will be generated.  You will need to go through the upgrade process on each site.
+
+Again, we would like to thank the people that contributed to this release with countless hours of testing, bug reporting, translation and support.  In particular:
+    Ronny Krijt (ronnyk)
+    Nuno Costa (nuno)
+    Rene Helminsen (reneh)
+    Jeremy Bass (JeremyBass)
+    Tyler Boespflug (tyman00)
+    Mark Reed (DrCss)
+
+Enjoy, and happy CMSMS'ing!
