@@ -1,0 +1,2 @@
+When upgrading tcpdf remember:
+	do a function_exists("code_to_utf8"); in html_entity_decode_php4.php
