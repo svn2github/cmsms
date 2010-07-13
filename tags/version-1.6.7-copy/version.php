@@ -18,8 +18,8 @@
 #
 #$Id: version.php 6110 2010-02-13 00:01:14Z calguy1000 $
 
-$CMS_VERSION = "1.6.7";
-$CMS_VERSION_NAME = "Teremba Bay";
+$CMS_VERSION = "1.6.8";
+$CMS_VERSION_NAME = "Pouebo";
 $CMS_SCHEMA_VERSION = "32";
 
 define('CMS_VERSION', $CMS_VERSION);

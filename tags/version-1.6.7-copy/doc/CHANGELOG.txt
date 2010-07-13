@@ -1,3 +1,7 @@
+Version 1.6.8 - Pouebo
+-----------------------------
+ - Fixes an important security vulnerability.
+
 Version 1.6.7 - Teremba Bay
 -----------------------------
  - #3999 Upload a file with apostrophe make problem
