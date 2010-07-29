@@ -132,6 +132,11 @@ if ( isset($params['urlparams']) && ( strlen($params['urlparams'] > 0 ) ) ) {
 		    $Prev_label = "Forrige side: ";
 		    $Next_label = "N&aelig;ste side: ";
 		    break;
+                  case 'de':
+                  case 'de_DE':
+                    $Prev_label = "Vorherige Seite: ";
+                    $Next_label = "N&auml;chste Seite: ";
+		    break;
 		  case 'nl':
 		  case 'nl_NL':
 		    $Prev_label = "Vorige pagina: ";
