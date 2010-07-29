@@ -452,11 +452,11 @@ function cms_module_CreateLink(&$modinstance, $id, $action, $returnid='', $conte
 
 	$class = (isset($params['class'])?cms_htmlentities($params['class']):'');
 
-	if ($prettyurl != '' && $config['url_rewriting'] == 'mod_rewrite')
+	if ($prettyurl != '' && $config['url_rewriting'] == 'mod_rewrite' && $config['use_hierarchy'] == true)
 	{
 		$text = $config['root_url'] . '/' . $prettyurl . $config['page_extension'];
 	}
-	else if ($prettyurl != '' && $config['url_rewriting'] == 'internal')
+	else if ($prettyurl != '' && $config['url_rewriting'] == 'internal' && $config['use_hierarchy'] == true)
 	{
 		$text = $config['root_url'] . '/index.php/' . $prettyurl . $config['page_extension'];
 	}

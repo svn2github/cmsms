@@ -114,6 +114,7 @@ $tmp[0]['default_upload_permission'] = testConfig('default_upload_permission', '
 $tmp[0]['url_rewriting'] = testConfig('url_rewriting', 'url_rewriting');
 $tmp[0]['page_extension'] = testConfig('page_extension', 'page_extension');
 $tmp[0]['query_var'] = testConfig('query_var', 'query_var');
+$tmp[0]['use_hierarchy'] = testConfig('use_hierarchy', 'use_hierarchy');
 
 $tmp[1]['root_url'] = testConfig('root_url', 'root_url');
 $tmp[1]['ssl_url'] = testConfig('ssl_url', 'ssl_url');

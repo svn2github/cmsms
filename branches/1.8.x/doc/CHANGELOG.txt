@@ -1,3 +1,10 @@
+Version 1.8.2 - Toliara
+-----------------------------
+Reverted:
+  - Put the use_hierarchy config option back in for backwards compatibility
+    with upgrades. This may go away in the future, as it doesn't allow for
+    modules to have pretty URLs, but we'll have a proper workaround.
+
 Version 1.8.1 - Mankara 
 -----------------------------
 Security:
