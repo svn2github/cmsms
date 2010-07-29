@@ -215,7 +215,7 @@ function cms_module_CreateInputHidden(&$modinstance, $id, $name, $value='', $add
   $value = cms_htmlentities($value);
 
 	$value = str_replace('"', '&quot;', $value);
-	$text = '<input type="hidden" name="'.$id.$name.'" value="'.$value.'"';
+	$text = '<input type="hidden" id="'.$id.$name.'" name="'.$id.$name.'" value="'.$value.'"';
 	if ($addttext != '')
 	{
 		$text .= ' '.$addttext;
