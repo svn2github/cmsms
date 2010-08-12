@@ -11,6 +11,7 @@ Fixes:
   - #2215 Form Input Type of Password should have an ID attribute
   - #4834 Add an ID attribute to the form hidden tag
   - #5279 cms_stylesheet doesn't use new logic with "name" parameter
+  - #3620 $node->image not showing while using the items variable
 
 Version 1.8.1 - Mankara 
 -----------------------------
