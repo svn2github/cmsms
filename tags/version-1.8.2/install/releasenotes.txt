@@ -1,0 +1,69 @@
+------------------------------
+CMSMS Version 1.8 - Madagascar
+------------------------------
+
+Onwards and upwards we go. The dev team is proud to announce the latest version of your favorite content management system.  This version is primarily aimed at rounding out some of the rough edges that our primary audience (experienced, professional web developers) have experienced with CMS Made Simple. There are a number of new features to enhance performance not only of the website itself, but to make doing some mundane tasks faster and easier. As well, we've added some power for the contributing programmers, and fixed quite a few nagging bugs. We will now have a lot more to talk about at the GeekMoot in Amsterdam this September.
+
+The development team, and our beta testers have contributed countless hours in testing each and every change under as many different environments as possible. They've found a lot of issues, and tested each and every fix.
+
+We've deprecated the {stylesheet} tag in favor of a {cms_stylesheet} tag.  The replacement works by grabbing the content of the individual style sheets and passing them through smarty before writing them to uniquely named files in the tmp/cache directory. This is a huge feature. Processing the style sheets (individually) through smarty means that you will no longer have to search through each of the style sheets for individual colors, you can give them names. There are a lot of other cool possibilities as well.  Additionally, developers can now be confident that browsers will be able to cache the style sheets properly to improve performance, and to reduce bandwidth. There is however a trade off. Because the style sheets are stored in the tmp/cache directory, the relative directory of the style sheets is not the same, users should use the [[root_url]] smarty tag in their style sheets to force absolute references to images that are specified in style sheets.
+
+We've added the ability to bulk-copy pages. This means that if you have a page structure that you want to duplicate it becomes much easier. This is a big time saver for people who have multiple similarly structured groups of pages.
+
+There's a new {content_module} tag that allows modules to provide different types of content blocks for use in Content pages. This is a huge feature, it means that a module developer could write a specific type of content block to provide specific type of content, and that content is stored with the page, not with the module (so copying the page will still work etc). Currently the CGContentUtils and Uploads modules support the {content_module} tag, but soon enough more modules will support it.
+
+Our half-baked attempt at getting SSL support built into CMSMS was re-visited. We've fixed the {stylesheet}/ and {metadata} tags, and made other improvements to ensure that once you've specified that a page is secure, all of the CMSMS generated URLS are secure.
+
+We've gone through the libraries and cleaned a bunch of unused code, and updated the documentation (the api doc stuff will be regenerated shortly after the release of CMSMS). This should help all of the budding module authors out there, however we still think that looking at a clean, well working module as a reference is the best way to learn how to do things. The API doc will only tell you what functions are available and what parameters they take, but not necessarily the context they should be used in.
+
+We have also removed some of the very old, long deprecated callback methods from the module API. We now require that developers use the equivalent events that replaced them when events were introduced. These callbacks have been deprecated for a long time so therefore should not break any modules. However, if you are using some modules that haven't been maintained for a long time...
+
+We've also cleaned up the language stuff a bit. This should provide a modest performance improvement in the front-end, and in the admin.
+
+Module Manager has gotten a lot of attention in this release. We've listened, and now it should be much easier to install or upgrade modules, including all of their dependencies.
+
+There are a lot of bug fixes, some of them related to stuff introduced in 1.7.x, and some very old ones. We hope that CMSMS 1.8 will be a very stable release. Please note that because the database schema has changed, and the upgrade procedure must be followed, there will be no diff packages in this release.
+
+There have been hundreds of hours of development, testing, and documentation effort put into this release, proving once again that the CMSMS user community is active, strong, and cooperative. We would like to give a big thanks to the following users:
+
+Ted (The Benevolent Dictator)
+calguy1000 (Project Manager)
+RonnyK (leader of the QA Project)
+reneh (leader of the translation team)
+Rolf
+DrCSS
+JeremyBass
+Nuno
+tyman00
+_SjG_
+Utter
+ajprog
+Nullig
+Peciura
+jce76350
+Duketown
+
+
+----------------------------
+CMSMS Version 1.7.1 - Escade
+----------------------------
+
+This version of CMSMS fixes numerous minor bugs and adds some important features.  We didn't feel that the list of changes were extensive enough to call it 1.8 even though we attempted to attack as many issues that would have the biggest bang for the least bucks as possible.  That meant we tackled changes that were probably easy to implement, had smaller impacts on existing sites but would make things alot easier for our user base.
+
+One of the biggest things this version adds is better support for SSL.  There is now an (optional) ssl_url parameter in the config.php and a checkbox in each edit content page to turn on HTTPS support on an individual page basis.  This was a long time coming.
+
+We tweaked the module API so that any form element created by a module (form tag, text input, checkbox etc) has classes associated with the tag.  This will make it much easier for designers to style forms.
+
+We have also added preferences to control the default imagemanager thumbnail size instead of having to edit a config file.  There are new user preferences to aide in pagination for GCB, stylesheet, and template lists. As well, the core modules have had minor tweaks and bug fixes to generally solve a few problems and make life just a little bit simpler.  TinyMCE has been upgraded to the latest version again (hopefully we'll avoid the normal pain with upgrading and TinyMCE this time).
+
+There has been a schema change this version to accomodate the SSL changes so no diff releases will be generated.  You will need to go through the upgrade process on each site.
+
+Again, we would like to thank the people that contributed to this release with countless hours of testing, bug reporting, translation and support.  In particular:
+    Ronny Krijt (ronnyk)
+    Nuno Costa (nuno)
+    Rene Helminsen (reneh)
+    Jeremy Bass (JeremyBass)
+    Tyler Boespflug (tyman00)
+    Mark Reed (DrCss)
+
+Enjoy, and happy CMSMS'ing!
