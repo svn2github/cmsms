@@ -95,8 +95,8 @@ if (isset($params["category"]) && $params["category"] != '')
   }
 else if( isset($params['category_id']) )
   {
-    $query1 .= " ( mnc.news_category_id = '".$params['category_id']."' ) AND ";
-    $query2 .= " ( mnc.news_category_id = '".$params['category_id']."' ) AND ";
+    $query1 .= " ( mnc.news_category_id = '".(int)$params['category_id']."' ) AND ";
+    $query2 .= " ( mnc.news_category_id = '".(int)$params['category_id']."' ) AND ";
   }
 
 $now = $db->DbTimeStamp(time());

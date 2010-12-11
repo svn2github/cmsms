@@ -1,3 +1,7 @@
+Version 1.6.9 - Arama
+-----------------------------
+ - Fixes a minor security vulnerability in the News module.
+
 Version 1.6.8 - Pouebo
 -----------------------------
  - Fixes an important security vulnerability.
