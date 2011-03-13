@@ -159,8 +159,7 @@ else
 				   'version' => $row['version'],
 				   'filename' => $row['filename'],
 				   'size' => $row['size'],
-				   'reset_prefs'=1));
-));
+				   'reset_prefs' => 1));
               }
           }
           else
