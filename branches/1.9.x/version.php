@@ -18,7 +18,7 @@
 #
 #$Id$
 
-$CMS_VERSION = "1.9.4";
+$CMS_VERSION = "1.9.4.1";
 $CMS_VERSION_NAME = "Faanui";
 $CMS_SCHEMA_VERSION = "34";
 
