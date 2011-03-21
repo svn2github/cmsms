@@ -346,7 +346,7 @@ function smarty_cms_function_cms_selflink($params, &$smarty)
     }
   else
     {
-      if (! isset($params['label_side']) || $params['label_side'] == 'left' && $label != '')
+      if ((!isset($params['label_side']) || $params['label_side'] == 'left') && $label != '')
 	{
 	  $result .= $label.' ';
 	}
@@ -392,7 +392,7 @@ function smarty_cms_function_cms_selflink($params, &$smarty)
 	$alt = (isset($params['alt']) && ! empty($params['alt'])) ? $params['alt'] : '';
 	$result .= "<img src=\"{$params['image']}\" alt=\"$alt\" />";
 	if (! (isset($params['imageonly']) && $params['imageonly'])) {
-	  $result .= " $linktext";
+	  $result .= ' '.$linktext;
 	}
       } else {
 	$result .= $linktext;
