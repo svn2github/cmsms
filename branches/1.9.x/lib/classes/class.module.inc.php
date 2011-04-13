@@ -39,22 +39,6 @@ class CMSModule
 	 * ------------------------------------------------------------------
 	 */
 
-        /**
-	 * Reference to the global CMS Object
-	 * use: global $gCms;
-	 *
-	 * @deprecated
-	 */
-	var $cms;
-
-	/**
-	 * Reference to the config array in the global CMS Object
-	 * use: global $gCms; $config = $gCms->GetConfig();
-         *
-	 * @deprecated
-	 */
-	var $config;
-
 	/**
 	 * A variable that indicates the current desired language
 	 * this is effected by the (optional) lang parameter on module action
@@ -70,7 +54,7 @@ class CMSModule
 	 * @access private
 	 * @ignore
 	 */
-	var $langhash;
+	var $langhash = array();
 
 	/**
 	 * A hash of the parameters passed in to the module action
@@ -138,7 +122,7 @@ class CMSModule
 	 * @access private
 	 * @ignore
 	 */
-	var $param_map;
+	var $param_map = array();
 
 	/**
 	 * @access private
@@ -146,33 +130,30 @@ class CMSModule
 	 */
 	var $restrict_unknown_params;
 
-	/**
-	 * A reference to the global smarty object
-	 * use: global $gCms; $smarty = $gCms->GetSmarty();
-	 *
-	 * @deprecated
-	 */
-	var $smarty;
-
+	public function __get($k)
+	{
+	  switch( $k )
+	    {
+	    case 'cms':
+	      return cmsms();
+	    case 'config':
+	      return cmsms()->GetConfig();
+	    case 'smarty':
+	      return cmsms()->GetSmarty();
+	    }
+	}
+	  
 	/**
 	 * Constructor
 	 *
 	 */
 	function CMSModule()
 	{
-		global $gCms;
-		
-		$this->cms =& $gCms;
-		$this->config = $gCms->GetConfig(); // why?
-
 		global $CMS_STYLESHEET;
 		global $CMS_ADMIN_PAGE;
 		global $CMS_MODULE_PAGE;
 		global $CMS_INSTALL_PAGE;
 		$this->curlang = cms_current_language(); // current language for this request.
-		$this->langhash = array();
-		$this->params = array();
-		$this->param_map = array();
 		$this->restrict_unknown_params = false;
 		$this->wysiwygactive = false;
 		$this->error = '';
@@ -181,9 +162,6 @@ class CMSModule
 					'name' => 'lang',
 					'default' => 'en_US',
 					'optional' => true);
-
-		#$smarty = new CMSModuleSmarty($config, $this->GetName());
-		$this->smarty = &$gCms->GetSmarty();
 
 		if( !isset($CMS_ADMIN_PAGE) && !isset($CMS_STYLESHEET) && !isset($CMS_INSTALL_PAGE))
 		  {
@@ -200,13 +178,6 @@ class CMSModule
 		  {
 		    $this->params[0]['help'] = lang('langparam');
 		  }
-		
-		$this->modinstall = false;
-		$this->modtemplates = false;
-		$this->modlang = false;
-		$this->modform = false;
-		$this->modredirect = false;
-		$this->modmisc = false;
 	}
 	
 	/**
@@ -314,9 +285,7 @@ class CMSModule
 	 */
 	function RegisterModulePlugin()
 	{
-	  global $gCms;
-
-	  $smarty =& $gCms->GetSmarty();
+	  $smarty = cmsms()->GetSmarty();
 	  $smarty->register_function($this->GetName(),
 				   array($this,'function_plugin'));
 	}
@@ -709,7 +678,7 @@ class CMSModule
 	function & GetDb()
 	{
 		global $gCms;
-		$db = &$gCms->GetDb();
+		$db = $gCms->GetDb();
 		return $db;
 	}
 
@@ -1086,7 +1055,7 @@ class CMSModule
 	function CheckForDependents()
 	{
 		global $gCms;
-		$db =& $gCms->GetDb();
+		$db = $gCms->GetDb();
 
 		$result = false;
 
@@ -1110,7 +1079,7 @@ class CMSModule
 	function CreateXMLPackage( &$message, &$filecount )
 	{
 		global $gCms;
-		$modops =& $gCms->GetModuleOperations();
+		$modops = $gCms->GetModuleOperations();
 		return $modops->CreateXmlPackage($this, $message, $filecount);
 	}
 
@@ -2008,6 +1977,7 @@ class CMSModule
 			}
 		}
 	}
+
 
 	/**
 	 * This method prepares the data and does appropriate checks before

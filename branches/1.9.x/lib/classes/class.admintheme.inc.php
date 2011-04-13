@@ -1683,11 +1683,11 @@ debug_buffer('after menu items');
             }
         if ($width != '')
             {
-            $retStr .= ' width="'.$width.'"';
+				$retStr .= ' width="'.(int)$width.'"';
             }
         if ($height != '')
             {
-            $retStr .= ' height="'.$height.'"';
+				$retStr .= ' height="'.(int)$height.'"';
             }
         if ($alt != '')
             {

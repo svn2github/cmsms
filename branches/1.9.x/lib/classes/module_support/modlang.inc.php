@@ -126,7 +126,7 @@ function cms_module_Lang(&$modinstance)
 			include("$dir/module_custom/".$modinstance->GetName()."/lang/".$modinstance->DefaultLanguage().".php");
 		}
 
-		$modinstance->langhash[$ourlang] = &$lang;
+		$modinstance->langhash[$ourlang] =& $lang;
 	}
 
 	$result = '';

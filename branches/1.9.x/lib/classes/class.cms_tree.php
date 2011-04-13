@@ -76,17 +76,17 @@ class cms_tree
   {
     if( $key )
       {
-	if( is_string($key) )
-	  {
-	    $this->setTag($key,$value);
-	  }
-	else if( is_array($key) )
-	  {
-	    foreach( $key as $k => $v )
-	      {
-		$this->set_tag($k,$v);
-	      }
-	  }
+		  if( is_string($key) )
+			  {
+				  $this->set_tag($key,$value);
+			  }
+		  else if( is_array($key) )
+			  {
+				  foreach( $key as $k => $v )
+					  {
+						  $this->set_tag($k,$v);
+					  }
+			  }
       }
   }
 
