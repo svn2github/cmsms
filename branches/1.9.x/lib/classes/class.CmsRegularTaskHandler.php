@@ -55,8 +55,8 @@ class CmsRegularTaskHandler
 			}
 
 		// 1.  Get task objects from files.
-		global $gCms;
-		$dir = $gCms->config['root_path'].'/lib/tasks';
+		$config = cmsms()->GetConfig();
+		$dir = $config['root_path'].'/lib/tasks';
 
 		$tmp = new DirectoryIterator($dir);
 		$iterator = new RegexIterator($tmp,'/class\..+task\.php$/');
@@ -77,8 +77,7 @@ class CmsRegularTaskHandler
 
 
 		// 2.  Get task objects from modules.
-		global $gCms;
-		$opts = $gCms->GetModuleOperations();
+		$opts = cmsms()->GetModuleOperations();
 		$modules = $opts->get_modules_with_capability('tasks');
 		if (!$modules) return;
 		foreach( $modules as $one )

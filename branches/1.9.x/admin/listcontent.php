@@ -434,7 +434,7 @@ function show_h(&$root, &$sortableLists, &$listArray, &$output)
 	if( !is_object($content) ) return;
 
 	global $gCms;
-	$contentops =& $gCms->GetContentOperations();
+	$contentops = $gCms->GetContentOperations();
 
 	$output .= '<li id="item_'.$content->mId.'">'."\n";
 	$output .= '('.$contentops->CreateFriendlyHierarchyPosition($content->mHierarchy).') '.cms_htmlentities($content->mMenuText, '', '', true);
@@ -445,7 +445,7 @@ function show_h(&$root, &$sortableLists, &$listArray, &$output)
 		$listArray[$content->mId] = 'parent'.$content->mId.'ListOrder';
 		$output .= '<ul id="parent'.$content->mId.'" class="sortableList">'."\n";
 
-		$children = &$root->getChildren(false,true);
+		$children = $root->getChildren(false,true);
 		foreach ($children as $child)
 		{
 			show_h($child, $sortableLists, $listArray, $output);
@@ -577,7 +577,7 @@ function check_children(&$root, &$mypages, &$userid)
 		$result = in_array($content->Id(), $mypages, false);
 		if (!$result)
 		{
-		  $children =& $root->getChildren(false,true);
+		  $children = $root->getChildren(false,true);
 		  if( is_array($children) && count($children) > 0 )
 		  {
 		    foreach ($children as $child)
