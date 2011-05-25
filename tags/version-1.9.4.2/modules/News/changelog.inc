@@ -180,4 +180,7 @@
   <p>Fix pretty urls for search results.</p>
   <p>Fix canonical url in detail view.</p>
 </li>
+<li><p>Version 2.11.3</p>
+  <p>Fixes SQL injection vulnerabilities.</p>
+</li>
 </ul>
