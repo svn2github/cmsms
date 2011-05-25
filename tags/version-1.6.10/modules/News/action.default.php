@@ -80,13 +80,15 @@ if (isset($params["category"]) && $params["category"] != '')
 	  }
 	if (strpos($onecat, '|') !== FALSE || strpos($onecat, '*') !== FALSE)
 	  {
-	    $query1 .= "upper(mnc.long_name) like upper('" . trim(str_replace('*', '%', str_replace("'",'_',$onecat))) . "')";
-	    $query2 .= "upper(mnc.long_name) like upper('" . trim(str_replace('*', '%', str_replace("'",'_',$onecat))) . "')";
+	    $tmp = $db->qstr(trim(str_replace('*', '%', str_replace("'",'_',$onecat))));
+	    $query1 .= "upper(mnc.long_name) like upper({$tmp})";
+	    $query2 .= "upper(mnc.long_name) like upper({$tmp})";
 	  }
 	else
 	  {
-	    $query1 .= "mnc.news_category_name = '" . trim(str_replace("'",'_',$onecat)) . "'";
-	    $query2 .= "mnc.news_category_name = '" . trim(str_replace("'",'_',$onecat)) . "'";
+	    $tmp = $db->qstr(trim(str_replace("'",'_',$onecat)));
+	    $query1 .= "mnc.news_category_name = {$tmp}";
+	    $query2 .= "mnc.news_category_name = {$tmp}";
 	  }
 	$count++;
       }
@@ -135,7 +137,7 @@ if (isset($params['sortby']))
 	$query1 .= "ORDER BY mn.news_extra ";
       }
     else {
-      $query1 .= "ORDER BY mn." . str_replace("'", '', str_replace(';', '', $params['sortby'])) . " ";
+      $query1 .= "ORDER BY mn." . str_replace("'", '', str_replace(';', '', $db->qstr($params['sortby']))) . " ";
     }
   } 
  else 

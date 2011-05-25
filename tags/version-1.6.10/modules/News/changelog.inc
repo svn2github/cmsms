@@ -170,4 +170,7 @@
 <li><p>Version 2.10.4</p>
   <p>Minor bug fixes.</p>
 </li>
+<li><p>Version 2.10.4.2</p>
+  <p>Fixes SQL Injection vulnerability.</p>
+</li>
 </ul>

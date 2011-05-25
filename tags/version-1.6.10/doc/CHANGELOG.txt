@@ -1,3 +1,7 @@
+Version 1.6.10 - Bourail
+-----------------------------
+  - Fixes an SQL injection capability in the News module
+
 Version 1.6.9 - Arama
 -----------------------------
  - Fixes a minor security vulnerability in the News module.
