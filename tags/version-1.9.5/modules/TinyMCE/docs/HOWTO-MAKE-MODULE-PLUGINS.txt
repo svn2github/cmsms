@@ -1,0 +1,181 @@
++=================================================================+
++ CMS Made Simple - TinyMCE Module - How to create module plugins +
++								  +
++   Project URL: http://dev.cmsmadesimple.org/projects/tinymce	  +
++								  +
++	  Written: Tapio Löytty <tapsa@blackmilk.fi>		  +
++=================================================================+
+
+Introduction:
+=============
+
+This tutorial is for module developers, explaining shortly how you 
+can register your own TinyMCE plugin inside your modules. 
+In version 2.7.0 we added this support for TinyMCE module, that allows 
+module creator to make own plugins for this popular WYSIWYG editor.
+In this tutorial i will be explaining how this all works and what 
+you can gain from this.
+
+Features:
+=========
+
+- Possible to register multiple plugins from one module
+- Has failsafe names (means you can't accidentaly make doubles with
+			other modules)
+- Totally controllable from TinyMCE module panel
+- Has plugin description possibility
+					
+HOWTO:
+======
+
+Okey now the interesting part. I will take Gallery module as example, 
+since it already has working integration to this.
+
+Registering new TinyMCE plugins inside your module works pretty much 
+like Search module's SearchResult() and SearchReindex()
+You simply include function: RegisterTinyMCEPlugin() somewhere to your
+main module class. Creating actual plugin(s) will happend inside this
+function.
+
+TinyMCE expects RegisterTinyMCEPlugin() to return array that consists of
+array(s).
+
+Example (registering one plugin):
+---------------------------------
+
+return array(array('plugin_name',$script,'My imba comment!'));
+
+What happends there is it return's one plugin that has name 'plugin_name', 
+actual script that is included to variable $script and comment.
+
+Example 2 (registering two plugins):
+------------------------------------
+
+return array(
+		array('myplugin',$script,'This plugin is smart!'),
+		array('myotherplugin',$script2,'This plugin is stupid!'),
+		);
+
+When ever you are returning one or multiple plugins from function, you 
+always have to wrap em into array and include them to main array, like 
+i have done in this case.
+
+Example 3 (NOT LIKE THIS):
+--------------------------
+
+return array('cmsms',$just,'died!');
+
+In this case you will break whole CMS Made Simple, not permanently, but 
+it will cause whole TinyMCE crash, so be careful.
+
+Plugin array should always include these things:
+
+1. module name   ( short name, don't include your module name here, 
+		   it will be generated automatically )
+
+2. actual script ( it expects fully working javascript that is based
+		   on TinyMCE original register functionality )
+					
+3. comment 	 ( Allows you to give comment about your plugin so
+		   everyone who uses has a bit clue what it does )
+					
+More info about how to creating TinyMCE plugins you can find from: 
+http://wiki.moxiecode.com/index.php/TinyMCE:API
+
+Example 4 (Gallery module integration):
+---------------------------------------
+
+So here is code of Gallery module TinyMCE plugin registration. Showing 
+you working module plugin.
+
+CODE:
+
+function RegisterTinyMCEPlugin()
+  {
+    $gCms = cmsms();
+    $config = $this->GetConfig();
+    $galleries = $this->_GetGalleries();
+
+    $plugin1 = "
+	tinymce.create('tinymce.plugins.picker', {
+        createControl: function(n, cm) {
+            switch (n) {
+                 case 'picker':
+                    var c = cm.createMenuButton('picker', {
+                        title : '".$this->Lang('tinymce_button_picker')."',
+                        image : '".$config["root_url"]."/modules/Gallery/images/icon_TinyMCE.gif',
+                        icons : false
+                        });
+
+                        c.onRenderMenu.add(function(c, m) {
+                ";
+
+    foreach($galleries as $gallery)
+      {
+        $plugin1 .= "
+            m.add({title : '".$gallery['filename']."', onclick : function() {
+                tinyMCE.activeEditor.execCommand('mceInsertContent', false, '{Gallery" . ($gallery['filename'] == "Gallery/" ? "}" : " 
+				dir=\'" . substr((empty($gallery['filepath']) ? "" : $gallery['filepath'] . "/") . $gallery['filename'], 0, -1) . "\'}")."');
+                }});
+                m.addSeparator();
+                ";
+      }
+
+    $plugin1 .= "
+                });
+              // Return the new menu button instance
+              return c;
+            }
+
+          return null;
+       }
+});
+                ";
+
+                return array(array('picker',$plugin1,$this->Lang('tinymce_description_picker')));
+        }
+
+
+ABOUT CODE:
+
+Looks messy hu? Yeah i know, but that's how it is. When creating TinyMCE 
+plugins inside your module it will look like this. What code above does? 
+It add's new button to TinyMCE that allows you to bring all Galleries 
+from Gallery module to TinyMCE. It won't render them to whole gallery 
+or anything, don't expect that, it adds smarty code that will eventually 
+generate actual gallery to your frontend.
+
+WHY?
+====
+
+Question is why we made this possible, what this helps, and who?
+Well system is supposed to be simple as possible right? Some people 
+find it so hard to copy paste code from place A to B, well this makes 
+that part easier for your endusers. it makes possible for you to create
+plugins that help other people to make their life easier day by day.
+
+LAST WORDS / WARNING:
+=====================
+
+When you are creating TinyMCE plugins and adding them into your modules, 
+be aware that resposibility of not breaking modules lies on your shoulders.
+We made plugin support as safe as possible, and those plugins are defaultly 
+turned off when you install module that has this support, so your module won't
+instantly break anything.
+
+Releasing untested / not working code is always bad thing, so if you don't 
+know how to, learn. If you can't learn don't add this function to your module, 
+it will only break things.
+
+DO NOT PUBLISH BROKEN MODULES WITH THIS FUNCTION INSIDE OF THEM!
+DO NOT INCLUDE THIS FUNCTION TO YOUR MODULES IF YOU DON'T HAVE A CLUE 
+WHAT IT DOES!
+
+Okey that's enought, go now and play with this :)
+
+If you have any question about this, please don't hesitate to join 
+#cms @ irc.freenode.net and ask.
+
+Authors: Silmarillion < morten@poulsen.org >
+	 Stikki < tapsa@blackmilk.fi >
+		 
