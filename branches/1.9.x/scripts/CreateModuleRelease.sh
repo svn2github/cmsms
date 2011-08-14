@@ -183,14 +183,6 @@ if [ $_svn = 1 -a ${_vc_type:-bad} != 'bad' ]; then
   fi
 fi
 
-# create dummy index.html files in each directory
-#_dirs=`find . -type d | grep -v \.svn`
-#for i in $_dirs ; do
-#  if [ ! -f $i/index.html ]; then
-#    echo '<!-- dummy -->' > ${i}/index.html
-#  fi
-#done
-
 # do an svn tag command
 if [ $_tag = 1 -a ${_vc_type:-bad} != 'bad' ]; then
    _newtag=''
@@ -219,6 +211,7 @@ if [ $_tag = 1 -a ${_vc_type:-bad} != 'bad' ]; then
 fi
 
 # make a temporary file of all the stuff we don't want in the archive
+echo "Preparing...";
 mkdir $_tmpdir
 for i in $_excludes ; do
   echo $i >> ${_tmpdir}/excludes.dat
@@ -227,14 +220,24 @@ done
 _destname=${_destdir}/${_name}-${_version}.tar.gz
 _tmpdest=${_tmpdir}/files.tgz
 cd ..
-tar zcvXf ${_tmpdir}/excludes.dat ${_tmpdest} ${_name}
+tar zcXf ${_tmpdir}/excludes.dat ${_tmpdest} ${_name}
 mkdir $_tmpdir/tmp
 cd ${_tmpdir}/tmp
-tar zxf ${_tmpdir}/files.tgz
+tar zxf ${_tmpdest}
+cd ${_name}
+
+# create dummy index.html files in each directory
+echo "Creating index.html files in each directory";
+_dirs=`find . -type d | grep -v \.svn`
+for i in $_dirs ; do
+  if [ ! -f $i/index.html ]; then
+    echo '<!-- dummy -->' > ${i}/index.html
+  fi
+done
 
 if [ $_checksums = 1 ]; then
   # create the archive checksums
-  cd ${_name}
+  echo "Creating archive checksums...";
   find . -name '*php' | grep -v lang > ${_tmpdir}/file.lst
   while read _line ; do
     _md5=`md5sum $_line | cut -d" " -f1`
@@ -245,11 +248,14 @@ if [ $_checksums = 1 ]; then
   done < ${_tmpdir}/file.lst
   _t3=`md5sum -b _c.dat | cut -d" " -f1`
   echo "${_salt}::${_t3}" | md5sum -b > _d.dat
-  cd ..
 fi
+
+cd ..
 
 # create the archive.
 tar zcf ${_destname} ${_name}
 
 # and cleanup
 rm -rf $_tmpdir 2>/dev/null
+
+echo "Done... your archive is at: ${_destname}"
