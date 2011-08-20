@@ -34,6 +34,7 @@ _cmsurl='http://svn.cmsmadesimple.org/svn/cmsmadesimple';
 # noask      (if set, disable confirmation check)
 # noclean    (if set, don't perform cleanup of temporary files)
 # notag      (if set, don't create a tag for this release)
+# noremember (if set, don't update the cache files for convenience)
 
 # adjust the path
 _t=`pwd`/scripts
@@ -109,6 +110,11 @@ while [ $# -gt 0 ]; do
       shift 2
       continue
       ;;
+    '--noremember' )
+      noremember=1
+      shift 1
+      continue
+      ;;
   esac
 done
 
@@ -162,6 +168,8 @@ if [ ${noask:-notset} = notset ]; then
   if [ ${noclean:-notset} = notset ]; then echo 'YES'; else echo "NO"; fi;
   echo -n "CREATE CMS TAG ${_cmsurl}/tags/version-$_version? ";
   if [ ${notag:-notset} = notset ]; then echo 'YES'; else echo "NO"; fi;
+  echo -n "Update our cache file to remember settings? ";
+  if [ ${nonoremember:-notset} = notset ]; then echo 'NO'; else echo "YES"; fi;
 
   echo
   echo -n "Is this correct? (yes/no) ";
@@ -246,5 +254,7 @@ md5sum -b * >cmsmadesimple-$_version-checksums.dat 2>/dev/null
 # cleanup
 cleanup
 
-echo $_svn > ~/.${_this}.stat
+if [ ${noremember:-notset} = notset ]; then
+  echo $_svn > ~/.${_this}.stat
+fi
 echo "Done: All release files should be in $_destdir";

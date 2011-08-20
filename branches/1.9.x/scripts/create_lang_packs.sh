@@ -101,7 +101,7 @@ _version=`grep '^\$CMS_VERSION' version.php | grep -v _NAME | cut -d\" -f2`
 
 # find the list of languages (except english)
 cd admin/lang/ext
-_langs=`ls -1 | grep -v index`
+_langs=`ls -1 | grep -v index | grep -v en_CY`
 echo $_langs
 
 #

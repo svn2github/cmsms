@@ -8,6 +8,7 @@ _this=`basename $0`
 _workdir=/tmp/$_this.$$
 _owd=`pwd`
 _clean=0
+_dummy=0
 # basedir    (if set, specify the base directory to put generated releases).
 
 # adjust the path
@@ -49,6 +50,11 @@ while [ $# -gt 0 ]; do
       ;;
     '--noclean' )
       _clean=0
+      shift
+      continue
+      ;; 
+    '--dummyfiles' )
+      _dummy=1
       shift
       continue
       ;; 
@@ -167,7 +173,9 @@ while read line ; do
   if [ $_c = 1 -a $_ci = 0 ]; then
     _changedfiles="$_f $_changedfiles"
   elif [ $_n = 1 -a $_ci = 0 ]; then
-    _newfiles="$_f $_newfiles"
+    _p=`echo $line | cut -d' ' -f3 | cut -d: -f1 | cut -d/ -f2-`
+    _fn=$_p/$_fn
+    _newfiles="$_fn $_newfiles"
   elif [ $_d = 1 ]; then
     _p=`echo $line | cut -d' ' -f3 | cut -d: -f1 | cut -d/ -f2-`
     _f=$_p/$_f
@@ -183,12 +191,14 @@ done
 for _f in $_newfiles ; do
   tar cf - $_f 2>/dev/null | (cd $_workdir/base_diff && tar xf - )
 done
-for _f in $_delfiles ; do
-  _dn=`dirname $_f`
-  _fn=`basename $_f`
-  mkdir -p $_workdir/base_diff/$_dn
-  touch $_workdir/base_diff/$_dn/$_fn
-done
+if [ $_dummy = 1 ]; then 
+  for _f in $_delfiles ; do
+    _dn=`dirname $_f`
+    _fn=`basename $_f`
+    mkdir -p $_workdir/base_diff/$_dn
+    touch $_workdir/base_diff/$_dn/$_fn
+  done
+fi
 
 #4 tar it up
 cd $_workdir/base_diff
@@ -245,12 +255,14 @@ done
 for _f in $_newfiles ; do
   tar cf - $_f | (cd $_workdir/full_diff && tar xf - )
 done
-for _f in $_delfiles ; do
-  _dn=`dirname $_f`
-  _fn=`basename $_f`
-  mkdir -p $_workdir/full_diff/$_dn >/dev/null
-  touch $_workdir/full_diff/$_dn/$_fn
-done
+if [ $_dummy = 1 ]; then
+  for _f in $_delfiles ; do
+    _dn=`dirname $_f`
+    _fn=`basename $_f`
+    mkdir -p $_workdir/full_diff/$_dn >/dev/null
+    touch $_workdir/full_diff/$_dn/$_fn
+  done
+fi
 
 #8 tar it up
 cd $_workdir/full_diff
