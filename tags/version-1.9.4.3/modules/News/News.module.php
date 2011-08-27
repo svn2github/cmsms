@@ -43,7 +43,7 @@ class News extends CMSModule
 
 	function GetVersion()
 	{
-		return '2.11.3';
+		return '2.11.4';
 	}
 
 	function MinimumCMSVersion()

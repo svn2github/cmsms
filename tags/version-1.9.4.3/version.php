@@ -18,7 +18,7 @@
 #
 #$Id: version.php 6900 2011-02-20 01:10:48Z calguy1000 $
 
-$CMS_VERSION = "1.9.4.2";
+$CMS_VERSION = "1.9.4.3";
 $CMS_VERSION_NAME = "Faanui";
 $CMS_SCHEMA_VERSION = "34";
 

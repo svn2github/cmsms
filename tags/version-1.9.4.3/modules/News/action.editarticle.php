@@ -1,5 +1,6 @@
 <?php
 if (!isset($gCms)) exit;
+if( !$this->CheckPermission('Modify News') ) exit;
 
 if (isset($params['cancel']))
   {

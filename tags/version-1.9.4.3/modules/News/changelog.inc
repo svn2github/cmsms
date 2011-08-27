@@ -183,4 +183,7 @@
 <li><p>Version 2.11.3</p>
   <p>Fixes SQL injection vulnerabilities.</p>
 </li>
+<li><p>Version 2.11.4</p>
+ <p>Fixes issue with editarticle not doing permission check.</p>
+</li>
 </ul>
