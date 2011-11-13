@@ -38,7 +38,6 @@ if (!isset($gCms)) exit;
 
 define('MINIMUM_REPOSITORY_VERSION','1.5');
 
-
 class ModuleManager extends CMSModule
 {
   const _dflt_request_url = 'http://www.cmsmadesimple.org/ModuleRepository/request/v2/';
@@ -63,7 +62,7 @@ class ModuleManager extends CMSModule
    ---------------------------------------------------------*/
   function GetVersion()
   {
-    return '1.5';
+    return '1.5.3';
   }
 
 

@@ -29,6 +29,7 @@
  *
  * @since		0.9
  * @version             1.8
+ * @abstract
  * @package		CMS
  */
 class CMSModule
@@ -2154,6 +2155,7 @@ class CMSModule
 	 * @param string The id to eventually return to when the module is finished it's task
 	 * @param string An array of params that should be inlucded in the URL of the link.	 These should be in a $key=>$value format.
 	 * @param boolean A flag to determine if actions should be handled inline (no moduleinterface.php -- only works for frontend)
+	 * @deprecated
 	 */
 	function RedirectForFrontEnd($id, $returnid, $action, $params = array(), $inline = true )
 	{
@@ -2168,6 +2170,7 @@ class CMSModule
 	 * @param string The id to eventually return to when the module is finished it's task
 	 * @param string An array of params that should be inlucded in the URL of the link.	 These should be in a $key=>$value format.
 	 * @param boolean A flag to determine if actions should be handled inline (no moduleinterface.php -- only works for frontend)
+	 * @deprecated
 	 */
 	function Redirect($id, $action, $returnid='', $params=array(), $inline=false)
 	{
