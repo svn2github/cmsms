@@ -18,7 +18,7 @@
 #
 #$Id: version.php 7502 2011-11-02 20:54:41Z calguy1000 $
 
-$CMS_VERSION = "1.10.1";
+$CMS_VERSION = "1.10.2";
 $CMS_VERSION_NAME = "Le Lorrain";
 $CMS_SCHEMA_VERSION = "35";
 
