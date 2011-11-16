@@ -1,6 +1,9 @@
 Version 1.10.2
-  - FILL ME IN.
+-----------------------------
   - Fixes #7172 (cms_selflink encoding the urlparam stuff).
+  - adds force_root_block to MicroTiny.
+  - Fixes a problem with page alias when it was cleared in editcontent
+  - Fixes a minor problem with copycontent
 
 Version 1.10.1 - Le Lorrain
 -----------------------------
