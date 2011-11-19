@@ -1,3 +1,38 @@
+Version 1.10.2 - *** NO NAME ***
+-----------------------------
+Core - Bug Reports:
+  - #7111 ordered lists in backend
+  - #7112 Missing content-type in printing module (CMSPrinting)
+
+Version 1.10.1 - Le Lorrain
+-----------------------------
+  - Fixed a problem with improper HTTPS detection in the metadata plugin
+  - Fixed a problem with modules not being loaded properly for admin stylesheets
+  - Fixed a minor problem with microtinyconfig
+  - Fixed a minor issue in event handlers.
+  - Adds one more error check into MenuManager wrt to GetContent on inactive objects.
+  - Fixes a problem with GetAllContent() which effects the parent dropdown stuff.
+  - Fixes a problem with deleting inactive content.
+  - Fixes the summary modifier.
+  - Replaces the cms_tree_operations::load_from_list() method with a simpler, recursive function.
+  - Minor optimizations to the cms_content_cache class to reduce database queries when there are deactivated pages.
+  - Inactive pages now show up in order content, and in a different color.
+  - ModuleManager - minor improvement to the is_connection_ok method.
+  - adodb_lite - get rid of some files that are not needed (xmlschema, config etc).
+  - Fixed problem with uninstalling deactivated modules.
+  - Fixes sorting for page_image and thumbnail dropdowns
+  - Fixes call to GetParameters in the module API that would hide parameters from the help if the module was using the new InitializAdmin method.
+  - Fixes postgres compatibility issue.
+  - Fixes pagination bug in news admin interface when category is selected.
+  - Minor fix to upgrade in News.
+  - Fixes minor problem with Pageinfo class.
+  - Fix to the GetModulesWithCapability method.
+  - Adds help for MicroTiny.
+  - Adds more help for the {content_module} tag.
+  - Fixes a problem in the Redirect method of the module api if a value of a parameter was 0
+  - now extend time limit in the module manager for time intensive operations. (some hosts may not allow this).
+  - Fixes some minor template issues in News.
+  
 Version 1.10 - Martinique
 -----------------------------
 Core - Bug Reports:
