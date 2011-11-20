@@ -8,6 +8,9 @@ Core - Bug Reports:
   - Fixes a problem with page alias when it was cleared in editcontent
   - Fixes a minor problem with copycontent
   - Fixes problem with filters not being loaded.
+  - Fixes to package generation scripts... all english variants are packaged together now.
+  - Some minor template changes to MicroTiny filepicker
+  - Change the way file sizes are displayed in MicroTiny filepicker.
 
 Version 1.10.1 - Le Lorrain
 -----------------------------
