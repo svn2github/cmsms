@@ -97,7 +97,7 @@ function SubmitElement(filename) {
     </td>
     <td width="1%" align="right">{$file->dimensions}</td>
     <td width="1%" align="right">{$file->size}</td>
-    <td width="1%" align="right">{$file->deletelink}</td>
+    <td width="1%" align="right">{$file->deletelink|default:''}</td>
   {/if}
   </tr>
   {/foreach}

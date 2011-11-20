@@ -1,4 +1,4 @@
-Version 1.10.2 - *** NO NAME ***
+Version 1.10.2 - Casa Pilote
 -----------------------------
 Core - Bug Reports:
   - #7111 ordered lists in backend
