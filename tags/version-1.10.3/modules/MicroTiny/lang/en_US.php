@@ -12,6 +12,13 @@ $lang["help"]=<<<EOT
 <h3>How Do I Use It?</h3>
 <p>The MicroTiny test area should appear automatically (for users with sufficient permission) under the &quot;Extensions &gt;&gt; MicroTiny WYSIWYG Editor&quot; option in the CMSMS admin console.</p>
 </p>In order for MicroTiny to be used as the wysiwyg editor when editing pages, the MicroTiny Wysiwyg Editor needs to be selected in the users preferences.  Please select &quot;MicroTiny&quot; in the &quot;Select WYSIWYG to Use&quot; option under &quot;My Preferences &gt;&gt; User Preferences&quot; in the CMSMS Admin panel.  Additional options in various modules or in content page templates, and content pages themselves  can control wether a text area or a wysiwyg field is provided in various edit forms.</p>
+<h3>About Styles and Colors</h3>
+<p>MicroTiny will read the stylesheets attached to the appropriate template <em>(if no template can be easily determined the default template and its stylesheets are used)</em>. and strip out background images in order to allow visualizing your text in an environment as close as possible to what will appear on the web page.  If your theme uses a dark background, along with background images on your styles you may experience problems.   We suggest that you always include a color on your background specifications.  i.e:
+<pre><code>body {
+ color: #eee;
+ background: <span style="color: blue;">#ddd</span> url(path/to/an/image.jpg);
+} 
+</pre></code>
 <h3>What about Frontend Wysiwygs</h3>
 <p>From time to time it may be necessary to provide a wysiwyg text area with limited functionality to frontend editors.   To do this, you will need to follow two steps <em>(subject to change in future versions of CMSMS).</em>:
 <ul>

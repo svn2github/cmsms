@@ -150,7 +150,7 @@ class microtiny_utils {
 		    $mod->smarty->assign('textareas',$tmp);		    
 		  }
 
-		if( $templateid == '' )
+		if( $templateid <= 0 )
 		  {
 		    $pageinfo = cmsms()->get_variable('pageinfo');
 		    if( is_object($pageinfo) )
@@ -159,14 +159,27 @@ class microtiny_utils {
 		      }
 		    else
 		      {
-			$templateops = cmsms()->GetTemplateOperations();
-			$dflt_template = $templateops->LoadDefaultTemplate();
-			if( is_object($dflt_template) ) $templateid = $dflt_template->id;
+			$contentobj = cms_utils::get_app_data('editing_content');
+			if( is_object($contentobj) )
+			  {
+			    $templateid = $contentobj->TemplateId();
+			  }
+			else
+			  {
+			    $templateops = cmsms()->GetTemplateOperations();
+			    $dflt_template = $templateops->LoadDefaultTemplate();
+			    if( is_object($dflt_template) ) $templateid = $dflt_template->id;
+			  }
 		      }
 		  }
-		if( $templateid )
+		$stripbackground = TRUE; // always strip background urls.
+		if( $templateid > 0 )
 		  {
 		    $mod->smarty->assign('templateid',$templateid);
+		  }
+		if( $stripbackground )
+		  {
+		    $mod->smarty->assign('stripbackground',1);
 		  }
 		$mod->smarty->assign("rooturl",$config["root_url"]);		
 

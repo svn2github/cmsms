@@ -3,8 +3,8 @@
   mode : "exact",
   elements : "{$textareas}",
   body_class : "CMSMSBody",
-  {if isset($templateid)}content_css : "{cms_stylesheet templateid=$templateid nolinks=1 adjustforeditor=1}",{/if}
-
+  content_css : "{cms_stylesheet templateid=$templateid nolinks=1}",
+  {/if}
   {* //Performance *}
   entity_encoding : "raw",
   button_tile_map : true, 

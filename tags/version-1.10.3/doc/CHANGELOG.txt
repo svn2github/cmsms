@@ -1,3 +1,14 @@
+Version 1.10.3 - Hyacinthe
+-----------------------------
+  - Fixes to MicroTiny when theme uses dark background colors
+  - Fixes to MicroTiny problems in various modes
+  - Minor documentation fix in contentoperations
+  - Fixes to cms_stylesheet plugin regular expressions
+  - Fixes to cms_http_request
+  - Fixes to cms_selflink
+  - Fixes problem with login when homepage is set.
+  - Minor enhancement to the setlocale stuff.
+
 Version 1.10.2 - Casa Pilote
 -----------------------------
 Core - Bug Reports:
