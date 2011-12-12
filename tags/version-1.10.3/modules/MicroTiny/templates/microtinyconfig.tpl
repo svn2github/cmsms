@@ -3,7 +3,12 @@
   mode : "exact",
   elements : "{$textareas}",
   body_class : "CMSMSBody",
+  {if isset($templateid)}
+  {if isset($stripbackground)}
+  content_css : "{cms_stylesheet templateid=$templateid nolinks=1 adjustforeditor=1}",
+  {else}
   content_css : "{cms_stylesheet templateid=$templateid nolinks=1}",
+  {/if}
   {/if}
   {* //Performance *}
   entity_encoding : "raw",
@@ -18,7 +23,8 @@
   visual : true,
 	      
   accessibility_warnings : false,
-      			
+
+  forced_root_block : '',      			
   fix_list_elements : true,
   verify_html : true,
   verify_css_classes : false,
