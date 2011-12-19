@@ -194,15 +194,50 @@ class microtiny_utils {
 			$image=",image,|";
 		}
 		$toolbar="undo,|,bold,italic,underline,|,cut,copy,paste,pastetext,removeformat,|,justifyleft,justifycenter,justifyright,justifyfull,|,bullist,numlist,|,".$linker."link,unlink,|".$image.",formatselect"; //,separator,styleselect
-		$css_styles = $mod->GetPreference('css_styles');
-		$css_styles =str_replace("\n",",",$css_styles);
-		$css_styles =str_replace("\r",",",$css_styles);
 
-		if ($css_styles!="") {
+		// handle css styles... newline OR comma separated (why, kinda dumb?)
+		$tmp = $mod->GetPreference('css_styles');
+		$tmp = str_replace("\r\n","\n",$tmp);
+		$tmp = explode("\n",$tmp);
+		$tmp2 = array();
+		foreach( $tmp as $one )
+		  {
+		    $one = trim($one);
+		    if( empty($one) ) continue;
+
+		    $tmp3 = explode(',',$one);
+		    foreach( $tmp3 as $one2 )
+		      {
+			$tmp2[] = trim($one2);
+		      }
+		  }
+
+		$tmp3 = array();
+		foreach( $tmp2 as $one )
+		  {
+		    $tmp4 = explode('=',trim($one),2);
+		    if( count($tmp4) == 1 )
+		      {
+			$tmp3[$tmp4[0]] = $tmp4[0];
+		      }
+		    else
+		      {
+			$tmp3[$tmp4[0]] = $tmp4[1];
+		      }
+		  }
+
+		$css_styles = '';
+		foreach( $tmp3 as $key => $value )
+		  {
+		    $css_styles .= $key.'='.$value.';';
+		  }
+		$css_styles = substr($css_styles,0,-1);
+		if ($css_styles!='') {
 		  $toolbar.=",separator,styleselect";
 		  $mod->smarty->assign("css_styles",$css_styles);
 		}
 
+		// give the rest to smarty.
 		$mod->smarty->assign('show_statusbar',$mod->GetPreference('show_statusbar',0));
 		$mod->smarty->assign('allow_resize',$mod->GetPreference('allow_resize',0));
 		$mod->smarty->assign("toolbar",$toolbar);				
