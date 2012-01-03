@@ -1169,6 +1169,7 @@ final class ModuleOperations
   {
 	  global $CMS_ADMIN_PAGE;
 	  $obj = null;
+    echo $module_name;
 	  if( !$module_name )
 		  {
 			  if( isset($CMS_ADMIN_PAGE) )

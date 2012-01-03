@@ -241,9 +241,10 @@ class cms_utils
    * @author calguy1000
    * @return object or null
    */
-  public static function &get_syntax_highlighter_module()
+  public static function &get_syntax_highlighter_module($module_name = '')
   {
-	  return ModuleOperations::get_instance()->GetSyntaxHighlighter();
+	  //return ModuleOperations::get_instance()->GetSyntaxHighlighter($module_name);
+    return ModuleOperations::get_instance()->GetSyntaxModule($module_name);
   }
 
 

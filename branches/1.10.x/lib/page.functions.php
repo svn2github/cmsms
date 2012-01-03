@@ -818,7 +818,7 @@ function create_textarea($enablewysiwyg, $text, $name, $classname = '', $id = ''
 
   if( !$result && $wantedsyntax )
     {
-      $module = cms_utils::get_syntax_highlighter_module();
+      $module = cms_utils::get_syntax_highlighter_module($forcewysiwyg);
       if( $module )
 	{
 	  $result = $module->SyntaxTextArea($name,$wantedsyntax,$width,$height,$encoding,$text,$addtext);
