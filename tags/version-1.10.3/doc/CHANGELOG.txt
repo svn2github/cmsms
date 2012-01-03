@@ -9,6 +9,7 @@ Version 1.10.3 - Hyacinthe
   - Fixes to cms_selflink
   - Fixes problem with login when homepage is set.
   - Minor enhancement to the setlocale stuff.
+  - Fixes an issue in get_module_instance
 
 Version 1.10.2 - Casa Pilote
 -----------------------------
