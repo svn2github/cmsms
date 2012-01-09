@@ -175,16 +175,18 @@ if (isset($_POST["submit_form"])) {
 	$listgcbs_pagelimit = get_preference($userid,'listgcbs_pagelimit',20);
 
 	$homepage = get_preference($userid,'homepage');
-	$to = '?'.CMS_SECURE_PARAM_NAME.'='.$_SESSION[CMS_USER_KEY];
-	$pos = strpos($homepage,'?'.CMS_SECURE_PARAM_NAME);
-	$from = substr($homepage,$pos,strlen($to));
-	$homepage = str_replace($from,$to,$homepage);
-	$homepage = str_replace('&','&amp;',$homepage);
 
 	$hide_help_links = get_preference($userid, 'hide_help_links');
 	$ignoredmodules = explode(',',get_preference($userid,'ignoredmodules'));
 	$gCms->clear_cached_files();
 }
+
+// fix the homepage.
+$to = '?'.CMS_SECURE_PARAM_NAME.'='.$_SESSION[CMS_USER_KEY];
+$pos = strpos($homepage,'?'.CMS_SECURE_PARAM_NAME);
+$from = substr($homepage,$pos,strlen($to));
+$homepage = str_replace($from,$to,$homepage);
+$homepage = str_replace('&','&amp;',$homepage);
 
 include_once("header.php");
 
