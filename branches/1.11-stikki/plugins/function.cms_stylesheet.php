@@ -204,11 +204,7 @@ function smarty_cms_function_cms_stylesheet($params, &$smarty)
 					$smarty = $gCms->GetSmarty();
 					$smarty->left_delimiter = '[[';
 					$smarty->right_delimiter = ']]';
-					$smarty->_compile_source('stylesheet:'.$one['css_name'], $one['css_text'], $_compiled );
-					@ob_start();
-					$smarty->_eval('?>' . $_compiled);
-					$_contents = @ob_get_contents();
-					@ob_end_clean();
+					$_contents = $smarty->fetch('string:'.$one['css_text']); // todo, deal with caching?
 					$smarty->left_delimiter = '{';
 					$smarty->right_delimiter = '}';
 
