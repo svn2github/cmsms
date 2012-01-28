@@ -18,11 +18,33 @@
 #
 #$Id: content.functions.php 6863 2011-01-18 02:34:48Z calguy1000 $
 
-class CMSModuleDbTemplateResource extends Smarty_Resource_Custom
+abstract class CMS_Fixed_Resource_Custom extends Smarty_Resource_Custom
+{
+  public function populate(Smarty_Template_Source $source, Smarty_Internal_Template $_template = null)
+  {
+        $source->filepath = $source->type . ':' . $source->name;
+        $source->uid = sha1($source->type . ':' . $source->name);
+
+        $mtime = $this->fetchTimestamp($source->name);
+        if ($mtime !== null) {
+            $source->timestamp = $mtime;
+        } else {
+            $this->fetch($source->name, $content, $timestamp);
+            $source->timestamp = isset($timestamp) ? $timestamp : false;
+            if( isset($content) )
+                $source->content = $content;
+        }
+        $source->exists = !!$source->timestamp;
+  }
+}
+
+class CMSModuleDbTemplateResource extends CMS_Fixed_Resource_Custom
 {
   protected function fetch($name,&$source,&$mtime)
   {
     $db = cmsms()->GetDb();
+    
+    $tmp = explode(';',$name);
     $query = "SELECT * from ".cms_db_prefix()."module_templates WHERE module_name = ? and template_name = ?";
     $row = $db->GetRow($query, preg_split('/;/', $name));
     if ($row)
