@@ -63,7 +63,7 @@ class MenuManager extends CMSModule
 
   function MinimumCMSVersion()
   {
-    return '1.10-beta0';
+    return '1.11-alpha0';
   }
 
   function GetAdminDescription()
@@ -97,6 +97,7 @@ class MenuManager extends CMSModule
     $this->SetParameterType('nocache',CLEAN_INT);
     $this->SetParameterType('root',CLEAN_STRING);
 
+    cmsms()->GetSmarty()->register_function('menu',array($this,'function_plugin'));
     cmsms()->GetSmarty()->register_function('cms_breadcrumbs',array($this,'smarty_cms_breadcrumbs'));
   }
 
