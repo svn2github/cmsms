@@ -251,8 +251,6 @@ if ($config['debug'] == true)
   $smarty->error_reporting = 'E_ALL';
 }
 
-$CMS_LAZYLOAD_MODULES = 1;
-
 #Setup content routes
 if( !isset($CMS_ADMIN_PAGE) && !isset($CMS_STYLESHEET) && !isset($CMS_INSTALL_PAGE) )
 {
@@ -271,6 +269,8 @@ if (! isset($CMS_INSTALL_PAGE))
     $modops->LoadModules(isset($LOAD_ALL_MODULES), !isset($CMS_ADMIN_PAGE));
     debug_buffer('', 'End of Loading Modules');
   }
+
+$CMS_LAZYLOAD_MODULES = 1;
 
 #Do auto task stuff.
 if (! isset($CMS_INSTALL_PAGE))

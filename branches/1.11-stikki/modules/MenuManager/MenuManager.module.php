@@ -58,7 +58,7 @@ class MenuManager extends CMSModule
 
   function GetVersion()
   {
-    return '1.8';
+    return '1.8.1';
   }
 
   function MinimumCMSVersion()
@@ -76,7 +76,7 @@ class MenuManager extends CMSModule
     return 'layout';
   }
 
-  function LazyLoadFrontend() { return TRUE; }
+  function LazyLoadFrontend() { return FALSE; }
 
   public function InitializeFrontend()
   {

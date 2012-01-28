@@ -18,8 +18,6 @@
 
 function smarty_cms_function_cms_stylesheet($params, &$smarty)
 {
-	debug_to_log('cms_stylesheet');
-	debug_to_log($params);
 	//
 	// begin
 	//
