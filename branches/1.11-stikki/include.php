@@ -251,6 +251,8 @@ if ($config['debug'] == true)
   $smarty->error_reporting = 'E_ALL';
 }
 
+$CMS_LAZYLOAD_MODULES = 1;
+
 #Setup content routes
 if( !isset($CMS_ADMIN_PAGE) && !isset($CMS_STYLESHEET) && !isset($CMS_INSTALL_PAGE) )
 {

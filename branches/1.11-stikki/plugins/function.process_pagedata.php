@@ -18,21 +18,11 @@
 
 function smarty_cms_function_process_pagedata($params,&$smarty)
 {
-  $content = cmsms()->get_variable('content_obj');
-  if (!is_object($content) ||  empty($content)) return;
-
-  $tpl = $content->GetPropertyValue('pagedata','');
-  if( empty($tpl) ) return;
-
-  $smarty->_compile_source('preprocess template', $tpl, $_compiled);
-  @ob_start();
-  $smarty->_eval('?>' . $_compiled);
-  $result = @ob_get_contents();
-  @ob_end_clean();
-	if( isset($params['assign']) ){
-		$smarty->assign(trim($params['assign']),$result);
-		return;
-	}
+  $result = $smarty->fetch('content:pagedata');
+  if( isset($params['assign']) ){
+    $smarty->assign(trim($params['assign']),$result);
+    return;
+  }
   return $result;
 }
 

@@ -59,11 +59,7 @@ function smarty_cms_function_metadata($params, &$smarty)
 
 	if ((!strpos($result,$smarty->left_delimiter) === false) and (!strpos($result,$smarty->right_delimiter) === false))
 	{
-		$smarty->_compile_source('metadata template', $result, $_compiled);
-		@ob_start();
-		$smarty->_eval('?>' . $_compiled);
-		$result = @ob_get_contents();
-		@ob_end_clean();
+	  $result = $smarty->fetch('string:'.$result);
 	}
 	if( isset($params['assign']) ){
 		$smarty->assign(trim($params['assign']),$result);

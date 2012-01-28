@@ -102,6 +102,7 @@ $smarty->assign('starttext',$this->Lang('youarehere'));
 $smarty->assign('menuparams',$params);
 $smarty->assign('count',count($newstack));
 $smarty->assign('nodelist',$newstack);
+$mdid = md5($gCms->variables['content_id'].implode('|', $params));
 if ($usefile)
   {
     $txt = $this->ProcessTemplate($tpl_name, $mdid, false, $gCms->variables['content_id']);

@@ -70,6 +70,9 @@ function cms_autoloader($classname)
       return;
     }
 
+  global $CMS_LAZYLOAD_MODULES;
+  if( !isset($CMS_LAZYLOAD_MODULES) ) return;
+
   // standard content types
   $fn = cms_join_path($config['root_path'],'lib','classes','contenttypes',"{$classname}.inc.php");
   if( file_exists($fn) )

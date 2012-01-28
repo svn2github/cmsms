@@ -1,6 +1,6 @@
 <?php
 #CMS - CMS Made Simple
-#(c)2004 by Ted Kulp (wishy@users.sf.net)
+#(c)2004-2012 by Ted Kulp (wishy@users.sf.net)
 #This project's homepage is: http://www.cmsmadesimple.org
 #
 #This program is free software; you can redistribute it and/or modify
@@ -35,6 +35,11 @@ class Smarty_CMS extends SmartyBC
 	public $params; // <- triggers error without
 	private static $_instance;
 
+// 	public function _compile_source($a,$b,$c)
+// 	{
+// 	  stack_trace(); die();
+// 	}
+
 	/**
 	* Constructor
 	*
@@ -42,7 +47,7 @@ class Smarty_CMS extends SmartyBC
 	*/
 	public function __construct()
 	{
-  
+ 
 		parent::__construct();
 
 		global $CMS_ADMIN_PAGE;
@@ -52,12 +57,11 @@ class Smarty_CMS extends SmartyBC
 		// Set template and config dirs according witch instance we are at.
 		if( isset($CMS_ADMIN_PAGE) && $CMS_ADMIN_PAGE == 1 ) {
 
-			$this->setTemplateDir($config["root_path"].'/'.$config['admin_dir'].'/templates/');
-			$this->setConfigDir($config["root_path"].'/'.$config['admin_dir'].'/configs/');
+		  $this->setTemplateDir(cms_join_path($config['root_path'],$config['admin_dir'],'templates'));
+		  $this->setConfigDir(cms_join_path($config['root_path'],$config['admin_dir'],'/configs'));;
 		} else {
-
-			$this->setTemplateDir($config["root_path"].'/tmp/templates/');
-			$this->setConfigDir($config["root_path"].'/tmp/configs/');
+		    $this->setTemplateDir(cms_join_path($config['root_path'],'tmp','templates'));
+		    $this->setConfigDir(cms_join_path($config['root_path'],'tmp','templates'));
 		}
 
 		// Set template_c and canche dirs
@@ -65,24 +69,17 @@ class Smarty_CMS extends SmartyBC
 		$this->setCacheDir(TMP_CACHE_LOCATION);
 
 		// Set plugins dirs
-		//$this->setPluginsDir(array($config["root_path"].'/lib/smarty/plugins', $config["root_path"].'/plugins'));
-		$this->setPluginsDir(array($config["root_path"].'/lib/smarty/plugins'));
+		$this->addPluginsDir(cms_join_path($config['root_path'],'plugins'));
 
 		// register default plugin handler
-		//$this->registerDefaultPluginHandler(array(&$this, 'my_plugin_handler'));
-
+		$this->registerDefaultPluginHandler(array(&$this, 'defaultPluginHandler'));
 
 		//print_r($this->registered_plugins);
 		
-		// Pretty sure we won't need these anymore. -Stikki-
-			//$this->compiler_file = 'CMS_Compiler.class.php';
-			//$this->compiler_class = 'CMS_Compiler';
-			//$this->assign('app_name','CMS');
-
+		$this->assign('app_name','CMS');
 		if ($config["debug"] == true) {
-
-			$this->force_compile = true;
-			$this->debugging = true;
+		  $this->force_compile = true;
+		  $this->debugging = true;
 		}
 
 		if (is_sitedown()) {
@@ -100,7 +97,7 @@ class Smarty_CMS extends SmartyBC
 		// Check if we are at install page, don't register anything if so, cause nothing below is needed.
 		if(isset($CMS_INSTALL_PAGE)) return;
 
-		$this->load_file_plugins();
+		//$this->load_file_plugins();
 
 		// See new style
 		$this->registerResource("db", array(
@@ -114,31 +111,18 @@ class Smarty_CMS extends SmartyBC
 						array(&$this, "template_get_timestamp"),
 						array(&$this, "db_get_secure"),
 						array(&$this, "db_get_trusted")));
-							
-		$this->registerResource("template", array(
-						array(&$this, "template_get_template"),
-						array(&$this, "template_get_timestamp"),
-						array(&$this, "db_get_secure"),
-						array(&$this, "db_get_trusted")));
-							   
-		$this->registerResource("tpl_top", array(
-						array($this, "template_top_get_template"),
-						array($this, "template_get_timestamp"),
-						array($this, "db_get_secure"),
-						array($this, "db_get_trusted")));
-							  
-		$this->registerResource("tpl_head", array(
-						array(&$this, "template_head_get_template"),
-						array(&$this, "template_get_timestamp"),
-						array(&$this, "db_get_secure"),
-						array(&$this, "db_get_trusted")));
-							   
-		$this->registerResource("tpl_body", array(
-						array(&$this, "template_body_get_template"),
-						array(&$this, "template_get_timestamp"),
-						array(&$this, "db_get_secure"),
-						array(&$this, "db_get_trusted")));
-							   
+
+		$this->registerResource('template',new CMSPageTemplateResource(''));
+		$this->registerResource('tpl_top',new CMSPageTemplateResource('top'));
+		$this->registerResource('tpl_head',new CMSPageTemplateResource('head'));
+		$this->registerResource('tpl_body',new CMSPageTemplateResource('body'));
+		$this->registerResource('module_db_tpl',new CMSModuleDbTemplateResource());
+		$this->registerResource('module_file_tpl',new CMSModuleFileTemplateResource());
+		$this->registerResource('content',new CMSContentTemplateResource());
+		$this->registerResource('htmlblob',new CMSGlobalContentTemplateResource());
+		$this->registerResource('globalcontent',new CMSGlobalContentTemplateResource());
+
+		/*
 		$this->registerResource("htmlblob", array(
 						array(&$this, "global_content_get_template"),
 						array(&$this, "global_content_get_timestamp"),
@@ -150,32 +134,65 @@ class Smarty_CMS extends SmartyBC
 						array(&$this, "global_content_get_timestamp"),
 						array(&$this, "db_get_secure"),
 						array(&$this, "db_get_trusted")));
-								
+		*/
+
+		/*								
 		$this->registerResource("content", array(
 						array(&$this, "content_get_template"),
 						array(&$this, "content_get_timestamp"),
 						array(&$this, "db_get_secure"),
 						array(&$this, "db_get_trusted")));
+		*/
 							  
 		$this->registerResource("module", array(
 						array(&$this, "module_get_template"),
 						array(&$this, "module_get_timestamp"),
 						array(&$this, "db_get_secure"),
 						array(&$this, "db_get_trusted")));
-							 
-		$this->registerResource("module_db_tpl", array(
-						array(&$this, "module_db_template"),
-						array(&$this, "module_db_timestamp"),
-						array(&$this, "db_get_secure"),
-						array(&$this, "db_get_trusted")));
-								
-		$this->registerResource("module_file_tpl", array(
-						array(&$this, "module_file_template"),
-						array(&$this, "module_file_timestamp"),
-						array(&$this, "db_get_secure"),
-						array(&$this, "db_get_trusted")));
+
 						
 		
+	}
+
+
+	public function loadPlugin($plugin_name,$check = true)
+	{
+	  $res = parent::loadPlugin($plugin_name,$check);
+	  if( $res ) 
+	    {
+	      if( !function_exists($plugin_name) )
+		{
+		  $parts = explode('_',$plugin_name);
+		  if( $parts[0] != 'smarty' || $parts[1] == 'internal' ) return $res;
+		  return false;
+		}
+	    }
+	  return $res;
+	}
+
+	public function defaultPluginHandler($name, $type, $template, &$callback, &$script)
+	{
+	  $config = cmsms()->GetConfig();
+	  $fn = cms_join_path($config['root_path'],'plugins',$type.'.'.$name.'.php');
+	  if( file_exists($fn) )
+	    {
+	      // plugins with the smarty_cms_function
+	      $callback = 'smarty_cms_'.$type.'_'.$name;
+	      $script = $fn;
+	      require_once($fn);
+	      if( function_exists('smarty_cms_'.$type.'_'.$name) )
+		{
+		  $callback = 'smarty_cms_'.$type.'_'.$name;
+		  return TRUE;
+		}
+	    }
+
+	  debug_display('not found: '.$name);
+	  return FALSE;
+	  // maybe it was loaded by a module
+	  $modulename = module_meta::get_instance()->find_module_by_plugin($name);
+	  $obj = cms_utils::get_module($modulename);
+	  return TRUE;
 	}
 
 
@@ -537,7 +554,7 @@ class Smarty_CMS extends SmartyBC
 	* @param  object The smarty object.
 	* @return boolean
 	*/
-	function global_content_get_template($tpl_name, &$tpl_source, &$smarty_obj)
+	function global_content_get_template($tpl_name, &$tpl_source, $smarty_obj)
 	{
 		debug_buffer('start global_content_get_template');
 		$gCms = cmsms();
@@ -603,7 +620,7 @@ class Smarty_CMS extends SmartyBC
 	* @param  object The smarty object.
 	* @return boolean
 	*/
-	function template_top_get_template($tpl_name, &$tpl_source, &$smarty_obj)
+	function template_top_get_template($tpl_name, &$tpl_source, $smarty_obj)
 	{
 		$gCms = cmsms();
 		$config = $gCms->GetConfig();
@@ -640,10 +657,13 @@ class Smarty_CMS extends SmartyBC
 		$pos = stripos($tpl_source,'<head');
 		if( $pos === FALSE )
 		  {
-			// return the whole template
-			return true;
+		echo "IN TOP 1<br/>\n";
+		    // return the whole template
+		    return true;
 		  }
+		echo "IN TOP 2<br/>\n";
 		$tpl_source = substr($tpl_source,0,$pos);
+		debug_display($tpl_source);
 		return true;
 		  }
 		return false;
@@ -659,7 +679,7 @@ class Smarty_CMS extends SmartyBC
 	* @param  object The smarty object.
 	* @return boolean
 	*/
-	function template_head_get_template($tpl_name, &$tpl_source, &$smarty_obj)
+	function template_head_get_template($tpl_name, &$tpl_source, $smarty_obj)
 	{
 		$gCms = cmsms();
 		$config = $gCms->GetConfig();
@@ -781,7 +801,7 @@ class Smarty_CMS extends SmartyBC
 	* @param  object The smarty object.
 	* @return boolean
 	*/
-	function template_get_template($tpl_name, &$tpl_source, &$smarty_obj)
+	function template_get_template($tpl_name, &$tpl_source, $smarty_obj)
 	{
 		$gCms = cmsms();
 		$config = $gCms->GetConfig();
@@ -893,7 +913,7 @@ class Smarty_CMS extends SmartyBC
 	* @param  object The smarty object.
 	* @return boolean
 	*/
-	function template_get_timestamp($tpl_name, &$tpl_timestamp, &$smarty_obj)
+	function template_get_timestamp($tpl_name, &$tpl_timestamp, $smarty_obj)
 	{
 		$gCms = cmsms();
 
@@ -939,7 +959,7 @@ class Smarty_CMS extends SmartyBC
 	* @param  object The smarty object.
 	* @return boolean
 	*/
-	function content_get_template($tpl_name, &$tpl_source, &$smarty_obj)
+	function content_get_template($tpl_name, &$tpl_source, $smarty_obj)
 	{
 		$gCms = cmsms();
 		$config = $gCms->GetConfig();
@@ -1053,6 +1073,7 @@ class Smarty_CMS extends SmartyBC
 	*/
 	function module_get_template ($tpl_name, &$tpl_source, &$smarty_obj)
 	{
+	  debug_display("module_get_template $tpl_name");
 		$gCms = cmsms();
 		$contentobj = $gCms->variables['content_obj'];
 		$config = $gCms->config;

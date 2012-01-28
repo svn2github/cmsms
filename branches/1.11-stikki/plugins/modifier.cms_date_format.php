@@ -1,7 +1,7 @@
 <?php
 
-function smarty_cms_modifier_cms_date_format($string, $format = '',
-					     $default_date = '')
+function smarty_modifier_cms_date_format($string, $format = '',
+					 $default_date = '')
 {
   $gCms = cmsms();
   if( $format == '' )
@@ -27,7 +27,7 @@ function smarty_cms_modifier_cms_date_format($string, $format = '',
 
   $smarty =& $gCms->GetSmarty();
   $config = $gCms->GetConfig();
-  $fn = cms_join_path($config['root_path'],'lib','smarty-new','plugins','modifier.date_format.php');
+  $fn = cms_join_path($config['root_path'],'lib','smarty','plugins','modifier.date_format.php');
   if( !file_exists($fn) ) die();
   require_once( $fn );
 
