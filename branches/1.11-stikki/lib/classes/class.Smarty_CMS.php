@@ -138,7 +138,9 @@ class Smarty_CMS extends SmartyBC
 						array(&$this, "db_get_trusted")));
 
 						
-		
+		$this->registerPlugin('function','content','CMS_Content_Block::smarty_fetch_block',false);
+// 		$this->registerPlugin('function','content','CMS_Content_Block::smarty_fetch_imageblock',false);
+// 		$this->registerPlugin('function','content','CMS_Content_Block::smarty_fetch_moduleblock',false);
 	}
 
 
