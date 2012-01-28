@@ -234,14 +234,9 @@ function cms_module_ProcessTemplateFromDatabase(&$modinstance, $tpl_name, $desig
 	$gCms = cmsms();
 	$smarty = $gCms->GetSmarty();
 
-	$oldcache = $smarty->caching;
-	$smarty->caching = false;
-
 	if( $modulename == '' ) $modulename = $modinstance->GetName();
 
 	$result = $smarty->fetch('module_db_tpl:'.$modulename.';'.$tpl_name, '', ($designation != ''?$designation:$modulename));
-
-	$smarty->caching = $oldcache;
 
 	return $result;
 }

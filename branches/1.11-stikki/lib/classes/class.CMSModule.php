@@ -297,7 +297,7 @@ abstract class CMSModule
 
 	  $smarty = $gCms->GetSmarty();
 	  $smarty->register_function($this->GetName(),
-				   array($this,'function_plugin'));
+				     array($this,'function_plugin'),false);
 	}
 
 	/**

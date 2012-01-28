@@ -33,6 +33,7 @@ class Smarty_CMS extends SmartyBC
 {	
 	public $id; // <- triggers error without
 	public $params; // <- triggers error without
+	private $_global_cache_id;
 	private static $_instance;
 
 // 	public function _compile_source($a,$b,$c)
@@ -83,13 +84,17 @@ class Smarty_CMS extends SmartyBC
 			$this->force_compile = true;
 		}
 
-		if (isset($CMS_ADMIN_PAGE) && $CMS_ADMIN_PAGE == 1) {
-			$this->setCaching(false);
-			//$this->force_compile = true;
-		}
-
 		// Check if we are at install page, don't register anything if so, cause nothing below is needed.
 		if(isset($CMS_INSTALL_PAGE)) return;
+
+		if( isset($CMS_ADMIN_PAGE) && $CMS_ADMIN_PAGE == 1 ) {
+		  $this->setCaching(false);
+		  //$this->force_compile = true;
+		}
+// 		else {
+// 		  $this->setCaching(Smarty::CACHING_LIFETIME_CURRENT);
+// 		}
+
 
 		// Load User Defined Tags
 		{
@@ -197,6 +202,45 @@ class Smarty_CMS extends SmartyBC
 		return self::$_instance;
 	}
 
+
+	public function set_global_cacheid($id)
+	{
+	  if( is_null($id) || $id === '' )
+	    {
+	      $this->_global_cache_id = null;
+	    }
+	  else
+	    {
+	      $this->_global_cache_id = $id;
+	    }
+	}
+
+	public function fetch($template = null,$cache_id = null, $compile_id = null, $parent = null, $display = false, $merge_tpl_vars = true, $no_output_filter = false)
+	{
+	  if( is_null($cache_id) || $cache_id === '' )
+	    {
+	      $cache_id = $this->_global_cache_id;
+	    }
+	  return parent::fetch($template,$cache_id,$compile_id,$parent,$display,$merge_tpl_vars,$no_output_filter);
+	}
+
+	public function clearCache($template_name = null,$cache_id = null,$compile_id = null,$exp_time = null,$type = null)
+	{
+	  if( is_null($cache_id) || $cache_id === '' )
+	    {
+	      $cache_id = $this->_global_cache_id;
+	    }
+	  return parent::clearCache($template_name,$cache_id,$compile_id,$exp_time,$type);
+	}
+
+	public function isCached($template = null,$cache_id = null,$compile_id = null, $parent = null)
+	{
+	  if( is_null($cache_id) || $cache_id === '' )
+	    {
+	      $cache_id = $this->_global_cache_id;
+	    }
+	  return parent::isCached($template,$cache_id,$compile_id,$parent);
+	}
 
 	/**
 	* A method to load smarty plugins

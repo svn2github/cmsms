@@ -88,6 +88,7 @@ class News extends CMSModule
 		}
 	    }
 	      
+	  $this->RegisterModulePlugin();
 	  $this->RestrictUnknownParams();
 	  $this->RegisterRoute('/[nN]ews\/(?P<articleid>[0-9]+)\/(?P<returnid>[0-9]+)\/(?P<junk>.*?)\/d,(?P<detailtemplate>.*?)$/');
 	  $this->RegisterRoute('/[nN]ews\/(?P<articleid>[0-9]+)\/(?P<returnid>[0-9]+)\/(?P<junk>.*?)$/');

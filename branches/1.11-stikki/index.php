@@ -220,6 +220,20 @@ if ((isset($_REQUEST['showtemplate']) && $_REQUEST['showtemplate'] == 'false'))
   $showtemplate = false;
 }
 
+$smarty->set_global_cacheid('p'.$contentobj->Id());
+$uid = get_userid(FALSE);
+if( $contentobj->Cachable() && $showtemplate && !$uid )
+  {
+    // this content is cachable...  so enable smarty caching of this page data, for this user.
+    $smarty->setCaching(Smarty::CACHING_LIFETIME_CURRENT);
+  }
+else
+  {
+    // do not cache anything on this page... also means we have to get rid of any cached data for this page.
+    $smarty->clearCache(null);
+  }
+
+
 /*
 if (isset($_GET["print"]))
 {
@@ -248,10 +262,10 @@ else
 	else
 	{
 */	
-	    $top  = $smarty->fetch('tpl_top:'.$contentobj->TemplateId());
-	    $body = $smarty->fetch('tpl_body:'.$contentobj->TemplateId());
-	    $head = $smarty->fetch('tpl_head:'.$contentobj->TemplateId());
-	    $html = $top.$head.$body;
+$top  = $smarty->fetch('tpl_top:'.$contentobj->TemplateId());
+$body = $smarty->fetch('tpl_body:'.$contentobj->TemplateId());
+$head = $smarty->fetch('tpl_head:'.$contentobj->TemplateId());
+$html = $top.$head.$body;
 /*	
 	}
 }
@@ -288,7 +302,6 @@ else if( isset($config['show_performance_info']) && ($showtemplate == true) )
 if( is_sitedown() || $config['debug'] == true)
 {
 	$smarty->clear_compiled_tpl();
-	#$smarty->clear_all_cache();
 }
 
 if ( !is_sitedown() && $config["debug"] == true)

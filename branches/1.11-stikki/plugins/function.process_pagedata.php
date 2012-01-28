@@ -18,6 +18,7 @@
 
 function smarty_cms_function_process_pagedata($params,&$smarty)
 {
+  $smarty = cmsms()->GetSmarty();
   $result = $smarty->fetch('content:pagedata');
   if( isset($params['assign']) ){
     $smarty->assign(trim($params['assign']),$result);
