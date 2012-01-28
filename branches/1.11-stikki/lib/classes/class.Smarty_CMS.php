@@ -138,9 +138,10 @@ class Smarty_CMS extends SmartyBC
 						array(&$this, "db_get_trusted")));
 
 						
-		$this->registerPlugin('function','content','CMS_Content_Block::smarty_fetch_block',false);
-// 		$this->registerPlugin('function','content','CMS_Content_Block::smarty_fetch_imageblock',false);
-// 		$this->registerPlugin('function','content','CMS_Content_Block::smarty_fetch_moduleblock',false);
+		$this->registerPlugin('function','content','CMS_Content_Block::smarty_fetch_contentblock',false);
+		$this->registerPlugin('function','process_pagedata','CMS_Content_Block::smarty_fetch_pagedata',false);
+		$this->registerPlugin('function','content_image','CMS_Content_Block::smarty_fetch_imageblock',false);
+		$this->registerPlugin('function','content_module','CMS_Content_Block::smarty_fetch_moduleblock',false);
 	}
 
 
@@ -223,6 +224,10 @@ class Smarty_CMS extends SmartyBC
 	    {
 	      $cache_id = $this->_global_cache_id;
 	    }
+	  else if( $cache_id[0] == '|' )
+	    {
+	      $cache_id = $this->_global_cache_id . $cache_id;
+	    }
 	  return parent::fetch($template,$cache_id,$compile_id,$parent,$display,$merge_tpl_vars,$no_output_filter);
 	}
 
@@ -232,6 +237,10 @@ class Smarty_CMS extends SmartyBC
 	    {
 	      $cache_id = $this->_global_cache_id;
 	    }
+	  else if( $cache_id[0] == '|' )
+	    {
+	      $cache_id = $this->_global_cache_id . $cache_id;
+	    }
 	  return parent::clearCache($template_name,$cache_id,$compile_id,$exp_time,$type);
 	}
 
@@ -240,6 +249,10 @@ class Smarty_CMS extends SmartyBC
 	  if( is_null($cache_id) || $cache_id === '' )
 	    {
 	      $cache_id = $this->_global_cache_id;
+	    }
+	  else if( $cache_id[0] == '|' )
+	    {
+	      $cache_id = $this->_global_cache_id . $cache_id;
 	    }
 	  return parent::isCached($template,$cache_id,$compile_id,$parent);
 	}

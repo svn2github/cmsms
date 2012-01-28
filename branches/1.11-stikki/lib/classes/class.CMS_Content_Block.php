@@ -49,7 +49,7 @@ final class CMS_Content_Block
       }
   }
 
-  public static function smarty_fetch_block($params,&$smarty)
+  public static function smarty_fetch_contentblock($params,&$smarty)
   {
     $gCms = cmsms();
     $smarty = $gCms->GetSmarty();
@@ -149,17 +149,165 @@ final class CMS_Content_Block
 	  }
 	else
 	  {
+	    $block = (isset($params['block']))?$params['block']:'content_en';
 	    $result = '';
 	    $oldvalue = $smarty->caching;
 	    $smarty->caching = false;
-	    $result = $smarty->fetch(str_replace(' ', '_', 'content:' . (isset($params['block'])?$params['block']:'content_en')), ''
-				     , $contentobj->Id());
+	    $result = $smarty->fetch(str_replace(' ', '_', 'content:' . $block), '',
+				     '|'.$block);
 	    $smarty->caching = $oldvalue;
 	    return self::content_return($result, $params, $smarty);
 	  }
       }
     return _smarty_cms_function_content_return('', $params, $smarty);
   }
-}
+
+  public static function smarty_fetch_pagedata($params,&$smarty)
+  {
+    $smarty = cmsms()->GetSmarty();
+    $result = $smarty->fetch('content:pagedata');
+    if( isset($params['assign']) ){
+      $smarty->assign(trim($params['assign']),$result);
+      return;
+    }
+    return $result;
+  }
+
+  public static function smarty_fetch_imageblock($params,&$smarty)
+  {
+    $gCms = cmsms();
+    $smarty = $gCms->GetSmarty();
+    $config = $gCms->GetConfig();
+
+    $contentobj = $gCms->variables['content_obj'];
+    if( isset($_SESSION['cms_preview_data']) && $contentobj->Id() == '__CMS_PREVIEW_PAGE__' )
+      {
+	// it's a preview.
+	if( !isset($_SESSION['cms_preview_data']['content_obj']) )
+	  {
+	    $contentops =& $gCms->GetContentOperations();
+	    $_SESSION['cms_preview_data']['content_obj'] = $contentops->LoadContentFromSerializedData($_SESSION['cms_preview_data']);
+	  }
+	$contentobj =& $_SESSION['cms_preview_data']['content_obj'];
+      }
+    if( !is_object($contentobj) || $contentobj->Id() <= 0 )
+      {
+	return self::content_return('', $params, $smarty);
+      }
+
+    $adddir = get_site_preference('contentimage_path');
+    if( $params['dir'] != '' )
+      {
+	$adddir = $params['dir'];
+      }
+    $dir = cms_join_path($config['uploads_path'],$adddir);
+    $basename = basename($config['uploads_path']);
+
+    $result = '';
+    if( isset($params['block']) )
+      {
+	$oldvalue = $smarty->caching;
+	$smarty->caching = false;
+	$result = $smarty->fetch(str_replace(' ', '_', 'content:' . $params['block']), '', $contentobj->Id());
+	$smarty->caching = $oldvalue;
+      }
+    $img = self::content_return($result, $params, $smarty);
+    if( $img == -1 || empty($img) )
+      return;
+
+    // create the absolute url.
+    if( startswith($img,$basename) )
+      {
+	// old style url.
+	if( !startswith($img,'http') ) $img = str_replace('//','/',$img);
+	$img = substr($img,strlen($basename.'/'));
+	$img = $config['uploads_url'] . '/'.$img;
+      }
+    else
+      {
+	$img = $config['uploads_url'] . '/'.$adddir.'/'.$img;
+      }
+
+    $name = $params['block'];
+    $alt = '';
+    $width = '';
+    $height = '';
+    $urlonly = false;
+    $xid = '';
+    $class = '';
+    if( isset($params['name']) ) $name = $params['name'];
+    if( isset($params['class']) ) $class = $params['class'];
+    if( isset($params['id']) ) $xid = $params['id'];
+    if( isset($params['alt']) ) $alt = $params['alt'];
+    if( isset($params['width']) ) $width = $params['width'];
+    if( isset($params['height']) ) $height = $params['height'];
+    if( isset($params['urlonly']) ) $urlonly = true;
+
+    if( !isset($params['alt']) ) $alt = $params['block'];
+  
+    if( $urlonly ) return $img;
+    $out = '<img src="'.$img.'" ';
+    if( !empty($name) )
+      {
+	$out .= 'name="'.$name.'" ';
+      }
+    if( !empty($class) )
+      {
+	$out .= 'class="'.$class.'" ';
+      }
+    if( !empty($xid) )
+      {
+	$out .= 'id="'.$xid.'" ';
+      }
+    if( !empty($width) )
+      {
+	$out .= 'width="'.$width.'" ';
+      }
+    if( !empty($height) )
+      {
+	$out .= 'height="'.$height.'" ';
+      }
+    if( !empty($alt) )
+      {
+	$out .= 'alt="'.$alt.'" ';
+      }
+    $out .= '/>';
+    if( isset($params['assign']) ){
+      $smarty->assign(trim($params['assign']),$out);
+      return;
+    }
+    return $out;
+  }
+
+  public static function smarty_fetch_moduleblock($params,&$smarty)
+  {
+    $smarty = cmsms()->GetSmarty();
+    $result = '';
+    $key = '';
+
+    if( !isset($params['block']) ) {
+      return;
+    }
+    $block = $params['block'];
+
+    $gCms = cmsms();
+    $content_obj = &$gCms->variables['content_obj'];
+    if( is_object($contentobj) )
+      {
+	$result = $contentobj->GetPropertyValue($block);
+	if( $result == -1 ) $result = '';
+      }
+
+    if( isset($params['assign']) )
+      {
+	$smarty =& $gCms->GetSmarty();
+	$smarty->assign($params['assign'],$result);
+	return;
+      }
+
+    return $result;
+  }
+
+} // end of class.
 
 ?>
