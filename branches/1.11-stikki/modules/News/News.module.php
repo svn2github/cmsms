@@ -43,12 +43,12 @@ class News extends CMSModule
 
 	function GetVersion()
 	{
-		return '2.12.3';
+		return '2.12.4';
 	}
 
 	function MinimumCMSVersion()
 	{
-		return '1.10-beta0';
+		return '1.11-alpha0';
 	}
 
 	function GetAdminDescription()
@@ -90,6 +90,8 @@ class News extends CMSModule
 	      
 	  $this->RegisterModulePlugin();
 	  $this->RestrictUnknownParams();
+	  $gCms->GetSmarty()->register_function('news',array($this,'function_plugin'));
+
 	  $this->RegisterRoute('/[nN]ews\/(?P<articleid>[0-9]+)\/(?P<returnid>[0-9]+)\/(?P<junk>.*?)\/d,(?P<detailtemplate>.*?)$/');
 	  $this->RegisterRoute('/[nN]ews\/(?P<articleid>[0-9]+)\/(?P<returnid>[0-9]+)\/(?P<junk>.*?)$/');
 	  $this->RegisterRoute('/[nN]ews\/(?P<articleid>[0-9]+)\/(?P<returnid>[0-9]+)$/');
