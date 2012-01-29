@@ -97,6 +97,7 @@ final class module_meta
     $sig = md5($capability.serialize($params));
     if( !isset($this->_data['capability']) || !isset($this->_data['capability'][$sig]) )
       {
+		  debug_buffer('start building module capability list');
 		  if( !isset($this->_data['capability']) )
 		  {
 			  $this->_data['capability'] = array();
@@ -131,6 +132,7 @@ final class module_meta
 // 			  }
 		  }
 
+		  debug_buffer('done building module capability list');
 		  // store it.
 		  $this->_save_cache();
       }
@@ -170,42 +172,45 @@ final class module_meta
     $this->_load_cache();
     if( !isset($this->_data['methods']) || !isset($this->_data['methods'][$method]) )
       {
-	if( !isset($this->_data['methods']) )
-	  {
-	    $this->_data['methods'] = array();
-	  }
-	$installed_modules = ModuleOperations::get_instance()->GetInstalledModules();
-	$loaded_modules = ModuleOperations::get_instance()->GetLoadedModules();
-	$this->_data['methods'][$method] = array();
-	foreach( $installed_modules as $onemodule )
-	  {
-	    $loaded_it = FALSE;
-	    $object = null;
-	    if( isset($loaded_modules[$onemodule]) )
-	      {
-		$object = $loaded_modules[$onemodule];
-	      }
-	    else
-	      {
-		$object = ModuleOperations::get_instance()->get_module_instance($onemodule);
-		$loaded_it = TRUE;
-	      }
-	    if( !$object ) continue;
-	    if( !method_exists($object,$method) ) continue;
+		  debug_buffer('start building module method cache');
+		  if( !isset($this->_data['methods']) )
+			  {
+				  $this->_data['methods'] = array();
+			  }
+		  
+		  $installed_modules = ModuleOperations::get_instance()->GetInstalledModules();
+		  $loaded_modules = ModuleOperations::get_instance()->GetLoadedModules();
+		  $this->_data['methods'][$method] = array();
+		  foreach( $installed_modules as $onemodule )
+			  {
+				  $loaded_it = FALSE;
+				  $object = null;
+				  if( isset($loaded_modules[$onemodule]) )
+					  {
+						  $object = $loaded_modules[$onemodule];
+					  }
+				  else
+					  {
+						  $object = ModuleOperations::get_instance()->get_module_instance($onemodule);
+						  $loaded_it = TRUE;
+					  }
+				  if( !$object ) continue;
+				  if( !method_exists($object,$method) ) continue;
 
-	    // now do the test
-	    $res = $object->$method();
-	    $this->_data['methods'][$method][$onemodule] = $res;
+				  // now do the test
+				  $res = $object->$method();
+				  $this->_data['methods'][$method][$onemodule] = $res;
 
-// 	    if( $loaded_it )
-// 	      {
-// 			  debug_display('unload '.$onemodule);
-// 			  ModuleOperations::get_instance()->unload_module($onemodule);
-// 	      }
-	  }
+				  // 	    if( $loaded_it )
+				  // 	      {
+				  // 			  debug_display('unload '.$onemodule);
+				  // 			  ModuleOperations::get_instance()->unload_module($onemodule);
+				  // 	      }
+			  }
 
-	// store it.
-	$this->_save_cache();
+		  // store it.
+		  debug_buffer('done building module method cache');
+		  $this->_save_cache();
       }
 
     $res = null;
@@ -251,6 +256,7 @@ final class module_meta
 	  if( isset($this->_data[$key]) ) return $this->_data[$key];
 
 	  // nope, gotta generate it.
+	  debug_buffer('start builing module plugin cache');
 	  $data = array();
 	  $loaded = array();
 	  $smarty = cmsms()->GetSmarty();
@@ -289,6 +295,7 @@ final class module_meta
 // 	  }
 
 	  $this->_data[$key] = $data;
+	  debug_buffer('done builing module plugin cache');
 	  $this->_save_cache();
 	  return $data;
   }

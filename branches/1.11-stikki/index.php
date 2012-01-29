@@ -222,7 +222,7 @@ if ((isset($_REQUEST['showtemplate']) && $_REQUEST['showtemplate'] == 'false'))
 
 $smarty->set_global_cacheid('p'.$contentobj->Id());
 $uid = get_userid(FALSE);
-if( $contentobj->Cachable() && $showtemplate && !$uid )
+if( $contentobj->Cachable() && $showtemplate && !$uid && get_site_preference('use_smartycache',0) )
   {
     // this content is cachable...  so enable smarty caching of this page data, for this user.
     $smarty->setCaching(Smarty::CACHING_LIFETIME_CURRENT);

@@ -153,8 +153,7 @@ final class CMS_Content_Block
 	    $result = '';
 	    $oldvalue = $smarty->caching;
 	    $smarty->caching = false;
-	    $result = $smarty->fetch(str_replace(' ', '_', 'content:' . $block), '',
-				     '|'.$block);
+	    $result = $smarty->fetch(str_replace(' ', '_', 'content:' . $block), '|'.$block, $contentobj->Id().$block);
 	    $smarty->caching = $oldvalue;
 	    return self::content_return($result, $params, $smarty);
 	  }
@@ -208,7 +207,7 @@ final class CMS_Content_Block
       {
 	$oldvalue = $smarty->caching;
 	$smarty->caching = false;
-	$result = $smarty->fetch(str_replace(' ', '_', 'content:' . $params['block']), '', $contentobj->Id());
+	$result = $smarty->fetch(str_replace(' ', '_', 'content:' . $params['block']), '|'.$params['block'], $contentobj->Id().$params['block']);
 	$smarty->caching = $oldvalue;
       }
     $img = self::content_return($result, $params, $smarty);

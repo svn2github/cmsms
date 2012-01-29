@@ -75,8 +75,8 @@ class Smarty_CMS extends SmartyBC
 
 		$this->assign('app_name','CMS');
 		if ($config["debug"] == true) {
-		  $this->force_compile = true;
-		  $this->debugging = true;
+		  //$this->force_compile = true;
+		  //$this->debugging = true;
 		}
 
 		if (is_sitedown()) {
@@ -91,31 +91,29 @@ class Smarty_CMS extends SmartyBC
 		  $this->setCaching(false);
 		  //$this->force_compile = true;
 		}
-// 		else {
-// 		  $this->setCaching(Smarty::CACHING_LIFETIME_CURRENT);
-// 		}
 
 
 		// Load User Defined Tags
 		{
 		  $utops = cmsms()->GetUserTagOperations();
 		  $usertags = $utops->ListUserTags();
+		  $caching = (get_site_preference('smarty_cache_udt','never') == 'always')?true:false;
 		  foreach( $usertags as $id => $name )
 		    {
-		      $utops->CreateTagFunction($name);
+		      $function = $utops->CreateTagFunction($name);
+		      $this->registerPlugin('function',$name,$function,$caching);
 		    }
 		}
 
-		//$this->load_file_plugins();
-
 		// See new style
-		$this->registerResource("db", array(
+
+		$this->registerResource("db", array( // remove me ??
 						array(&$this, "template_get_template"),
 						array(&$this, "template_get_timestamp"),
 						array(&$this, "db_get_secure"),
 						array(&$this, "db_get_trusted")));
 						 
-		$this->registerResource("print", array(
+		$this->registerResource("print", array( // remove me ??
 						array(&$this, "template_get_template"),
 						array(&$this, "template_get_timestamp"),
 						array(&$this, "db_get_secure"),
@@ -131,20 +129,30 @@ class Smarty_CMS extends SmartyBC
 		$this->registerResource('htmlblob',new CMSGlobalContentTemplateResource());
 		$this->registerResource('globalcontent',new CMSGlobalContentTemplateResource());
 							  
-		$this->registerResource("module", array(
+		$this->registerResource("module", array( // remove me ??
 						array(&$this, "module_get_template"),
 						array(&$this, "module_get_timestamp"),
 						array(&$this, "db_get_secure"),
 						array(&$this, "db_get_trusted")));
 
 						
-		$this->registerPlugin('function','content','CMS_Content_Block::smarty_fetch_contentblock',false);
-		$this->registerPlugin('function','process_pagedata','CMS_Content_Block::smarty_fetch_pagedata',false);
-		$this->registerPlugin('function','content_image','CMS_Content_Block::smarty_fetch_imageblock',false);
-		$this->registerPlugin('function','content_module','CMS_Content_Block::smarty_fetch_moduleblock',false);
+		if( !isset($CMS_ADMIN_PAGE) )
+		  {
+		    // just for frontend actions.
+		    $this->registerPlugin('function','content','CMS_Content_Block::smarty_fetch_contentblock',false);
+		    $this->registerPlugin('function','process_pagedata','CMS_Content_Block::smarty_fetch_pagedata',false);
+		    $this->registerPlugin('function','content_image','CMS_Content_Block::smarty_fetch_imageblock',false);
+		    $this->registerPlugin('function','content_module','CMS_Content_Block::smarty_fetch_moduleblock',false);
 
-		$this->autoload_filters = array('pre'=>'precompilefunc',
-						'post'=>'postcompilefunc');
+		    $this->autoload_filters = array('pre'=>'precompilefunc',
+						    'post'=>'postcompilefunc');
+
+		    if( get_site_preference('use_smartycache',0) )
+		      {
+			// compile check can only be enabled, if using smarty cache... just for safety.
+			$this->setCompileCheck(get_site_preference('use_smartycompilecheck',1));
+		      }
+		  }
 	}
 
 
@@ -181,11 +189,11 @@ class Smarty_CMS extends SmartyBC
 	    }
 
 	  // now see if we've loaded udt's.
-	  if( UserTagOperations::get_instance()->UserTagExists($name) )
-	    {
-	      $callback = 'cms_user_tag_'.$name;
-	      return TRUE;
-	    }
+// 	  if( UserTagOperations::get_instance()->UserTagExists($name) )
+// 	    {
+// 	      $callback = 'cms_user_tag_'.$name;
+// 	      return TRUE;
+// 	    }
 
 	  // maybe it was loaded by a module
 	  $modulename = module_meta::get_instance()->find_module_by_plugin($name);

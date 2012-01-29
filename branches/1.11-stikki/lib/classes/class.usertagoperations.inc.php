@@ -248,7 +248,6 @@ final class UserTagOperations
 		if( $row )
 		{
 			$smarty = cmsms()->GetSmarty();
-			$code = $row['code'];		
 			$functionname = $this->CreateTagFunction($name);
 			$result = call_user_func_array($functionname, array(&$params, &$smarty));
 		}
