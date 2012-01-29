@@ -71,7 +71,8 @@ function cms_autoloader($classname)
     }
 
   global $CMS_LAZYLOAD_MODULES;
-  if( !isset($CMS_LAZYLOAD_MODULES) ) return;
+  global $CMS_INSTALL_PAGE;
+  if( !isset($CMS_LAZYLOAD_MODULES) || isset($CMS_INSTALL_PAGE) ) return;
 
   // standard content types
   $fn = cms_join_path($config['root_path'],'lib','classes','contenttypes',"{$classname}.inc.php");
