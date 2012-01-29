@@ -1962,6 +1962,7 @@ $lang['admin']['permissions'] = 'Permissions';
 $lang['admin']['unknown'] = 'Unknown';
 $lang['admin']['download'] = 'Download';
 $lang['admin']['frontendwysiwygtouse']="Frontend wysiwyg";
+$lang['admin']['backendwysiwygtouse']="Default backend wysiwyg";
 $lang['admin']['all_groups'] = 'All Groups'; //needs translation
 $lang['admin']['error_type'] = 'Error Type';
 $lang['admin']['contenttype_errorpage'] = 'Error Page';

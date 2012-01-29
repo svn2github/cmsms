@@ -114,7 +114,6 @@ if (isset($_POST["adduser"]))
 		$newuser->firstname = $firstname;
 		$newuser->lastname = $lastname;
 		$newuser->email = $email;
-		$newuser->wysiwyg = $wysiwyg;
 		$newuser->adminaccess = $adminaccess;
 		$newuser->SetPassword($password);
 
@@ -212,17 +211,13 @@ else {
 				<?php
 				$modules = module_meta::get_instance() -> module_list_by_method('IsWYSIWYG');
 				foreach( $modules as $key )
-                                       {
-				  $object = cms_utils::get_module($key);
-				  if( is_object($object) && $object->IsWYSIWYG() )
-				    {
-				      echo '<option value="'.$key.'"';
-				      if ($wysiwyg == $key)
+				{
+					echo '<option value="'.$key.'"';
+					if (get_site_preference('backendwysiwyg') == $key)
 					{
 					  echo ' selected="selected"';
 					}
 				      echo '>'.$key.'</option>';
-				    }
 				}
 				?>
 				</select>

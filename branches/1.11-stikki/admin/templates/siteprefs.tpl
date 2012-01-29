@@ -57,7 +57,14 @@
   </p>
 </div>
 {/if}
-
+<div class="pageoverflow">
+	<p class="pagetext">{$lang_backendwysiwygtouse}:</p>
+	<p class="pageinput">
+		<select name="backendwysiwyg">
+		{html_options options=$wysiwyg selected=$backendwysiwyg}
+		</select>
+	</p>
+</div>
 <div class="pageoverflow">
   <p class="pagetext">{$lang_date_format_string}:</p>
   <p class="pageinput">
