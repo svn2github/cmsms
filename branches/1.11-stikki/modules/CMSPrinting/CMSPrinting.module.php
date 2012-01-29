@@ -19,6 +19,7 @@
 #$Id: News.module.php 2114 2005-11-04 21:51:13Z wishy $
 
 class CMSPrinting extends CMSModule {
+
 	function GetName() {
 		return 'CMSPrinting';
 	}
@@ -36,7 +37,7 @@ class CMSPrinting extends CMSModule {
 	}
 
 	function GetVersion() {
-		return '1.0';
+		return '1.0.1';
 	}
 
 	function MinimumCMSVersion() {
@@ -56,6 +57,10 @@ class CMSPrinting extends CMSModule {
     return $this->Lang('postinstall');
   }
 
+  public function LazyLoadFrontend() {
+    return FALSE;
+  }  
+  
   function relativeToAbsolute($prefix, $text) {
     // search for single quotes and replace them by double quotes
     $search = '\'';
@@ -112,8 +117,10 @@ class CMSPrinting extends CMSModule {
   }
 	
   public function InitializeFrontend() {
+  
     $this->RestrictUnknownParams();
     $this->RegisterModulePlugin();
+	cmsms()->GetSmarty()->registerPlugin('function', 'print', array($this,'function_plugin')); // maintai old style, for backwards compability
     
     $this->SetParameterType('url',CLEAN_STRING);
     $this->SetParameterType('pageid',CLEAN_INT);
@@ -129,12 +136,7 @@ class CMSPrinting extends CMSModule {
     $this->SetParameterType('more',CLEAN_STRING);
     $this->SetParameterType('onlyurl',CLEAN_STRING);
   }
-
-  public function LazyLoadFrontend() {
-    return TRUE;
-  }
-
-
+  
   function VisibleToAdminUser() {
     return $this->CheckPermission('modifyprintingsettings') || $this->CheckPermission('Modify Templates');
   }

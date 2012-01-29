@@ -383,8 +383,6 @@ final class CmsApp {
 		/* Check to see if a Smarty object has been instantiated yet,
 		  and, if not, go ahead an create the instance. */
 		return Smarty_CMS::get_instance();
-		//$smarty = new Smarty_CMS();
-		//return $smarty;
 	}
 
 	/**

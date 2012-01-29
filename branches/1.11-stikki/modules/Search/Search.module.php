@@ -42,7 +42,10 @@ class Search extends CMSModule
       }
   }
 
-  function LazyLoadFrontend() { return TRUE; }
+  function LazyLoadFrontend() 
+  { 
+	return FALSE; 
+  }
 
   function GetName()
   {
@@ -74,7 +77,7 @@ class Search extends CMSModule
 
   function GetVersion()
   {
-    return '1.7.1';
+    return '1.7.2';
   }
 
   function MinimumCMSVersion()
@@ -102,8 +105,7 @@ class Search extends CMSModule
     $this->CreateParameter('resultpage', 'null', $this->Lang('param_resultpage'));
     $this->CreateParameter('searchtext','null',$this->Lang('param_searchtext'));
     $this->CreateParameter('detailpage','null',$this->Lang('param_detailpage'));
-    $this->CreateParameter('submit',$this->Lang('searchsubmit'),
-			   $this->Lang('param_submit'));
+    $this->CreateParameter('submit',$this->Lang('searchsubmit'),$this->Lang('param_submit'));
     $this->CreateParameter('action','default',$this->Lang('param_action'));
     $this->CreateParameter('pageid','null',$this->Lang('param_pageid'));
     $this->CreateParameter('count','null',$this->Lang('param_count'));
@@ -113,7 +115,10 @@ class Search extends CMSModule
 
   public function InitializeFrontend()
   {
+	$this->RegisterModulePlugin();
     $this->RestrictUnknownParams();
+	cmsms()->GetSmarty()->registerPlugin('function', 'search', array($this,'function_plugin')); // maintai old style, for backwards compability
+	
     $this->SetParameterType('inline',CLEAN_STRING);
     $this->SetParameterType(CLEAN_REGEXP.'/passthru_.*/',CLEAN_STRING);
     $this->SetParameterType('modules',CLEAN_STRING);
