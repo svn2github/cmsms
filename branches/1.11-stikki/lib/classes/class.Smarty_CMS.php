@@ -71,12 +71,11 @@ class Smarty_CMS extends SmartyBC
 		$this->registerDefaultPluginHandler(array(&$this, 'defaultPluginHandler'));
 
 		$this->assign('app_name','CMS');
-		/* Disabling for now -Stikki-
+		/* Disabling for now -Stikki- */
 		if ($config["debug"] == true) {
-		  //$this->force_compile = true;
-		  //$this->debugging = true;
+		  $this->force_compile = true;
+		  $this->debugging = true;
 		}
-		*/
 		
 		if (is_sitedown()) {
 			$this->setCaching(false);
@@ -104,25 +103,6 @@ class Smarty_CMS extends SmartyBC
 		
 
 		// Load resources
-		/*
-		$this->registerResource("db", array( // remove me ??
-						array(&$this, "template_get_template"),
-						array(&$this, "template_get_timestamp"),
-						array(&$this, "db_get_secure"),
-						array(&$this, "db_get_trusted")));
-						 
-		$this->registerResource("print", array( // remove me ??
-						array(&$this, "template_get_template"),
-						array(&$this, "template_get_timestamp"),
-						array(&$this, "db_get_secure"),
-						array(&$this, "db_get_trusted")));
-						
-		$this->registerResource("module", array( // remove me ??
-						array(&$this, "module_get_template"),
-						array(&$this, "module_get_timestamp"),
-						array(&$this, "db_get_secure"),
-						array(&$this, "db_get_trusted")));						
-		*/
 		$this->registerResource('template',new CMSPageTemplateResource(''));
 		$this->registerResource('tpl_top',new CMSPageTemplateResource('top'));
 		$this->registerResource('tpl_head',new CMSPageTemplateResource('head'));
@@ -204,13 +184,6 @@ class Smarty_CMS extends SmartyBC
 		  return TRUE;
 		}
 	    }
-
-	  // now see if we've loaded udt's.
-// 	  if( UserTagOperations::get_instance()->UserTagExists($name) )
-// 	    {
-// 	      $callback = 'cms_user_tag_'.$name;
-// 	      return TRUE;
-// 	    }
 
 	  // maybe it was loaded by a module
 	  $modulename = module_meta::get_instance()->find_module_by_plugin($name);
@@ -326,44 +299,7 @@ class Smarty_CMS extends SmartyBC
 	    }
 	  return parent::isCached($template,$cache_id,$compile_id,$parent);
 	}
-
-	/**
-	* Wrapper for the trigger_error method
-	* NOTE: Stikki to CG: Still needed?
-	*
-	* @ignore
-	* @access private
-	* @param string The error message
-	* @param int    The error type E_USER_WARNING or E_USER_NOTICE
-	* @return void
-	*/
-	function trigger_error($error_msg, $error_type = E_USER_WARNING)
-	{   
-		stack_trace();
-		var_dump("Smarty error: $error_msg");
-	}
-
-
-	/**
-	* Method to test if a function/item is registered
-	* NOTE: Changed to use new style - Stikki
-	* NOTE: Stikki to CG: Still needed?
-	*
-	* @access public
-	* @param string The function/item name to test
-	* @param string An optional type (block,filter,...) default is function.
-	* @return bool
-	* @since 1.10
-	* @author calguy1000
-	*/
-	function is_registered($name,$type = 'function')
-	{
-		if( !$type ) return FALSE;
-		if( !isset($this->registered_plugins[$type]) ) return FALSE;
-		if( !isset($this->registered_plugins[$type][$name]) ) return FALSE;
-		return TRUE;
-	}
-
 	
 } // end of class
+
 ?>
