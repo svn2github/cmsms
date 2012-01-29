@@ -22,10 +22,10 @@ final class CMSSmartySecurityPolicy extends Smarty_Security
 {
   public $php_handling = Smarty::PHP_REMOVE;
   public $static_classes = null;
-  public $php_modifiers = array('escape','count','preg_replace');
+  public $php_modifiers = array('escape','count','preg_replace','lang');
   public $streams = null;
   public $allow_contsnts = false;
-  public $allow_super_globals = false;
+  //public $allow_super_globals = false;
   public $allow_php_tag = false;
 
   public function __construct($smarty)
