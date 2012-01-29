@@ -4,7 +4,7 @@
  *
  * Purpose:  populate an array from a JSON-like string
  */
-function smarty_cms_function_setlist($params, &$smarty) {
+function smarty_function_setlist($params, &$smarty) {
 	$newlist = array();
 	if (!isset($params['var']))
 		{

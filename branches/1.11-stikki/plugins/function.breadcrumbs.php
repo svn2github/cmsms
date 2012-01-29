@@ -17,7 +17,7 @@
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
-function smarty_cms_function_breadcrumbs($params, &$smarty)
+function smarty_function_breadcrumbs($params, &$smarty)
 {
 	$gCms = cmsms(); 
 	$manager = $gCms->GetHierarchyManager();

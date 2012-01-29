@@ -16,7 +16,7 @@
 #along with this program; if not, write to the Free Software
 #Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-function smarty_cms_function_html_blob($params, &$smarty)
+function smarty_function_html_blob($params, &$smarty)
 {
 	if( isset($params['assign']) ){
 	    $smarty->assign(trim($params['assign']),$smarty->fetch('globalcontent:'.$params['name']));

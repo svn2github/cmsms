@@ -10,7 +10,7 @@
  *        http://dev.cmsmadesimple.org/users/marks/
  * ----------------------------------------------------------------
  **/
-function smarty__modifier_summarize($string,$numwords='5',$etc='...')
+function smarty_modifier_summarize($string,$numwords='5',$etc='...')
 {
   $tmp = explode(" ",strip_tags($string));
   $stringarray = array();
