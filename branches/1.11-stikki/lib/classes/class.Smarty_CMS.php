@@ -153,6 +153,8 @@ class Smarty_CMS extends SmartyBC
 			$this->setCompileCheck(get_site_preference('use_smartycompilecheck',1));
 		      }
 		  }
+
+		$this->enableSecurity('CMSSmartySecurityPolicy');
 	}
 
 
