@@ -18,7 +18,7 @@
 #
 #$Id: version.php 8299 2012-09-16 18:39:01Z calguy1000 $
 
-$CMS_VERSION = "1.11.2";
+$CMS_VERSION = "1.11.2.1";
 $CMS_VERSION_NAME = "Isabela";
 $CMS_SCHEMA_VERSION = "36";
 
