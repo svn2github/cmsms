@@ -18,8 +18,8 @@
 #
 #$Id$
 
-$CMS_VERSION = "1.11.4b-custom";
-$CMS_VERSION_NAME = "cg custom2";
+$CMS_VERSION = "1.11.4c-custom";
+$CMS_VERSION_NAME = "cg custom3";
 $CMS_SCHEMA_VERSION = "37";
 
 define('CMS_VERSION', $CMS_VERSION);

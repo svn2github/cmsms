@@ -49,15 +49,6 @@ if (isset($_POST["cancel"])) {
 $userid = get_userid();
 $access = check_permission($userid, 'Add Global Content Blocks');
 
-/*
-$use_javasyntax = false;
-if (get_preference($userid, 'use_wysiwyg') == "1") {
-	$htmlarea_flag = true;
-    $use_javasyntax = false;
-}else if (get_preference($userid, 'use_javasyntax') == "1"){
-    $use_javasyntax = true;
-}
-*/
 $gcb_wysiwyg = (get_site_preference('nogcbwysiwyg','0') == '0') ? 1 : 0;
 if( $gcb_wysiwyg )
   {
@@ -79,6 +70,10 @@ if ($access) {
 		else if ($gcbops->CheckExistingHtmlBlobName($htmlblob)){
 			$error .= "<li>".lang('blobexists')."</li>";
 			$validinfo = false;
+		}
+		elseif(preg_match('<^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$>', $htmlblob) == 0) {
+		  $error .= "<li>".lang('illegalcharacters',lang('name'))."</li>";
+		  $validinfo = false;
 		}
 		else if($content == ""){
 		  $error .= '<li>'.lang('nofieldgiven',array(lang('content'))).'</li>';
@@ -166,7 +161,7 @@ else
           <input type="hidden" name="<?php echo CMS_SECURE_PARAM_NAME ?>" value="<?php echo $_SESSION[CMS_USER_KEY] ?>" />
         </div>
 		<div class="pageoverflow">
-			<p class="pagetext">*<?php echo lang('name')?>:</p>
+			<p class="pagetext">*<?php echo lang('name') .' '. lang('gcb_name_help')?>:</p>
 			<p class="pageinput"><input type="text" name="htmlblob" maxlength="255" value="<?php echo $htmlblob?>" class="standard" /></p>
 		</div>
 		<?php if (get_site_preference('nogcbwysiwyg','0') == '0') { ?>

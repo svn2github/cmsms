@@ -78,15 +78,17 @@ if ($access)
   if (isset($_POST["submit2"]) || isset($_POST['apply']) || $ajax)
 	{
 		$validinfo = true;
-		if ($htmlblob == "")
-		{
-			$error .= "<li>".lang('nofieldgiven', array(lang('name')))."</li>";
-			$validinfo = false;
+		if ($htmlblob == "") {
+		  $error .= "<li>".lang('nofieldgiven', array(lang('name')))."</li>";
+		  $validinfo = false;
 		}
-		else if ($htmlblob != $oldhtmlblob && $gcbops->CheckExistingHtmlBlobName($htmlblob, $htmlblob_id))
-		{
-			$error .= "<li>".lang('blobexists')."</li>";
-			$validinfo = false;
+		else if ($htmlblob != $oldhtmlblob && $gcbops->CheckExistingHtmlBlobName($htmlblob, $htmlblob_id)) {
+		  $error .= "<li>".lang('blobexists')."</li>";
+		  $validinfo = false;
+		}
+		elseif(preg_match('<^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$>', $htmlblob) == 0) {
+		  $error .= "<li>".lang('illegalcharacters',lang('name'))."</li>";
+		  $validinfo = false;
 		}
 		else if($content == ""){
 		  $error .= '<li>'.lang('nofieldgiven',array('content')).'</li>';
@@ -309,7 +311,7 @@ else
 			</p>
 		</div>
 		<div class="pageoverflow">
-			<p class="pagetext"><?php echo lang('name')?>:</p>
+			<p class="pagetext"><?php echo lang('name') .' '. lang('gcb_name_help')?>:</p>
 			<p class="pageinput"><input type="text" name="htmlblob" maxlength="255" value="<?php echo $htmlblob?>" class="standard" /></p>
 		</div>
                 

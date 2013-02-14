@@ -2197,8 +2197,8 @@ function cms_get_jquery($exclude = '',$ssl = null,$cdn = false,$append = '',$cus
   $basePath=$custom_root!=''?trim($custom_root,'/'):$base_url;
   
   // Scripts to include
-  $scripts['jquery.min.js'] = '<script type="text/javascript" src="'.($cdn?'https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js':$basePath.'/lib/jquery/js/jquery-1.7.2.min.js').'"></script>'."\n";
-  $scripts['jquery-ui.min.js'] = '<script type="text/javascript" src="'.($cdn?'https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.21/jquery-ui.min.js':$basePath.'/lib/jquery/js/jquery-ui-1.8.21.custom.min.js').'"></script>'."\n";
+  $scripts['jquery.min.js'] = '<script type="text/javascript" src="'.($cdn?'https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js':$basePath.'/lib/jquery/js/jquery-1.8.3.min.js').'"></script>'."\n";
+  $scripts['jquery-ui.min.js'] = '<script type="text/javascript" src="'.($cdn?'https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js':$basePath.'/lib/jquery/js/jquery-ui-1.9.2.custom.min.js').'"></script>'."\n";
   $scripts['jquery.ui.nestedSortable.js'] = '<script type="text/javascript" src="'.$basePath.'/lib/jquery/js/jquery.ui.nestedSortable-1.3.4.js"></script>'."\n";
   $scripts['jquery.json.min.js'] = '<script type="text/javascript" src="'.$basePath.'/lib/jquery/js/jquery.json-2.3.min.js"></script>'."\n";
   
@@ -2207,10 +2207,10 @@ function cms_get_jquery($exclude = '',$ssl = null,$cdn = false,$append = '',$cus
     
     $exclude_list = explode(",", trim(str_replace(' ','',$exclude)));
     foreach($exclude_list as $one) {
-      if ($one == 'jquery-1.6.2.min.js') {
+      if ($one == 'jquery-1.8.3.min.js') {
           $one = 'jquery.min.js';
       }
-      if ($one == 'jquery-ui-1.8.14.min.js') {
+      if ($one == 'jquery-ui-1.9.2.min.js') {
           $one = 'jquery-ui.min.js';
       }
       if ($one == 'jquery.json-2.2.js') {

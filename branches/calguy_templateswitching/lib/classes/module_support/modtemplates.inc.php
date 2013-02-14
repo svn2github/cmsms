@@ -228,13 +228,12 @@ function cms_module_ProcessTemplateFromData(&$modinstance, $data)
  */
 function cms_module_ProcessTemplateFromDatabase(&$modinstance, $tpl_name, $designation = '', $cache = false, $modulename = '')
 {
-	$gCms = cmsms();
-	$smarty = $gCms->GetSmarty();
+	$smarty = cmsms()->GetSmarty();
 
 	if( $modulename == '' ) $modulename = $modinstance->GetName();
 
 	$oldcache = $smarty->caching;
-	if( $smsrty->caching != Smarty::CACHING_OFF ) {
+	if( $smarty->caching != Smarty::CACHING_OFF ) {
 		$smarty->caching = ($modinstance->can_cache_output())?Smarty::CACHING_LIFETIME_CURRENT:Smarty::CACHING_OFF;
 	}
 	$result = $smarty->fetch('module_db_tpl:'.$modulename.';'.$tpl_name, '', ($designation != ''?$designation:$modulename));

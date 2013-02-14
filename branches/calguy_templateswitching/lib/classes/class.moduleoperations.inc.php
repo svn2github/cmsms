@@ -49,7 +49,7 @@ final class ModuleOperations
 	private $_moduleinfo;
 	private $_errors = null;
 	
-	private $xml_exclude_files = array('^\.svn' , '^CVS$' , '^\#.*\#$' , '~$', '\.bak$' );
+	private $xml_exclude_files = array('^\.svn' , '^CVS$' , '^\#.*\#$' , '~$', '\.bak$', '^\.git');
 	private $xmldtd = '
 <!DOCTYPE module [
   <!ELEMENT module (dtdversion,name,version,description*,help*,about*,requires*,file+)>
@@ -629,7 +629,7 @@ final class ModuleOperations
 			  }
 			  if( !$res && !isset($CMS_FORCE_MODULE_LOAD))
 			  {		  
-				  audit('','Core',"Cannot load module $module_name ... problem loadind dependent module $name");
+				  audit('','Core',"Cannot load module $module_name ... Problem loading dependent module $name");
 				  debug_buffer("Cannot load $module_name... cannot load it's dependants.");
 				  unset($obj);
 				  return FALSE;
@@ -866,6 +866,7 @@ final class ModuleOperations
   public function UpgradeModule( $module_name, $to_version = '')
   {
 	  $module_obj = $this->get_module_instance($module_name);
+	  if( !is_object($module_obj) ) return FALSE;
 	  return $this->_upgrade_module($module_obj,$to_version);
   }
 
