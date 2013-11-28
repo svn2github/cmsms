@@ -1,3 +1,7 @@
+Version 1.11.10 - custom0 
+-----------------------------
+New versions of jquery, jquery-ui, etc.
+
 Version 1.11.9 - Bartolome
 -----------------------------
 Core - General

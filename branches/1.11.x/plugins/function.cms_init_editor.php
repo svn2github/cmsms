@@ -31,7 +31,7 @@ function smarty_function_cms_init_editor($params, &$template)
     {
       $wysiwyg = get_site_preference('frontendwysiwyg');
     }
-  
+
   if( !$wysiwyg || (int)$wysiwyg < 0 ) return;
   
   $mod = cms_utils::get_module($wysiwyg);
