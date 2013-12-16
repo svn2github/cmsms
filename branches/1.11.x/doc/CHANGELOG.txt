@@ -1,6 +1,7 @@
 Version 1.11.10 - custom0 
 -----------------------------
-New versions of jquery, jquery-ui, etc.
+New versions of jquery, jquery-ui, and blueimp file upload handler. etc.
+Fix and cleanup filemanager tempaltes.
 
 Version 1.11.9 - Bartolome
 -----------------------------
