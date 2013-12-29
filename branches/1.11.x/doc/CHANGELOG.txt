@@ -1,7 +1,10 @@
 Version 1.11.10 - custom0 
 -----------------------------
-New versions of jquery, jquery-ui, and blueimp file upload handler. etc.
+New versions of jquery, jquery-ui, blueimp-uploader
+Makes security key 16 characters long
+Minor fix to MicroTiny.
 Fix and cleanup filemanager tempaltes.
+
 
 Version 1.11.9 - Bartolome
 -----------------------------
@@ -37,6 +40,7 @@ Core - General
   - Improve the help for content_image
   - Performance improvements for listcontent and add/editcontent
   - Improved and better documented sample htaccess.txt file
+  - No longer allow upgrading inactive modules.
   - Smarty template engine upgraded to version 3.1.14
   - Optimization to Menumanager to load all pages when no parameters limit the amount of pages to display.
   - Adds a check to the installer and systeminfo page to test wether the filesystem has a significant time difference from the php process
