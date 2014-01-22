@@ -46,8 +46,6 @@ function smarty_cms_modifier_cms_date_format($string, $format = '', $default_dat
 			}
 		}
 	}
-
-	$config = cmsms()->GetConfig();
 	
 	$fn = cms_join_path(SMARTY_PLUGINS_DIR, 'modifier.date_format.php');
 	if(!file_exists($fn)) 
