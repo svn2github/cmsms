@@ -44,9 +44,9 @@ class CMSPageTemplateResource extends CMS_Fixed_Resource_Custom
 		}
 	}
 
-	protected function buildUniqueResourceName(Smarty $smarty,$resource_name)
+	protected function buildUniqueResourceName(Smarty $smarty, $resource_name, $is_config = false)
 	{
-		return parent::buildUniqueResourceName($smarty,$resource_name).'--'.$this->_section;
+		return parent::buildUniqueResourceName($smarty, $resource_name, $is_config) . '#' . $this->_section;
 	}
 
 	private function get_template($name)

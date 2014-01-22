@@ -22,7 +22,7 @@
  * @package CMS
  */
 
-require_once(dirname(dirname(__FILE__)).'/smarty/SmartyBC.class.php');
+require_once(dirname(dirname(__FILE__)).'/smarty/libs/SmartyBC.class.php');
 
 /**
  * Extends the Smarty class for content.
