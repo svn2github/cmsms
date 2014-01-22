@@ -36,7 +36,7 @@ function smarty_cms_modifier_cms_date_format($string, $format = '', $default_dat
 		if($format == '')		
 			$format = '%b %e, %Y';
 		
-		if(!isset(cmsms()->variables['page_id'])) {
+		if(!cmsms()->is_frontend_request()) {
 		
 			if($uid = get_userid(false)) {
 			
