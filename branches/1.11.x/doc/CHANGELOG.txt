@@ -1,9 +1,15 @@
 Version 1.11.10 - custom0 
 -----------------------------
-New versions of jquery, jquery-ui, blueimp-uploader
-Makes security key 16 characters long
-Minor fix to MicroTiny.
-Fix and cleanup filemanager tempaltes.
+Core - General
+  - New versions of jquery, jquery-ui, blueimp-uploader
+  - Makes security key 16 characters long
+  - Smarty template engine upgraded to version 3.1.16
+  
+Core - MicroTiny
+  - Minor fix to MicroTiny.
+  
+Core - FileManager
+  - Fix and cleanup filemanager tempaltes.
 
 
 Version 1.11.9 - Bartolome
