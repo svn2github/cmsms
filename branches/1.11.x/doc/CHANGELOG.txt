@@ -6,10 +6,10 @@ Core - General
   - Smarty template engine upgraded to version 3.1.16
   
 Core - MicroTiny
-  - Minor fix to MicroTiny.
+  - Minor fix to MicroTiny
   
 Core - FileManager
-  - Fix and cleanup filemanager tempaltes.
+  - Fix and cleanup filemanager templates
 
 
 Version 1.11.9 - Bartolome
@@ -21,7 +21,7 @@ Core - General
   - Removes a debug limit on caching in contentoperations
   - Robots don't index Error Console pages
   - Only show technical details on the Error Console page to logged in administrators
-  - Entropy improvement in the cookie used to stay loggedin.
+  - Entropy improvement in the cookie used to stay loggedin
 
 Core - Search
   - Fixes PHP 5.3 dependency
@@ -30,7 +30,7 @@ Core - Bug Reports
   - #9549 CMSMS 1.11.8 performance regression
 
 Core - CMSMailer
-  - No longer send SMTP password in plain text.
+  - No longer send SMTP password in plain text
 
 
 Version 1.11.8 - Fioreana
@@ -49,8 +49,8 @@ Core - General
   - No longer allow upgrading inactive modules.
   - Smarty template engine upgraded to version 3.1.14
   - Optimization to Menumanager to load all pages when no parameters limit the amount of pages to display.
-  - Adds a check to the installer and systeminfo page to test wether the filesystem has a significant time difference from the php process
-  - The bbcode compatible system info report is now forced to english for posting in the forum
+  - Adds a check to the installer and systeminfo page to test whether the filesystem has a significant time difference from the php process
+  - The bbcode compatible system info report is now forced to English for posting in the forum
 
 Core - Bug Reports
   - #8272 Sitename in Russian becomes unreadable
