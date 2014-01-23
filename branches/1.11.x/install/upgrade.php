@@ -96,7 +96,7 @@ if(! isset($_GET['sessiontest']) && (! isset($_POST['page'])) )
 	}
 
 	@clearstatcache();
-	$pathSmartClass = cms_join_path(CMS_BASE, 'lib', 'smarty', 'Smarty.class.php');
+	$pathSmartClass = cms_join_path(CMS_BASE, 'lib', 'smarty', 'libs', 'Smarty.class.php');
 	if(! is_readable($pathSmartClass))
 	{
 		installerShowErrorPage('Smarty.class.php cannot be found or not readable! Check your installation for '. $pathSmartClass .', exiting!', 'Smarty.class.php_cannot_be_found_or_not_readable');
