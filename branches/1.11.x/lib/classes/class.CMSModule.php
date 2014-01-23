@@ -401,8 +401,7 @@ abstract class CMSModule
 	    }
 	  else
 	    {
-	      return cms_module_smarty_plugin_manager::addStatic($this->GetName(),$this->GetName(),'function',
-								 'function_plugin',$cachable);
+	      return cms_module_smarty_plugin_manager::addStatic($this->GetName(), 'function', 'function_plugin', $cachable);
 	    }
 	}
 
