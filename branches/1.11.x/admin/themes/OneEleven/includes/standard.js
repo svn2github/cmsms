@@ -161,7 +161,7 @@ jQuery(document).ready(function($) {
 			dialogs[dialog_id] = $(this).dialog({
 				autoOpen : false,
 				modal: true,
-				title : '<strong> ' + $(this).attr('title') + ' </strong>'
+				title : $(this).attr('title')
 			});
 		});
 		$('.open').click(function(event) {
