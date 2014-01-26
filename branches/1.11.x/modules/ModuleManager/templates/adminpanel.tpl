@@ -34,7 +34,7 @@
 			<td>{$entry->helplink}</td>
 			<td>{$entry->aboutlink}</td>
 		</tr>
-	{if $entry->description}
+	{if isset($entry->description) && $entry->description}
 		<tr class="{$entry->rowclass}">
                 	<td>&nbsp;</td>
                 	<td colspan="6">{$entry->description}</td>
