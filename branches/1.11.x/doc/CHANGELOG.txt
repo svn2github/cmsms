@@ -4,6 +4,7 @@ Core - General
   - New versions of jquery, jquery-ui, blueimp-uploader
   - Makes security key 16 characters long
   - Smarty template engine upgraded to version 3.1.16
+  - Fixes to function signatures, and fix a notice in cms_module_smarty_plugin_manager.
   
 Core - MicroTiny
   - Minor fix to MicroTiny
