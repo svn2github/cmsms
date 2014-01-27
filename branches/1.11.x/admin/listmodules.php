@@ -378,7 +378,7 @@ else if ($action == "showmodulehelp")
 	{
 	  $modinstance->curlang = trim($_GET['lang']);
 	}
-      echo $modinstance->GetHelpPage();
+      echo @$modinstance->GetHelpPage();
       $modinstance->params = array(array('name'=>'lang','default'=>'en_US','optional'=>true));
       $modinstance->curlang = $mod_old_lang;
       echo "</div>";
@@ -506,7 +506,7 @@ else
 	  $xmlcol = '<a href="'.$thisurl.'&amp;action=exportxml&amp;module='.$key.'"><img border="0" src="../modules/ModuleManager/images/xml_rss.gif" alt="'.lang('xml').'" /></a>';
 	  
 	  //Is there help?
-	  if ($modinstance->GetHelp() != '')
+	  if (@$modinstance->GetHelp() != '')
 	    {
 	      $namecol = "<a href=\"{$thisurl}&amp;action=showmodulehelp&amp;module=".$key."\">".$key."</a>";
 	    }
@@ -625,7 +625,7 @@ else
 	    }
 	  
 	  //Is there help?
-	  if ($modinstance->GetHelp() != '')
+	  if (@$modinstance->GetHelp() != '')
 	    {
 	      $helpcol = "<a href=\"{$thisurl}&amp;action=showmodulehelp&amp;module=".$key."\">".lang('help')."</a>";
 	    }
