@@ -178,9 +178,9 @@ final class cms_module_smarty_plugin_manager
   }
 
 
-  public static function addStatic($module_name,$type,$callback,$cachable = TRUE,$available = 0)
+  public static function addStatic($module_name,$name,$type,$callback,$cachable = TRUE,$available = 0)
   {
-	  return self::get_instance()->add($module_name,$type,$callback,$cachable,$available);
+	  return self::get_instance()->add($module_name,$name,$type,$callback,$cachable,$available);
   }
 
 
