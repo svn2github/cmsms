@@ -11,6 +11,9 @@ Core - MicroTiny
 Core - FileManager
   - Fix and cleanup filemanager templates
 
+Core - News
+ - Fix potential SQL injection vulnerability wrt the sortby parameter.
+
 
 Version 1.11.9 - Bartolome
 -----------------------------
