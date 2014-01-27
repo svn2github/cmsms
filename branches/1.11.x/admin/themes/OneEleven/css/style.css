@@ -914,7 +914,7 @@ header .shortcuts li.favorites a {
 /* toggle sidebar */
 #oe_sidebar .toggle-button {
 	text-indent: -9999em;
-	z-index: 900;
+	z-index: 100;
 	display: block;
 	cursor: pointer;
 	width: 24px;
