@@ -192,7 +192,7 @@ final class cms_module_smarty_plugin_manager
 	  
 	  // todo... check valid input
 
-	  $sig = md5($name.$module_name.$callback);
+	  $sig = md5($name.$module_name.serialize($callback));
 	  if( !isset($this->_data[$sig]) ) {
 		  {
 			  if( $available == 0 ) $available = self::AVAIL_FRONTEND;
