@@ -344,6 +344,7 @@ if ( !is_sitedown() && $config["debug"] == true)
 
 if( $page == '__CMS_PREVIEW_PAGE__' && isset($_SESSION['cms_preview']) ) // temporary
   {
+    unset($_SESSION['cms_preview_data']);
     unset($_SESSION['cms_preview']);
   }
 

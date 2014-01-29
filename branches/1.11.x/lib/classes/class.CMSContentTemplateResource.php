@@ -39,6 +39,7 @@ class CMSContentTemplateResource extends CMS_Fixed_Resource_Custom
     $gCms = cmsms();
     $config = $gCms->GetConfig();
     $contentobj = $gCms->variables['content_obj'];
+    $page_id = cmsms()->get_variable('page_id');
 
     if (!is_object($contentobj))
       {
@@ -52,15 +53,8 @@ class CMSContentTemplateResource extends CMS_Fixed_Resource_Custom
 	$mtime = time();
 	return;
       }
-    else if( isset($_SESSION['cms_preview_data']) && $contentobj->Id() == '__CMS_PREVIEW_PAGE__' )
+    else if( isset($_SESSION['cms_preview_data']) && $page_id == '__CMS_PREVIEW_PAGE__' )
       {
-	if( !isset($_SESSION['cms_preview_data']['content_obj']) )
-	  {
-	    $contentops = $gCms->GetContentOperations();
-	    $_SESSION['cms_preview_data']['content_obj'] = $contentops->LoadContentFromSerializedData($_SESSION['cms_preview_data']);
-	    $contentobj =& $_SESSION['cms_preview_data']['content_obj'];
-	  }
-	$contentobj =& $_SESSION['cms_preview_data']['content_obj'];
 	$source = $contentobj->Show($name);
 	$mtime = $contentobj->GetModifiedDate();
 

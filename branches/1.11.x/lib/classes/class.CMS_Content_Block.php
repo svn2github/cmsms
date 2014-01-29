@@ -211,6 +211,7 @@ final class CMS_Content_Block
     $gCms = cmsms();
 
     $contentobj = $gCms->variables['content_obj'];
+    $page_id = cmsms()->get_variable('page_id');
     if (is_object($contentobj))
       {
 	$id = '';
@@ -236,7 +237,7 @@ final class CMS_Content_Block
 	//Only consider doing module processing if
 	//a. There is no block parameter
 	//b. then
-	//   1. $id is cntnt01
+	//   1. $id is cntnt01 or _preview_
 	//   2. or inline is false
 
 	if (!isset($params['block']) && ($id == 'cntnt01' || $id == '_preview_' || ($id != '' && $inline == false)))
@@ -317,7 +318,7 @@ final class CMS_Content_Block
 
 	    $oldvalue = $smarty->caching;
 	    $smarty->caching = false;
-	    if( $id == '_preview_') {
+	    if( $id == '_preview_' || $page_id == '__CMS_PREVIEW_PAGE__') {
 	      // note: content precompile/postcompile events will not be triggererd in preview.
 	      $val = $contentobj->Show($block);
 	      $result = $smarty->fetch('string:'.$val);
