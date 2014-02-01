@@ -18,8 +18,8 @@
 #
 #$Id$
 
-$CMS_VERSION = "1.11.10-custom1";
-$CMS_VERSION_NAME = "Bartolome";
+$CMS_VERSION = "1.11.10";
+$CMS_VERSION_NAME = "Pinzon";
 $CMS_SCHEMA_VERSION = "37";
 
 define('CMS_VERSION', $CMS_VERSION);

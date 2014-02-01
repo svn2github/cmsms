@@ -1,5 +1,5 @@
-Version 1.11.10 - custom0 
------------------------------
+Version 1.11.10 - Pinzon
+------------------------
 Core - General
   - New versions of jquery, jquery-ui, blueimp-uploader
   - Makes security key 16 characters long
