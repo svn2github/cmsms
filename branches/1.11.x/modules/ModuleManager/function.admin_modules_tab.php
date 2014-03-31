@@ -209,7 +209,9 @@ if( count( $data ) )
   }
  else
    {
-     $smarty->assign('message', $this->Lang('error_connectnomodules'));
+     $smarty->clear_assign('items');
+     $smarty->clear_assign('itemcount');
+     $smarty->assign('message', $this->Lang('error_nomodulesfilter'));
    }
 // Setup search form
 $searchstart = $this->CreateFormStart( $id, 'searchmod', $returnid );

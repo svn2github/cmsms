@@ -63,7 +63,7 @@ class ModuleManager extends CMSModule
    ---------------------------------------------------------*/
   function GetVersion()
   {
-    return '1.5.5';
+    return '1.5.6';
   }
 
 
@@ -198,7 +198,7 @@ class ModuleManager extends CMSModule
    ---------------------------------------------------------*/
   function MinimumCMSVersion()
   {
-    return "1.10-beta0";
+    return "1.11.9";
   }
 
 

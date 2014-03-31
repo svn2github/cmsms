@@ -10,7 +10,7 @@
 <p class="pageerror">{$message}</p>
 {/if}
 
-{if $itemcount > 0}
+{if isset($itemcount) && $itemcount > 0}
 <table cellspacing="0" class="pagetable">
 	<thead>
 		<tr>
