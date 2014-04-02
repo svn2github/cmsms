@@ -89,12 +89,11 @@ if( $status != 200 || $result == '' )
   }
 
 $help = json_decode($result,true);
-if( $help[0] == false )
-  {
-    $this->_DisplayErrorPage( $id, $params, $returnid,
-			      $help[1] );
+if( !is_array($help) ) $help = array(TRUE,$help);
+if( is_array($help) && $help[0] == false ) {
+    $this->_DisplayErrorPage( $id, $params, $returnid, $help[1] );
     return;
-  }
+}
 $this->smarty->assign('title',$this->Lang('helptxt'));
 $this->smarty->assign('moduletext',$this->Lang('nametext'));
 $this->smarty->assign('vertext',$this->Lang('vertext'));

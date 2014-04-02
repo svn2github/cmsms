@@ -79,6 +79,7 @@ if( $status != 200 || $result == '' )
     return;
   }
 $about = json_decode($result,true);
+if( !is_array($about) ) $about = array(TRUE,$about);
 if( $about[0] == false )
   {
     $this->_DisplayErrorPage( $id, $params, $returnid,
