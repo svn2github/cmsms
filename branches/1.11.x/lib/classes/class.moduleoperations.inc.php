@@ -19,7 +19,7 @@
 #$Id$
 
 /**
- * @package CMS 
+ * @package CMS
  */
 
 /**
@@ -49,7 +49,7 @@ final class ModuleOperations
 	private $_moduleinfo;
 	private $_moduledeps;
 	private $_errors = null;
-	
+
 	private $xml_exclude_files = array('^\.svn' , '^CVS$' , '^\#.*\#$' , '~$', '\.bak$', '^\.git');
 	private $xmldtd = '
 <!DOCTYPE module [
@@ -124,9 +124,9 @@ final class ModuleOperations
    * Creates an xml data package from the module directory.
    *
    * @param mixed $modinstance The instance of the module object
-   * @param string $message Reference to a string which will be filled with the message 
+   * @param string $message Reference to a string which will be filled with the message
    *                        created by the run of the method
-   * @param integer $filecount Reference to an interger which will be filled with the 
+   * @param integer $filecount Reference to an interger which will be filled with the
    *                           total # of files in the package
    * @return string an XML string comprising the module and its files
    */
@@ -266,7 +266,7 @@ final class ModuleOperations
 					}
 				}
 				break;
-		
+
 			case 'MINCMSVERSION':
 			case 'MAXCMSVERSION':
 			case 'DESCRIPTION':
@@ -387,7 +387,7 @@ final class ModuleOperations
 
 		 $lazyload_fe    = (method_exists($module_obj,'LazyLoadFrontend') && $module_obj->LazyLoadFrontend())?1:0;
 		 $lazyload_admin = (method_exists($module_obj,'LazyLoadAdmin') && $module_obj->LazyLoadAdmin())?1:0;
-		 $query = 'INSERT INTO '.cms_db_prefix().'modules 
+		 $query = 'INSERT INTO '.cms_db_prefix().'modules
                    (module_name,version,status,admin_only,active,allow_fe_lazyload,allow_admin_lazyload)
                    VALUES (?,?,?,?,?,?,?)';
 		 $dbr = $db->Execute($query,array($module_obj->GetName(),$module_obj->GetVersion(),'installed',
@@ -503,16 +503,6 @@ final class ModuleOperations
 	  $allow_auto = (isset($CMS_PREVENT_AUTOINSTALL) && $CMS_PREVENT_AUTOINSTALL)?0:1;
 
 	  $gCms = cmsms(); // backwards compatibility... set the global.
-	  if( !class_exists($module_name) ) {
-		  $fname = $dir."/$module_name/$module_name.module.php";
-		  if( !is_file($fname) ) {
-			  debug_buffer("Cannot load $module_name because the module file does not exist");
-			  return FALSE;
-		  }
-
-		  debug_buffer('loading module '.$module_name);
-		  require_once($fname); 
-	  }
 
 	  // load dependencies.
 	  if( !isset($config['modules_noloaddependants']) && $dependents == TRUE ) {
@@ -537,6 +527,17 @@ final class ModuleOperations
 		  }
 	  }
 
+	  if( !class_exists($module_name) ) {
+		  $fname = $dir."/$module_name/$module_name.module.php";
+		  if( !is_file($fname) ) {
+			  debug_buffer("Cannot load $module_name because the module file does not exist");
+			  return FALSE;
+		  }
+
+		  debug_buffer('loading module '.$module_name);
+		  require_once($fname);
+	  }
+
 	  $obj = new $module_name;
 	  if( !is_object($obj) ) {
 		  // oops, some problem loading.
@@ -553,7 +554,7 @@ final class ModuleOperations
 		  return FALSE;
 	  }
 
-	  if( isset($info[$module_name]) && $info[$module_name]['status'] != 'installed' && 
+	  if( isset($info[$module_name]) && $info[$module_name]['status'] != 'installed' &&
 		  (isset($CMS_INSTALL_PAGE) || $this->_is_queued_for_install($module_name)) ) {
 		  // not installed, can we auto-install it?
 		  if( (in_array($module_name,$this->cmssystemmodules) || $obj->AllowAutoInstall() == true ||
@@ -606,7 +607,7 @@ final class ModuleOperations
 		  }
 	  }
 
-	  if( (isset($info[$module_name]) && $info[$module_name]['status'] == 'installed') || 
+	  if( (isset($info[$module_name]) && $info[$module_name]['status'] == 'installed') ||
 		  $force_load ) {
 		  if( is_object($obj) ) $this->_modules[$module_name] = $obj;
 		  return TRUE;
@@ -625,7 +626,7 @@ final class ModuleOperations
   public function FindAllModules()
   {
 	$dir = dirname(dirname(dirname(__FILE__))).DIRECTORY_SEPARATOR."modules";
-	
+
 	$result = array();
 	if( $handle = @opendir($dir) ) {
 		while( ($file = readdir($handle)) !== false ) {
@@ -633,7 +634,7 @@ final class ModuleOperations
 			if( @is_file($fn) )	$result[] = $file;
 		}
 	}
-	
+
 	sort($result);
 	return $result;
   }
@@ -641,7 +642,7 @@ final class ModuleOperations
 
   /**
    * Finds all modules in the filesystem, and builds a database about them
-   * 
+   *
    * @since 1.10
    * @access private
    * @internal
@@ -666,7 +667,7 @@ final class ModuleOperations
   /**
    * Finds all modules that are available to be loaded...
    * this method uses the information in the database to load the modules that are necessary to load
-   * it also, will go through any queued installs/upgrades and force those modules to load, which 
+   * it also, will go through any queued installs/upgrades and force those modules to load, which
    * will in turn do the upgrading and installing if necessary.
    *
    * @access public
@@ -906,7 +907,7 @@ final class ModuleOperations
   /**
    * Returns an array of installed modules that have a certain capabilies
    * This method will force the loading of all modules regardless of the module settings.
-   * 
+   *
    * @param string $capability The capability name
    * @param mixed $args Capability arguments
    * @return array List of all the module objects with that capability
@@ -964,7 +965,7 @@ final class ModuleOperations
   /**
    * A function to return the object reference to the module object
    * if the module is not already loaded, it will be loaded.  Version checks are done
-   * with the module to allow only loading versions of modules that are greater than the 
+   * with the module to allow only loading versions of modules that are greater than the
    * specified value.
    *
    * @param string The module name
@@ -1013,7 +1014,7 @@ final class ModuleOperations
 
   /**
    * Return the current syntax highlighter module object
-   * 
+   *
    * This method retrieves the specified syntax highlighter module, or uses the current current user preference for the syntax hightlighter module
    * for a name.
    *
@@ -1041,7 +1042,7 @@ final class ModuleOperations
 
   /**
    * Return the current wysiwyg module object
-   * 
+   *
    * This method makes an attempt to find the appropriate wysiwyg module given the current request context
    * and admin user preference.
    *
@@ -1077,7 +1078,7 @@ final class ModuleOperations
   /**
    * Return the current search module object
    *
-   * This method returns module object for the currently selected search module.  
+   * This method returns module object for the currently selected search module.
    *
    * @return null on failure, an object of type CmsModule on success
    * @since 1.10
@@ -1095,7 +1096,7 @@ final class ModuleOperations
 
   /**
    * Alias for the GetSyntaxHiglighter method.
-   * 
+   *
    * @see GetSyntaxHighlighter
    * @deprecated
    * @since 1.10
@@ -1116,7 +1117,7 @@ final class ModuleOperations
 
   /**
    * Queue a module for install
-   * 
+   *
    * @internal
    * @since 1.10
    * @param string module name
@@ -1133,7 +1134,7 @@ final class ModuleOperations
 
   /**
    * Get list of modules queued for install.
-   * 
+   *
    * @internal
    * @since 1.10
    * @param string module name
