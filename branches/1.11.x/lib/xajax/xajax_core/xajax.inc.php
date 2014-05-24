@@ -201,6 +201,7 @@ class xajax
 				'allowBlankResponse' => false,
 				'allowAllResponseTypes' => false,
 				'generateStubs' => true,
+				'clearBuffer' => true,
 				'logFile' => '',
 				'timeout' => 6000,
 				'version' => $this->getVersion()
