@@ -104,7 +104,7 @@ class Content extends ContentBase
     }
 
 	/**
-	 * Set content attribute values (from parameters received from admin add/edit form) 
+	 * Set content attribute values (from parameters received from admin add/edit form)
 	 *
 	 * @param array $params hash of parameters to load into content attributes
 	 * @return void
@@ -128,13 +128,13 @@ class Content extends ContentBase
 							}
 						$this->mTemplateId = $params['template_id'];
 					}
-	  
+
 				// add content blocks
 				$blocks = $this->get_content_blocks();
 				foreach($blocks as $blockName => $blockInfo)
 					{
 						$parameters[] = $blockInfo['id'];
-			
+
 						if( isset($blockInfo['type']) && $blockInfo['type'] == 'module' )
 							{
 								$module = cms_utils::get_module($blockInfo['module']);
@@ -144,7 +144,7 @@ class Content extends ContentBase
 								if( $tmp != null ) $params[$blockInfo['id']] = $tmp;
 							}
 					}
-	  
+
 				// do the content property parameters
 				foreach ($parameters as $oneparam)
 					{
@@ -203,9 +203,9 @@ class Content extends ContentBase
 		$hash = array();
 		$blocks = null;
 		try {
-			$blocks = $this->get_content_blocks(); 
+			$blocks = $this->get_content_blocks();
 		}
-		catch( CmsEditContentException $e ) 
+		catch( CmsEditContentException $e )
 		{
 			$this->SetError($e->getMessage());
 		}
@@ -218,7 +218,7 @@ class Content extends ContentBase
 		$tmp = $this->display_attributes($adding);
 		if( !empty($tmp) )
 		{
-			foreach( $tmp as $one ) 
+			foreach( $tmp as $one )
 			{
 				$ret[] = $one;
 			}
@@ -231,7 +231,7 @@ class Content extends ContentBase
 				if( !isset($blockInfo['tab']) || $blockInfo['tab'] == '' || $blockInfo['tab'] == 'main' )
 				{
 					$parameters[] = $blockInfo['id'];
-				
+
 					$data = $this->GetPropertyValue($blockInfo['id']);
 					if( empty($data) && isset($blockInfo['default']) ) $data = $blockInfo['default'];
 					$tmp = $this->display_content_block($blockName,$blockInfo,$data,$adding);
@@ -240,10 +240,10 @@ class Content extends ContentBase
 				}
 			}
 		}
-			
+
 		$hash[lang('main')] = $ret;
 
-		// 
+		//
 		// other tabs.
 		//
 		if( is_array($blocks) && count($blocks) )
@@ -253,12 +253,12 @@ class Content extends ContentBase
 					if( isset($blockInfo['tab']) && $blockInfo['tab'] != '' && $blockInfo['tab'] != 'options')
 					{
 						$parameters[] = $blockInfo['id'];
-						
+
 						$data = $this->GetPropertyValue($blockInfo['id']);
 						if( empty($data) && isset($blockInfo['default']) ) $data = $blockInfo['default'];
 						$tmp = $this->display_content_block($blockName,$blockInfo,$data,$adding);
 						if( !$tmp ) continue;
-						
+
 						if( !isset($hash[$blockInfo['tab']]) )
 						{
 							$hash[$blockInfo['tab']] = array();
@@ -291,7 +291,7 @@ class Content extends ContentBase
 					if( isset($blockInfo['tab']) && $blockInfo['tab'] == 'options' )
 					{
 						$parameters[] = $blockInfo['id'];
-						
+
 						$data = $this->GetPropertyValue($blockInfo['id']);
 						if( empty($data) && isset($blockInfo['default']) ) $data = $blockInfo['default'];
 						$tmp = $this->display_content_block($blockName,$blockInfo,$data,$adding);
@@ -307,8 +307,8 @@ class Content extends ContentBase
 			$ret[]=array(lang('last_modified_at').':', strftime($tmp, strtotime($this->mModifiedDate) ) );
 			$userops = cmsms()->GetUserOperations();
 			$modifiedbyuser = $userops->LoadUserByID($this->mLastModifiedBy);
-			if($modifiedbyuser) $ret[]=array(lang('last_modified_by').':', $modifiedbyuser->username); 
-			
+			if($modifiedbyuser) $ret[]=array(lang('last_modified_by').':', $modifiedbyuser->username);
+
 			if( count($ret) ) $hash[lang('options')] = $ret;
 		}
 
@@ -340,14 +340,14 @@ class Content extends ContentBase
 	 *
 	 * @param boolean $adding  true if the content is being added for the first time
 	 * @param boolean $tab which tab to display
-	 * @param string $showadmin 
-	 * @return array 
+	 * @param string $showadmin
+	 * @return array
 	 */
     function EditAsArray($adding = false, $tab = 0, $showadmin = false)
     {
 		$fieldhash = $this->_get_form_data();
-		$tabnames = $this->TabNames(); 
-	
+		$tabnames = $this->TabNames();
+
 		$templateops = cmsms()->GetTemplateOperations();
 		$ret = array();
 		$this->stylesheet = '';
@@ -448,24 +448,24 @@ class Content extends ContentBase
     private function parse_content_blocks()
     {
 		if ($this->_contentBlocksLoaded) return TRUE;
-		
+
 		$parser = cmsms()->get_template_parser();
 		$parser->fetch('template:'.$this->TemplateId()); // do the magic.
 
 		$this->_contentBlocks = CMS_Content_Block::get_content_blocks();
 
-		if( !is_array($this->_contentBlocks) || !count($this->_contentBlocks) ) 
+		if( !is_array($this->_contentBlocks) || !count($this->_contentBlocks) )
 			return FALSE;
 
 		$this->_contentBlocksLoaded = TRUE;
 		return TRUE;
     }
-	
+
 	/**
 	 * undocumented function
 	 *
-	 * @param string $one 
-	 * @param string $adding 
+	 * @param string $one
+	 * @param string $adding
 	 * @return void
 	 * @internal
 	 */
@@ -480,20 +480,20 @@ class Content extends ContentBase
 				return array('<label for="template_id">'.lang('template').':</label>', $templateops->TemplateDropdown('template_id', $this->mTemplateId, 'onchange="document.Edit_Content.submit()"'));
 			}
 			break;
-			
+
 		case 'pagemetadata':
 			{
 				return array('<label for="id_pagemetadata">'.lang('page_metadata').':</label>',create_textarea(false, $this->Metadata(), 'metadata', 'pagesmalltextarea', 'metadata', '', '', '80', '6'));
 			}
 			break;
-			
+
 		case 'pagedata':
 			{
 				return array('<label for="id_pagedata">'.lang('pagedata_codeblock').':</label>',
 							 create_textarea(false,$this->GetPropertyValue('pagedata'),'pagedata','pagesmalltextarea','id_pagedata','','','80','6'));
 			}
 			break;
-			
+
 		case 'searchable':
 			{
 				$searchable = $this->GetPropertyValue('searchable');
@@ -507,7 +507,7 @@ class Content extends ContentBase
 							 lang('help_page_searchable'));
 			}
 			break;
-			
+
 		case 'disable_wysiwyg':
 			{
 				$disable_wysiwyg = $this->GetPropertyValue('disable_wysiwyg');
@@ -520,11 +520,11 @@ class Content extends ContentBase
              <input id="id_disablewysiwyg" type="checkbox" name="disable_wysiwyg" value="1"  '.($disable_wysiwyg==1?'checked="checked"':'').' onclick="this.form.submit()" />');
 			}
 			break;
-			
+
 		default:
 			return parent::display_single_element($one,$adding);
 		}
-		
+
     }
 
 	/*
@@ -542,7 +542,7 @@ class Content extends ContentBase
 			$ret = '<input type="text" size="'.$size.'" maxlength="'.$maxlength.'" name="'.$blockInfo['id'].'" value="'.cms_htmlentities($value, ENT_NOQUOTES, get_encoding('')).'" />';
 		}
 		else
-		{ 
+		{
 			$block_wysiwyg = true;
 			$hide_wysiwyg = $this->GetPropertyValue('disable_wysiwyg');
 
@@ -632,10 +632,6 @@ class Content extends ContentBase
 		// but I don't have the time to do it at the moment.
 		$field = '';
 		$label = '';
-		if( isset($blockInfo['label']) && $blockInfo['label'] != '')
-		{
-			$label = '<label for="'.$blockInfo['id'].'">'.$blockInfo['label'].'</label>';
-		}
 		switch( $blockInfo['type'] )
 		{
 			case 'text':
@@ -678,6 +674,10 @@ class Content extends ContentBase
 		if( empty($label) )
 		{
 			$label = $blockName;
+		}
+		if( isset($blockInfo['label']) && $blockInfo['label'] != '')
+		{
+			$label = '<label for="'.$blockInfo['id'].'">'.$blockInfo['label'].'</label>';
 		}
 		return array($label.':',$field);
 	}
