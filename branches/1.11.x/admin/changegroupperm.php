@@ -1,7 +1,7 @@
 <?php
 #CMS - CMS Made Simple
 #(c)2004 by Ted Kulp (wishy@users.sf.net)
-#This project's homepage is: http://www.cmsmadesimple.org
+#This projects homepage is: http://www.cmsmadesimple.org
 #
 #This program is free software; you can redistribute it and/or modify
 #it under the terms of the GNU General Public License as published by
@@ -71,18 +71,15 @@ $allgroups = array($tmp);
 $sel_groups = array($tmp);
 $group_list = $groupops->LoadGroups();
 $sel_group_ids = array();
-foreach( $group_list as $onegroup )
-{
-  if( $onegroup->id == 1 && $adminuser == false )
-    {
+foreach( $group_list as $onegroup ) {
+  if( $onegroup->id == 1 && $adminuser == false ) {
       continue;
-    }
+  }
   $allgroups[] = $onegroup;
-  if( $disp_group == -1 || $disp_group == $onegroup->id )
-    {
+  if( $disp_group == -1 || $disp_group == $onegroup->id ) {
       $sel_groups[] = $onegroup;
       $sel_group_ids[] = $onegroup->id;
-    }
+  }
 }
 
 $smarty->assign('group_list',$sel_groups);
@@ -93,47 +90,36 @@ if ($submitted == 1)
     // we have group permissions
     $now = $db->DbTimeStamp(time());
     $iquery = "INSERT INTO ".cms_db_prefix().
-      "group_perms (group_perm_id, group_id, permission_id, create_date, modified_date) 
+      "group_perms (group_perm_id, group_id, permission_id, create_date, modified_date)
        VALUES (?,?,?,$now,$now)";
 
-    $groups = array();
-    foreach( $_POST as $key=>$value )
-      {
-	if (strpos($key,"pg") == 0 && strpos($key,"pg") !== false)
-	  {
-	    $keyparts = explode('_',$key);
-	    if ($keyparts[2] != '1' && $value == '1')
-	      {
-		if( !in_array($keyparts[2],$groups) )
-		  {
-		    $groups[] = $keyparts[2];
-		  }
-	      }
-	  }
-      }
-
     $selected_groups = unserialize(base64_decode($_POST['sel_groups']));
-    $query = 'DELETE FROM '.cms_db_prefix().'group_perms 
-               WHERE group_id IN ('.implode(',',$selected_groups).')';
-    $db->Execute($query);
-    
-    foreach ($_POST as $key=>$value)
-      {
-	if (strpos($key,"pg") == 0 && strpos($key,"pg") !== false)
-	  {
-	    $keyparts = explode('_',$key);
-	    if ($keyparts[2] != '1' && $value == '1')
-	      {
-		$new_id = $db->GenID(cms_db_prefix()."group_perms_seq");
-		$result = $db->Execute($iquery, array($new_id,$keyparts[2],$keyparts[1]));
-		if( !$result )
-		  {
-		    echo "FATAL: ".$db->ErrorMsg().'<br/>'.$db->sql; exit();
-		  }
-	      }
-	  }
-      }
-    
+    if( is_array($selected_groups) && count($selected_groups) ) {
+        // clean this array
+        $tmp = array();
+        foreach( $selected_groups as &$one ) {
+            $one = (int)$one;
+            if( $one > 0 ) $tmp[] = $one;
+        }
+        $query = 'DELETE FROM '.cms_db_prefix().'group_perms
+                   WHERE group_id IN ('.implode(',',$tmp).')';
+        $db->Execute($query);
+    }
+
+    foreach ($_POST as $key=>$value) {
+        if (strpos($key,"pg") == 0 && strpos($key,"pg") !== false) {
+            $keyparts = explode('_',$key);
+            $keyparts[1] = (int)$keyparts[1];
+            if ($keyparts[1] > 0 && $keyparts[2] != '1' && $value == '1') {
+                $new_id = $db->GenID(cms_db_prefix()."group_perms_seq");
+                $result = $db->Execute($iquery, array($new_id,$keyparts[2],$keyparts[1]));
+                if( !$result ) {
+                    echo "FATAL: ".$db->ErrorMsg().'<br/>'.$db->sql; exit();
+                }
+            }
+        }
+    }
+
     // put mention into the admin log
 	audit($userid, 'Permission Group ID: '.$userid, 'Changed');
     $message = lang('permissionschanged');
@@ -167,7 +153,7 @@ while($result && $row = $result->FetchRow())
 	$perm_struct[$row['permission_id']] = $thisPerm;
       }
   }
-$smarty->assign_by_ref('perms',$perm_struct);		
+$smarty->assign_by_ref('perms',$perm_struct);
 $smarty->assign('cms_secure_param_name',CMS_SECURE_PARAM_NAME);
 $smarty->assign('cms_user_key',$_SESSION[CMS_USER_KEY]);
 $smarty->assign('form_start','<form id="groupname" method="post" action="changegroupperm.php">');
