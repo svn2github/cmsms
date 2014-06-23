@@ -10,18 +10,18 @@
  * @internal
  * @access private
  */
-function load_adodb() 
+function load_adodb()
 {
   $gCms = cmsms();
   $config = $gCms->GetConfig();
 
-	// @TODO: Remove dependence on PEAR for error handling	
+	// @TODO: Remove dependence on PEAR for error handling
 	if( !defined('ADODB_OUTP') )
 	  {
 	    define('ADODB_OUTP', 'debug_sql');
 	  }
 	//define('ADODB_ERROR_HANDLER', 'adodb_error');
-	
+
 	$adodb_light = cms_join_path(dirname(__FILE__),'adodb_lite','adodb.inc.php');
 	if (file_exists($adodb_light))
 	  {
@@ -33,7 +33,7 @@ function load_adodb()
 	    // ADOdb cannot be found, show a message and stop the script execution
 	    die('The ADOdb Lite database abstraction library cannot be found, CMS Made Simple cannot load.');
 	  }
-	
+
 	if( !defined('CMS_ADODB_DT') ) define('CMS_ADODB_DT', $config['use_adodb_lite'] ? 'DT' : 'T');
 }
 
@@ -47,14 +47,14 @@ function &adodb_connect()
 {
   $gCms = cmsms();
   $config = $gCms->GetConfig();
-	
-  $str = 'pear:date:extend';
+
+  $str = 'pear:date:extend:transaction';
   $dbinstance = ADONewConnection($config['dbms'], $str);
 	$dbinstance->raiseErrorFn = "adodb_error";
 	$conn_func = (isset($config['persistent_db_conn']) && $config['persistent_db_conn'] == true) ? 'PConnect' : 'Connect';
 	if(!empty($config['db_port'])) $dbinstance->port = $config['db_port'];
 	$connect_result = $dbinstance->$conn_func($config['db_hostname'], $config['db_username'], $config['db_password'], $config['db_name']);
-	
+
 	if (FALSE == $connect_result)
 	{
 	  $str = "Attempt to connect to database {$config['db_name']} on {$config['db_username']}@{$config['db_hostname']} failed";
@@ -63,14 +63,14 @@ function &adodb_connect()
 	}
 
 	$dbinstance->raiseErrorFn = null;
-	
+
 	$dbinstance->SetFetchMode(ADODB_FETCH_ASSOC);
-	
+
 	if ($config['debug'] == true)
 	{
 		$dbinstance->debug = true;
 	}
-	
+
 	$p1 = array();
 	if($config['set_names'] == true) {
 	  $p1[] = "NAMES 'utf8'";
