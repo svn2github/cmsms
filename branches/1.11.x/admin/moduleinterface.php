@@ -53,6 +53,11 @@ try {
     $action = (isset($ary[2])?$ary[2]:'');
   }
 
+  if( !$module ) {
+    trigger_error('Module action specified, but could not determine the module.');
+    redirect("index.php".$urlext);
+  }
+
   $modinst = ModuleOperations::get_instance()->get_module_instance($module);
   if( !$modinst ) {
     trigger_error('Module '.$module.' not found in memory. This could indicate that the module is in need of upgrade or that there are other problems');
@@ -107,7 +112,7 @@ try {
       echo '<div class="pageoverflow">';
       echo $themeObject->ShowHeader($modinst->GetFriendlyName(), '', '', 'both').'</div>';
     }
-  }  
+  }
   if( $USE_OUTPUT_BUFFERING ) {
     @ob_start();
   }
@@ -130,7 +135,7 @@ try {
 }
 catch( Exception $e ) {
   // handle uncaught exception
-  $handlers = ob_list_handlers(); 
+  $handlers = ob_list_handlers();
   for ($cnt = 0; $cnt < sizeof($handlers); $cnt++) { ob_end_clean(); }
   echo $smarty->errorConsole($e);
   return;

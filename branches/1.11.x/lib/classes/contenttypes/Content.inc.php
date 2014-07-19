@@ -349,12 +349,6 @@ class Content extends ContentBase
 		$tabnames = $this->TabNames();
 
 		$templateops = cmsms()->GetTemplateOperations();
-		$ret = array();
-		$this->stylesheet = '';
-		if ($this->TemplateId() > 0)
-		{
-			$this->stylesheet = '../stylesheet.php?templateid='.$this->TemplateId();
-		}
 
 		if( isset($tabnames[$tab]) )
 		{
@@ -670,16 +664,13 @@ class Content extends ContentBase
 			}
 			break;
 		}
-		if( empty($field) ) return FALSE;
-		if( empty($label) )
-		{
-			$label = $blockName;
-		}
-		if( isset($blockInfo['label']) && $blockInfo['label'] != '')
-		{
+
+		if( isset($blockInfo['label']) && $blockInfo['label'] != '') {
 			$label = '<label for="'.$blockInfo['id'].'">'.$blockInfo['label'].'</label>';
 		}
-		return array($label.':',$field);
+		if( empty($field) ) return FALSE;
+		if( empty($label) )	$label = $blockName.':';
+		return array($label,$field);
 	}
 
 } // end of class
