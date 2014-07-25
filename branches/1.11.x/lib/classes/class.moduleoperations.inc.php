@@ -733,6 +733,22 @@ final class ModuleOperations
 		  $lazyload_fe    = (method_exists($module_obj,'LazyLoadFrontend') && $module_obj->LazyLoadFrontend())?1:0;
 		  $lazyload_admin = (method_exists($module_obj,'LazyLoadAdmin') && $module_obj->LazyLoadAdmin())?1:0;
 
+		  // update dependencies
+		  $query = "DELETE FROM ".cms_db_prefix()."modules WHERE module_name = ?";
+		  $db->Execute($query, array($module_name));
+
+		  $deps = $module_obj->GetDependencies();
+		  if( is_array($deps) && count($deps) ) {
+			  $query = 'INSERT INTO '.cms_db_prefix().'module_deps
+                        (parent_module,child_module,minimum_version,create_date,modified_date)
+                        VALUES (?,?,?,NOW(),NOW())';
+			  foreach( $deps as $depname => $depversion ) {
+				  if( !$depname || !$depversion ) continue;
+				  $dbr = $db->Execute($query,array($depname,$module_obj->GetName(),$depversion));
+			  }
+		  }
+
+		  // update module table.
 		  $query = 'UPDATE '.cms_db_prefix().'modules SET version = ?, allow_fe_lazyload = ?,allow_admin_lazyload = ? WHERE module_name = ?';
 		  $dbr = $db->Execute($query,array($module_obj->GetVersion(),$lazyload_fe,$lazyload_admin,$module_obj->GetName()));
 
