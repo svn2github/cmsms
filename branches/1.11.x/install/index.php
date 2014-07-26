@@ -46,11 +46,9 @@ if(! extension_loaded_or('session') )
 }
 @session_start();
 
-$cms_orig_tz = date_default_timezone_get();
-if( !$cms_orig_tz )
-  {
-    date_default_timezone_set('UTC'); // if it's not set, this will hide any warning.
-  }
+$cms_orig_tz = @date_default_timezone_get();
+if( !$cms_orig_tz ) $cms_orig_tz = 'UTC';
+@date_default_timezone_set($cms_orig_tz);
 
 $_SESSION['cms_orig_tz'] = $cms_orig_tz;
 
