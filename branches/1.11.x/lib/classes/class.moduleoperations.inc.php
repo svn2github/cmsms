@@ -734,7 +734,7 @@ final class ModuleOperations
 		  $lazyload_admin = (method_exists($module_obj,'LazyLoadAdmin') && $module_obj->LazyLoadAdmin())?1:0;
 
 		  // update dependencies
-		  $query = "DELETE FROM ".cms_db_prefix()."module_deps WHERE module_name = ?";
+		  $query = "DELETE FROM ".cms_db_prefix()."module_deps WHERE child_module = ?";
 		  $db->Execute($query, array($module_name));
 
 		  $deps = $module_obj->GetDependencies();
