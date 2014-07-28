@@ -17,7 +17,8 @@ Core - Module Manager
   - Fixes problem with displaying help and about
 
 Core - News
-  - Sorting by category now obeys the sortasc parameter.
+  - Fixed sorting by category
+  
 
 Version 1.11.10 - Pinzon
 ------------------------
