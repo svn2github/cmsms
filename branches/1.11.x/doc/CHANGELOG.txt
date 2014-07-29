@@ -2,9 +2,9 @@ Version 1.11.11 - San Cristobal
 -------------------------------
 Core - General
   - Minor improvements to module loading
-  - Minor fix to error console.
+  - Minor fix to error console
   - xajax now cleans buffers before outputting anything
-  - Improvements to behavior of the 'label' parameter on content blocks.
+  - Improvements to behavior of the 'label' parameter on content_module blocks
   - Enable adodb transactions
   - Fix minor security issue with changegroupperms
   - Minor bug fixes wrt static routes
@@ -18,7 +18,7 @@ Core - Module Manager
 
 Core - News
   - Fixed sorting by category
-  
+
 
 Version 1.11.10 - Pinzon
 ------------------------
@@ -26,7 +26,7 @@ Core - General
   - New versions of jquery, jquery-ui, blueimp-uploader
   - Makes security key 16 characters long
   - Smarty template engine upgraded to version 3.1.16
-  - Fixes to function signatures, and fix a notice in cms_module_smarty_plugin_manager.
+  - Fixes to function signatures, and fix a notice in cms_module_smarty_plugin_manager
 
 Core - MicroTiny
   - Minor fix to MicroTiny
@@ -35,7 +35,7 @@ Core - FileManager
   - Fix and cleanup filemanager templates
 
 Core - News
- - Fix potential SQL injection vulnerability wrt the sortby parameter.
+ - Fix potential SQL injection vulnerability wrt the sortby parameter
 
 
 Version 1.11.9 - Bartolome
