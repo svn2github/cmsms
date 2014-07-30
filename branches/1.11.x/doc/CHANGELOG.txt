@@ -37,6 +37,8 @@ Core - FileManager
 Core - News
  - Fix potential SQL injection vulnerability wrt the sortby parameter
 
+Core - FileManager
+ - Fix issue with thumbnail generation on upload.
 
 Version 1.11.9 - Bartolome
 -----------------------------
