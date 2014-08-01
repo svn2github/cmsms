@@ -25,7 +25,7 @@
  */
 
 
- 
+
 /**
  * Redirects to relative URL on the current site
  *
@@ -352,36 +352,36 @@ function cms_utf8entities($val)
 
 /**
  * A function to put a backtrace into the generated log file.
- * 
+ *
  * @see debug_to_log, debug_bt
  * @return void
  * Rolf: Looks like not used
  */
 function debug_bt_to_log()
 {
-  if( cmsms()->config['debug_to_log'] || check_login(TRUE) ) {
-      $bt=debug_backtrace();
-      $file = $bt[0]['file'];
-      $line = $bt[0]['line'];
+    if( cmsms()->config['debug_to_log'] || (function_exists('check_login') && check_login(TRUE)) ) {
+        $bt=debug_backtrace();
+        $file = $bt[0]['file'];
+        $line = $bt[0]['line'];
 
-      $out = array();
-      $out[] = "Backtrace in $file on line $line";
+        $out = array();
+        $out[] = "Backtrace in $file on line $line";
 
-      $bt = array_reverse($bt);
-      foreach($bt as $trace) {
-	if( $trace['function'] == 'debug_bt_to_log' ) continue;
+        $bt = array_reverse($bt);
+        foreach($bt as $trace) {
+            if( $trace['function'] == 'debug_bt_to_log' ) continue;
 
-	$file = $line = '';
-	if( isset($trace['file']) ) $file = $trace['file'];
-	if( isset($trace['line']) ) $line = $trace['line'];
-	$function = $trace['function'];
-	$out[] = "$function at $file:$line"; 
-      }
+            $file = $line = '';
+            if( isset($trace['file']) ) $file = $trace['file'];
+            if( isset($trace['line']) ) $line = $trace['line'];
+            $function = $trace['function'];
+            $out[] = "$function at $file:$line";
+        }
 
-      $filename = TMP_CACHE_LOCATION . '/debug.log';
-      foreach ($out as $txt) {
-	error_log($txt . "\n", 3, $filename);
-      }
+        $filename = TMP_CACHE_LOCATION . '/debug.log';
+        foreach ($out as $txt) {
+            error_log($txt . "\n", 3, $filename);
+        }
     }
 }
 
@@ -546,17 +546,17 @@ function debug_output($var, $title="")
  */
 function debug_to_log($var, $title='',$filename = '')
 {
-  if( cmsms()->config['debug_to_log'] || check_login(TRUE) ) {
-    if( $filename == '' ) {
-      $filename = TMP_CACHE_LOCATION . '/debug.log';
-      $x = @filemtime($filename);
-      if( $x !== FALSE && $x < (time() - 24 * 3600) ) @unlink($filename);
+    if( cmsms()->config['debug_to_log'] || (function_exists('check_login') && check_login(TRUE)) ) {
+        if( $filename == '' ) {
+            $filename = TMP_CACHE_LOCATION . '/debug.log';
+            $x = @filemtime($filename);
+            if( $x !== FALSE && $x < (time() - 24 * 3600) ) @unlink($filename);
+        }
+        $errlines = explode("\n",debug_display($var, $title, false, false));
+        foreach ($errlines as $txt) {
+            error_log($txt . "\n", 3, $filename);
+        }
     }
-    $errlines = explode("\n",debug_display($var, $title, false, false));
-    foreach ($errlines as $txt) {
-      error_log($txt . "\n", 3, $filename);
-    }
-  }
 }
 
 
@@ -1248,7 +1248,7 @@ function cms_readfile($filename)
  * Sanitize input to prevent against XSS and other nasty stuff.
  * Taken from cakephp (http://cakephp.org)
  * Licensed under the MIT License
- * 
+ *
  * @internal
  * @param string input
  * @return string
@@ -1515,8 +1515,8 @@ function can_admin_upload()
 
 
 
-/** 
- * A convenience function to interpret octal permissions, and return 
+/**
+ * A convenience function to interpret octal permissions, and return
  * a human readable string.  Uses the lang() function for translation.
  *
  * @internal
@@ -1534,12 +1534,12 @@ function interpret_permissions($perms)
     {
       $owner[] = lang('read');
     }
-	
+
   if( $perms & 0200 )
     {
       $owner[] = lang('write');
     }
-	
+
   if( $perms & 0100 )
     {
       $owner[] = lang('execute');
@@ -1549,12 +1549,12 @@ function interpret_permissions($perms)
     {
       $group[] = lang('read');
     }
-	
+
   if( $perms & 0020 )
     {
       $group[] = lang('write');
     }
-	
+
   if( $perms & 0010 )
     {
       $group[] = lang('execute');
@@ -1564,12 +1564,12 @@ function interpret_permissions($perms)
     {
       $other[] = lang('read');
     }
-	
+
   if( $perms & 0002 )
     {
       $other[] = lang('write');
     }
-	
+
   if( $perms & 0001 )
     {
       $other[] = lang('execute');
@@ -1624,7 +1624,7 @@ function stack_trace()
 
 
 
-/** 
+/**
  * A wrapper around move_uploaded_file that attempts to ensure permissions on uploaded
  * files are set correctly.
  *
@@ -2195,17 +2195,17 @@ function cms_get_jquery($exclude = '',$ssl = null,$cdn = false,$append = '',$cus
     $base_url = $config['ssl_url'];
   }
   $basePath=$custom_root!=''?trim($custom_root,'/'):$base_url;
-  
+
   // Scripts to include
   $scripts['jquery.min.js'] = '<script type="text/javascript" src="'.($cdn?'https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js':$basePath.'/lib/jquery/js/jquery-1.11.0.min.js').'"></script>'."\n"
   . '<script type="text/javascript" src="' . $basePath .'/lib/jquery/js/jquery-migrate-1.2.1.min.js"></script>' . "\n";
   $scripts['jquery-ui.min.js'] = '<script type="text/javascript" src="'.($cdn?'https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js':$basePath.'/lib/jquery/js/jquery-ui-1.10.4.custom.min.js').'"></script>'."\n";
   $scripts['jquery.ui.nestedSortable.js'] = '<script type="text/javascript" src="'.$basePath.'/lib/jquery/js/jquery.ui.nestedSortable-1.3.4.js"></script>'."\n";
   $scripts['jquery.json.min.js'] = '<script type="text/javascript" src="'.$basePath.'/lib/jquery/js/jquery.json-2.3.min.js"></script>'."\n";
-  
+
   // Check if we need exclude some script
   if(!empty($exclude)) {
-    
+
     $exclude_list = explode(",", trim(str_replace(' ','',$exclude)));
     foreach($exclude_list as $one) {
       if ($one == 'jquery-1.6.2.min.js') {
@@ -2220,31 +2220,31 @@ function cms_get_jquery($exclude = '',$ssl = null,$cdn = false,$append = '',$cus
       if ($one == 'jquery.ui.nestedSortable-1.3.4.js') {
           $one = 'jquery.ui.nestedSortable.js';
       }
-      
+
       unset($scripts[$one]);
-    }		
+    }
   }
   // let them add scripts to the end ie: a jQuery plugin
   if(!empty($append)) {
     $append_list = explode(",", trim(str_replace(' ','',$append)));
     foreach($append_list as $key => $item) {
       $scripts['user_'+$key]='<script type="text/javascript" src="'.($item).'"></script>'."\n";;
-    }		
+    }
   }
   // Output
 
   $output = '';
   foreach($scripts as $script) {
-    $output .= $script;		
+    $output .= $script;
   }
   return $output;
 }
-	
-	
+
+
 
 /**
  * Rolf: only used in lib/classes/class.CMSModule.php
- */	
+ */
 if(!function_exists('get_called_class')) {
   function get_called_class() {
     try {
@@ -2258,11 +2258,11 @@ if(!function_exists('get_called_class')) {
   // this file is loaded before the autoloader runs.
   class cms_function_help {
 
-    public static function get_called_class($bt = false,$l = 1) 
+    public static function get_called_class($bt = false,$l = 1)
     {
       if (!$bt) $bt = debug_backtrace();
       if (!isset($bt[$l])) throw new Exception("Cannot find called class -> stack level too deep.");
-      if (!isset($bt[$l]['type'])) { 
+      if (!isset($bt[$l]['type'])) {
         if( $l >= 2 ) {
 	  throw new Exception ('type not set');
         }
@@ -2283,7 +2283,7 @@ if(!function_exists('get_called_class')) {
 		   $callerLine,
 		   $matches);
 	if (!isset($matches[1])) {
-         
+
 	  // must be an edge case.
 	  throw new Exception ("Could not find caller class: originating method call is obscured.");
 	}
