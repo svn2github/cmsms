@@ -9,6 +9,7 @@ Core - General
   - Fix minor security issue with changegroupperms
   - Minor bug fixes wrt static routes
   - Now update dependencies when a module is upgraded
+  - Fixes #10135
 
 Core - Installer
   - Minor change to timezone handling
