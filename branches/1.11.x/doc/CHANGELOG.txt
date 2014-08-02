@@ -20,6 +20,10 @@ Core - Module Manager
 Core - News
   - Fixed sorting by category
 
+Core - MicroTiny
+  - Updated to tinymce 3.5.11 to fix IE11 issues
+  - Now use "forced_root_block: 'p'" to ensure that newlines generate paragraphs, and ctrl+enter generates <br/> tags.
+
 
 Version 1.11.10 - Pinzon
 ------------------------
