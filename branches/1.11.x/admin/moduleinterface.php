@@ -86,7 +86,6 @@ try {
     $params = GetModuleParameters($id);
     if( $USE_THEME ) {
         $themeObject = cms_utils::get_theme_object();
-        $themeObject->set_action_module($module);
 
         @ob_start();
         echo  $modinst->DoActionBase($action, $id, $params);
