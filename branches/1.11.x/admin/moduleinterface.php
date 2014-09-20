@@ -96,9 +96,10 @@ try {
         $txt = $modinst->GetHeaderHTML();
         if( $txt !== false ) $headtext = $txt; // headtext is a global
 
+        
+        include_once("header.php");
         if (FALSE == empty($params['module_message'])) echo $themeObject->ShowMessage($params['module_message']);
         if (FALSE == empty($params['module_error'])) echo $themeObject->ShowErrors($params['module_error']);
-        include_once("header.php");
 
         echo '<div class="pagecontainer">';
         echo '<div class="pageoverflow">';
