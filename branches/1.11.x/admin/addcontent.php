@@ -91,6 +91,7 @@ $contentobj = null;
   $contentobj->SetAddMode();
   $contentobj->SetOwner($userid);
   $contentobj->SetCachable($page_cachable);
+  $contentobj->SetSecure($page_secure);
   $contentobj->SetActive($active);
   $contentobj->SetShowInMenu($showinmenu);
   $contentobj->SetLastModifiedBy($userid);
