@@ -52,7 +52,8 @@ usage()
   echo "        _svn = if value is 0 turn off svn update option."
   echo "        _checksums = if value is 0 do not attempt to create checksums."
   echo "NOTE:  Standard excludes are: *~ #*# .#* .svn CVS *.bak .git* *.tmp .cms_ignore *.swp _internal phpdoc.xml"
-  echo "  The special file .cms_ignore in any directory to exclude files in that directory and files below it (one pattern per line)"
+  echo
+  echo "  The special file .cms_ignore in any directory to exclude additional files in that directory and files below it (one pattern per line)"
   echo
 }
 
