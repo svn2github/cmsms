@@ -286,7 +286,9 @@ cd ${_tmpdir}/tmp
 tar zxf ${_tmpdir}/files.tgz
 
 if [ $_checksums = 1 ]; then
-  # create the archive checksums
+    # create the archive checksums
+    # _c.dat contains checksum values for each individual file
+    # _d.dat contains checksum values for the _c.dat file.
   cd ${_name}
   find . -name '*php' | grep -v lang > ${_tmpdir}/file.lst
   while read _line ; do
