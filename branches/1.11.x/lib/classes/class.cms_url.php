@@ -1,10 +1,10 @@
 <?php // -*- mode:php; tab-width:4; indent-tabs-mode:t; c-basic-offset:4; -*-
 #BEGIN_LICENSE
 #-------------------------------------------------------------------------
-# Module: cms_content_tree (c) 2010 by Robert Campbell 
+# Module: cms_content_tree (c) 2010 by Robert Campbell
 #         (calguy1000@cmsmadesimple.org)
 #  A caching tree for CMSMS content objects.
-# 
+#
 #-------------------------------------------------------------------------
 # CMS - CMS Made Simple is (c) 2005 by Ted Kulp (wishy@cmsmadesimple.org)
 # This project's homepage is: http://www.cmsmadesimple.org
@@ -19,7 +19,7 @@
 # However, as a special exception to the GPL, this software is distributed
 # as an addon module to CMS Made Simple.  You may not use this software
 # in any Non GPL version of CMS Made simple, or in any version of CMS
-# Made simple that does not indicate clearly and obviously in its admin 
+# Made simple that does not indicate clearly and obviously in its admin
 # section that the site was built with CMS Made simple.
 #
 # This program is distributed in the hope that it will be useful,
@@ -65,7 +65,7 @@ class cms_url
 
   /**
    * Constructor
-   * 
+   *
    * @param string the url to work with
    */
   public function __construct($url)
@@ -83,7 +83,7 @@ class cms_url
    */
   private function _get_part($key)
   {
-    if( isset($this->_parts[$key]) ) 
+    if( isset($this->_parts[$key]) )
       {
 	return $this->_parts[$key];
       }
@@ -113,7 +113,7 @@ class cms_url
   {
     return $this->_orig;
   }
-  
+
   /**
    * Return the URL scheme.  i.e: HTTP, HTTPS, ftp etc.
    *
@@ -176,7 +176,7 @@ class cms_url
    */
   public function set_port($val)
   {
-    return $this->_set_part('port',(int)$val);
+    return $this->_set_part('port',$val);
   }
 
   /**

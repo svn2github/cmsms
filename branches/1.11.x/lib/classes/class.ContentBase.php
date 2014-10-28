@@ -222,7 +222,7 @@ abstract class ContentBase
    * @internal
    */
   protected $mDefaultContent = false;
-	
+
   /**
    * What type of markup is ths?  HTML is the default
    */
@@ -250,14 +250,14 @@ abstract class ContentBase
    * @internal
    */
   protected $mModifiedDate = '';
-    
+
   /**
    * Additional Editors Array
    *
    * @internal
    */
   protected $mAdditionalEditors;
-	
+
   /*
    * state or meta information
    *
@@ -310,26 +310,26 @@ abstract class ContentBase
     $this->AddBaseProperty('secure',10);
     $this->AddBaseProperty('cachable',11);
     $this->AddContentProperty('target',12);
-      
+
     $this->AddContentProperty('image',50);
     $this->AddContentProperty('thumbnail',50);
     $this->AddBaseProperty('titleattribute',55);
     $this->AddBaseProperty('accesskey',56);
     $this->AddBaseProperty('tabindex',57);
-	  
+
     $this->AddContentProperty('extra1',80);
     $this->AddContentProperty('extra2',81);
     $this->AddContentProperty('extra3',82);
-	  
+
     $this->AddBaseProperty('owner',90);
     $this->AddBaseProperty('additionaleditors',91);
   }
 
-    
+
   /************************************************************************/
   /* Functions giving access to needed elements of the content			*/
   /************************************************************************/
-  
+
   public function __clone()
   {
     $this->mId = -1;
@@ -471,7 +471,7 @@ abstract class ContentBase
 
   /**
    * Set the page metadata
-   * 
+   *
    * @param string The metadata
    */
   public function SetMetadata($metadata)
@@ -752,7 +752,7 @@ abstract class ContentBase
      $this->DoReadyForEdit();
      $this->mHierarchyPath = $hierarchypath;
    }
-   
+
 
    /**
     * Returns the Active state
@@ -881,8 +881,8 @@ abstract class ContentBase
 	$this->DoReadyForEdit();
 	$this->mSecure = $secure;
     }
-	
-    
+
+
     /**
      * Return the page url (if any) associated with this content page.
      * Note: some content types do not support page urls.
@@ -909,7 +909,7 @@ abstract class ContentBase
 
     /**
      * Return the markup for this page. usually xhtml or html.
-     * 
+     *
      * @deprecated
      * @return string
      */
@@ -920,7 +920,7 @@ abstract class ContentBase
 
     /**
      * Set the markup for this page. usually xhtml or html.
-     * 
+     *
      * @deprecated
      * @param string
      */
@@ -933,7 +933,7 @@ abstract class ContentBase
     /**
      * Return the last modified date for this item
      * This is usually set on save.
-     * 
+     *
      * @return Date
      */
     public function LastModifiedBy()
@@ -944,7 +944,7 @@ abstract class ContentBase
     /**
      * Set the last modified date for this item
      * This is usually set on save.
-     * 
+     *
      * @param Date
      */
     public function SetLastModifiedBy($lastmodifiedby)
@@ -978,7 +978,7 @@ abstract class ContentBase
 
 
     /**
-     * Set the page alias for this content page.  
+     * Set the page alias for this content page.
      * If an empty alias is supplied, and depending upon the doAutoAliasIfEnabled flag, and config entries
      * a suitable alias may be calculated from other data in the page object
      * This method relies on the menutext and the name of the content page already being set.
@@ -1001,7 +1001,7 @@ abstract class ContentBase
 	    {
 	      $alias = trim($this->mName);
 	    }
-			
+
 	  $tolower = true;
 	  $alias = munge_string_to_url($alias, $tolower);
 	  // Make sure auto-generated new alias is not already in use on a different page, if it does, add "-2" to the alias
@@ -1028,9 +1028,9 @@ abstract class ContentBase
 	}
 
       $this->mAlias = munge_string_to_url($alias, $tolower);
-    } 
+    }
 
-	
+
     /**
      * Returns the menu text for this content page
      *
@@ -1068,7 +1068,8 @@ abstract class ContentBase
     }
 
     /**
-     * Returns the properties
+     * Returns the properties.
+     * This method will not preload properties.
      *
      * @return array
      */
@@ -1078,7 +1079,7 @@ abstract class ContentBase
     }
 
     /**
-     * Test wether this content page has the named property
+     * Test wether this content page has the named property.
      * Properties will be loaded from the database if necessary.
      *
      * @return boolean
@@ -1094,9 +1095,10 @@ abstract class ContentBase
       return in_array($name,array_keys($this->_props));
     }
 
-    
+
     /**
-     * Get the value for the named property
+     * Get the value for the named property.
+     * Properties will be loaded from the database if necessary.
      *
      * @return mixed String value, or null if the property does not exist.
      */
@@ -1107,8 +1109,8 @@ abstract class ContentBase
 	  return $this->_props[$name];
 	}
     }
-    
-    
+
+
     private function _load_properties()
     {
       if( $this->mId <= 0 ) return FALSE;
@@ -1130,7 +1132,7 @@ abstract class ContentBase
     {
       if( $this->mId <= 0 ) return FALSE;
       if( !is_array($this->_props) || count($this->_props) == 0 ) return FALSE;
-	    
+
       $db = cmsms()->GetDb();
       $query = 'SELECT prop_name FROM '.cms_db_prefix().'content_props WHERE content_id = ?';
       $gotprops = $db->GetCol($query,array($this->mId));
@@ -1140,7 +1142,7 @@ abstract class ContentBase
                     (content_id,type,prop_name,content,modified_date)
                     VALUES (?,?,?,?,$now)";
       $uquery = 'UPDATE '.cms_db_prefix()."content_props SET content = ?, modified_date = $now WHERE content_id = ? AND prop_name = ?";
-	  
+
       foreach( $this->_props as $key => $value )
 	{
 	  if( in_array($key,$gotprops) )
@@ -1167,12 +1169,12 @@ abstract class ContentBase
     public function SetPropertyValue($name, $value)
     {
       if( !is_array($this->_props) ) $this->_props = array();
-	  
+
       $this->_props[$name] = $value;
       if( !is_array($this->_props) ) $this->_load_properties();
       $this->_props[$name] = $value;
     }
-	
+
     /**
      * Set the value of a the named property.
      * This method will not load properties
@@ -1189,9 +1191,9 @@ abstract class ContentBase
     /**
      * Function content types to use to say whether or not they should show
      * up in lists where parents of content are set.  This will default to true,
-     * but should be used in cases like Separator where you don't want it to 
+     * but should be used in cases like Separator where you don't want it to
      * have any children.
-     * 
+     *
      * @since 0.11
      * @return boolean
      */
@@ -1261,7 +1263,7 @@ abstract class ContentBase
 	  $this->mReadyForEdit = true;
 	}
     }
-    
+
     /**
      * Load the content of the object from an ID
      * This method modifies the current object.
@@ -1278,7 +1280,7 @@ abstract class ContentBase
       global $debug_errors;
       $db = $gCms->GetDb();
       $config = $gCms->GetConfig();
-	  
+
       $result = false;
 
       if (-1 < $id)
@@ -1338,7 +1340,7 @@ abstract class ContentBase
 	      if (!is_array($this->_props) )
 		{
 		  $result = false;
-			      
+
 		  // debug mode
 		  if (true == $config["debug"])
 		    {
@@ -1420,7 +1422,7 @@ abstract class ContentBase
 	  if (!is_array($this->_props) )
 	    {
 	      $result = false;
-		      
+
 	      global $debug_errors;
 	      $gCms = cmsms();
 	      $config = $gCms->GetConfig();
@@ -1729,7 +1731,7 @@ abstract class ContentBase
 	$errors[] = lang('invalidparent');
 	$result = false;
       }
-	  
+
       if ($this->mName == '') {
 	if ($this->mMenuText != '') {
 	  $this->mName = $this->mMenuText;
@@ -1739,7 +1741,7 @@ abstract class ContentBase
 	  $result = false;
 	}
       }
-	  
+
       if ($this->mMenuText == '') {
 	if ($this->mName != '') {
 	  $this->mMenuText = $this->mName;
@@ -1749,7 +1751,7 @@ abstract class ContentBase
 	  $result = false;
 	}
       }
-		
+
       if (!$this->HandlesAlias()) {
 	if ($this->mAlias != $this->mOldAlias || ($this->mAlias == '' && $this->RequiresAlias()) ) {
 	  $gCms = cmsms();
@@ -1803,8 +1805,8 @@ abstract class ContentBase
 	  }
 	}
       }
-      if( $this->mURL == '' && 
-	  get_site_preference('content_mandatory_urls') && 
+      if( $this->mURL == '' &&
+	  get_site_preference('content_mandatory_urls') &&
 	  !$this->mDefaultContent &&
 	  $this->HasUsableLink() ) {
 	// page url is empty and mandatory
@@ -1887,7 +1889,7 @@ abstract class ContentBase
 
     /**
      * Function for the subclass to parse out data for it's parameters (usually from $_POST)
-     * This method is typically called from an editor form to allow modifying the content object from 
+     * This method is typically called from an editor form to allow modifying the content object from
      * form input fields.
      *
      * @abstract
@@ -1907,7 +1909,7 @@ abstract class ContentBase
 
       // go through the list of base parameters
       // setting them from params
-      
+
       // title
       if (isset($params['title']))
 	{
@@ -1940,7 +1942,7 @@ abstract class ContentBase
 	      $this->mActive = 1;
 	    }
 	}
-      
+
       // show in menu
       if (isset($params['showinmenu']))
 	{
@@ -1970,7 +1972,7 @@ abstract class ContentBase
 	      $val = '';
 	    }
 	  $this->SetPropertyValue('target', $val);
-	} 
+	}
 
       // title attribute
       if (isset($params['titleattribute']))
@@ -2025,7 +2027,7 @@ abstract class ContentBase
 	{
 	  $this->SetOwner($params["ownerid"]);
 	}
-	 
+
       // additional editors
       if (isset($params["additional_editors"]))
 	{
@@ -2111,7 +2113,7 @@ abstract class ContentBase
     public function Show($param = '')
     {
     }
-	
+
     /**
      * Used from a page that allows content editing. This method the list of distinct sections
      * that devides up the various logical sections that this content type supports for editing.
@@ -2124,7 +2126,7 @@ abstract class ContentBase
         return array();
     }
 
-    /** 
+    /**
      * Used from within a page that allows editing content this method returns the input fields for
      * the various fields that can be edited.
      *
@@ -2237,7 +2239,7 @@ abstract class ContentBase
 	      $text .= ' selected="selected"';
 	    }
 	  $text .= '>'.lang('group').': '.$onegroup->name."</option>";
-		   
+
 	}
 
       foreach ($allusers as $oneuser)
@@ -2312,7 +2314,7 @@ abstract class ContentBase
     }
 
     /**
-     * @deprecated 
+     * @deprecated
      */
     public function AddExtraProperty($name,$type = 'string')
     {
@@ -2382,7 +2384,7 @@ abstract class ContentBase
 	{
 	  $tmp[] = $one[0];
 	}
-	  
+
       return in_array($str,$tmp);
     }
 
@@ -2510,19 +2512,19 @@ abstract class ContentBase
 	  return array('<label for="in_cachable">'.lang('cachable').':</label>',
 		       '<input type="hidden" name="cachable" value="0"/><input id="in_cachable" class="pagecheckbox" type="checkbox" value="1" name="cachable"'.($this->mCachable?' checked="checked"':'').' />',lang('help_page_cachable'));
 	  break;
-	
+
 	case 'title':
 	  {
 	    return array('<label for="in_title">*'.lang('title').'</label>:','<input type="text" id="in_title" name="title" value="'.cms_htmlentities($this->mName).'" />');
 	  }
 	  break;
-	      
+
 	case 'menutext':
 	  {
 	    return array('<label for="in_menutext">*'.lang('menutext').'</label>:','<input type="text" name="menutext" id="in_menutext" value="'.cms_htmlentities($this->mMenuText).'" />');
 	  }
 	  break;
-	      
+
 	case 'parent':
 	  {
 	    $contentops = $gCms->GetContentOperations();
@@ -2539,11 +2541,11 @@ abstract class ContentBase
 	      return array('<label for="id_active">'.lang('active').'</label>:','<input type="hidden" name="active" value="0"/><input class="pagecheckbox" type="checkbox" name="active" id="id_active" value="1"'.($this->mActive?' checked="checked"':'').' />');
 	    }
 	  break;
-	      
+
 	case 'showinmenu':
 	  return array('<label for="showinmenu">'.lang('showinmenu').'</label>:','<input type="hidden" name="showinmenu" value="0"/><input class="pagecheckbox" type="checkbox" value="1" name="showinmenu" id="showinmenu"'.($this->mShowInMenu?' checked="checked"':'').' />');
 	  break;
-	      
+
 	case 'target':
 	  {
 	    $text = '<option value="---">'.lang('none').'</option>';
@@ -2553,14 +2555,14 @@ abstract class ContentBase
 	    $text .= '<option value="_top"'.($this->GetPropertyValue('target')=='_top'?' selected="selected"':'').'>_top</option>';
 	    return array('<label for="target">'.lang('target').'</label>:','<select name="target" id="target">'.$text.'</select>',
 			 lang('info_target'));
-		
+
 	  }
 	  break;
-	      
+
 	case 'alias':
 	  return array('<label for="alias">'.lang('pagealias').'</label>:','<input type="text" name="alias" id="alias" value="'.$this->mAlias.'" />',lang('help_page_alias'));
 	  break;
-	      
+
 	case 'secure':
 	  {
 	    $opt = '';
@@ -2596,7 +2598,7 @@ abstract class ContentBase
 	    return array('<label for="image">'.lang('image').'</label>:',$dropdown);
 	  }
 	  break;
-	      
+
 	case 'thumbnail':
 	  {
 	    $dir = cms_join_path($config['image_uploads_path'],get_site_preference('content_thumbnailfield_path'));
@@ -2606,13 +2608,13 @@ abstract class ContentBase
 	    return array('<label for="thumbnail">'.lang('thumbnail').'</label>:',$dropdown);
 	  }
 	  break;
-	      
+
 	case 'titleattribute':
 	  {
 	    return array('<label for="titleattribute">'.lang('titleattribute').'</label>:','<input type="text" name="titleattribute" id="titleattribute" maxlength="255" size="80" value="'.cms_htmlentities($this->mTitleAttribute).'" />');
 	  }
 	  break;
-	      
+
 	case 'accesskey':
 	  {
 	    return array('<label for="accesskey">'.lang('accesskey').'</label>:','<input type="text" name="accesskey" id="accesskey" maxlength="5" value="'.cms_htmlentities($this->mAccessKey).'" />');
@@ -2624,19 +2626,19 @@ abstract class ContentBase
 	    return array('<label for="tabindex">'.lang('tabindex').'</label>:','<input type="text" name="tabindex" id="tabindex" maxlength="5" value="'.cms_htmlentities($this->mTabIndex).'" />');
 	  }
 	  break;
-	      
+
 	case 'extra1':
 	  {
 	    return array('<label for="extra1">'.lang('extra1').'</label>:','<input type="text" name="extra1" id="extra1" maxlength="255" size="80" value="'.cms_htmlentities($this->GetPropertyValue('extra1')).'" />');
 	  }
 	  break;
-	      
+
 	case 'extra2':
 	  {
 	    return array('<label for="extra2">'.lang('extra2').'</label>:','<input type="text" name="extra2" id="extra2" maxlength="255" size="80" value="'.cms_htmlentities($this->GetPropertyValue('extra2')).'" />');
 	  }
 	  break;
-	      
+
 	case 'extra3':
 	  {
 	    return array('<label for="extra3">'.lang('extra3').'</label>:','<input type="text" name="extra3" id="extra3" maxlength="255" size="80" value="'.cms_htmlentities($this->GetPropertyValue('extra3')).'" />');
