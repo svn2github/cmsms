@@ -59,7 +59,7 @@ $access = (check_permission($userid, 'Add Pages') || check_permission($userid, '
 $gCms = cmsms();
 $contentops = $gCms->GetContentOperations();
 $existingtypes = $contentops->ListContentTypes();
-$content_type = "";
+$content_type = '';
 if (isset($_POST["content_type"]))
 {
 	$content_type = $_POST["content_type"];
@@ -68,13 +68,14 @@ else
 {
 	if (isset($existingtypes) && count($existingtypes) > 0)
 	{
-	  $content_type = get_site_preference('default_contenttype','content');
+        $content_type = get_site_preference('default_contenttype');
 	}
 	else
 	{
 		$error = "No content types loaded!";
 	}
 }
+if( !$content_type ) $content_type = 'content';
 
 $contentobj = null;
 {
@@ -130,7 +131,7 @@ if ($access && strtoupper($_SERVER['REQUEST_METHOD']) == 'POST' )
 	  $contentobj->SetAddMode();
 	  $contentobj->FillParams($_POST);
 	  $contentobj->SetOwner($userid);
-	    
+
 	  $error = $contentobj->ValidateData();
 	  if ($error === FALSE)
 	    {
@@ -146,7 +147,7 @@ if ($access && strtoupper($_SERVER['REQUEST_METHOD']) == 'POST' )
 		}
 	    }
 	}
-      else 
+      else
 	{
 	  $contentobj->FillParams($_POST);
 	}
@@ -172,7 +173,7 @@ else
   $content_types = $contentops->ListContentTypes(false,true);
   foreach ($content_types as $onetype => $onetypename)
     {
-      if( $onetype == 'errorpage' && !check_permission($userid,'Manage All Content') ) 
+      if( $onetype == 'errorpage' && !check_permission($userid,'Manage All Content') )
 	{
 	  continue;
 	}
@@ -248,15 +249,15 @@ if ($contentobj->HasPreview())
 	<input type="hidden" id="serialized_content" name="serialized_content" value="<?php echo SerializeObject($contentobj); ?>" />
         </div>
 	<div id="page_content">
-		<div class="pageoverflow">	
+		<div class="pageoverflow">
 		<?php
-		
+
 		$submit_buttons = '
 			<div class="pagetext">&nbsp;</div>
 			<div class="pageinput">';
 		$submit_buttons .= ' <input type="submit" name="submitbutton" value="'.lang('submit').'" class="pagebutton" />';
 		$submit_buttons .= ' <input type="submit" name="cancel" value="'.lang('cancel').'" class="pagebutton" /></div>';
-		
+
 		$numberoftabs = count($tabnames);
 		$showtabs = 1;
 		if ($numberoftabs == 0)
