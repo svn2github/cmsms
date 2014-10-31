@@ -36,7 +36,7 @@ if( !isset($CMS_INSTALL_PAGE) )
 if( isset($CMS_ADMIN_PAGE) || isset($CMS_INSTALL_PAGE) )
   {
     // admin pages can't be cached... period, at all.. never.
-    @session_cache_limiter('private');
+    @session_cache_limiter('nocache');
     header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
     header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
     header("Cache-Control: no-store, no-cache, must-revalidate");
