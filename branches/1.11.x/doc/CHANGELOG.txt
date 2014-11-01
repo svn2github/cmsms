@@ -1,3 +1,12 @@
+Version 1.11.12 - No Name Set
+-----------------------------
+Core - General
+  - 
+
+Core - Bug Reports
+  - #10170 Incorrect setting for session_cache_limiter() in include.php
+
+
 Version 1.11.11 - San Cristobal
 -------------------------------
 Core - General
@@ -22,7 +31,7 @@ Core - News
 
 Core - MicroTiny
   - Updated to tinymce 3.5.11 to fix IE11 issues
-  - Now use "forced_root_block: 'p'" to ensure that newlines generate paragraphs, and ctrl+enter generates <br/> tags.
+  - Now use "forced_root_block: 'p'" to ensure that newlines generate paragraphs, and ctrl+enter generates <br /> tags
 
 
 Version 1.11.10 - Pinzon
@@ -43,7 +52,7 @@ Core - News
  - Fix potential SQL injection vulnerability wrt the sortby parameter
 
 Core - FileManager
- - Fix issue with thumbnail generation on upload.
+ - Fix issue with thumbnail generation on upload
 
 Version 1.11.9 - Bartolome
 -----------------------------
