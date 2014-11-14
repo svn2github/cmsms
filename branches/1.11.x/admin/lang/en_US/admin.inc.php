@@ -224,7 +224,7 @@ $lang['admin']['help_function_browser_lang'] = <<<EOT
 <li>assign<br/>- <em>(optional)</em> The name of the smarty variable to assign the results to.  If not specified the results of this function are returned.</li>
 </ul>
 EOT;
-$lang['admin']['info_target'] = 'This option may used by the Menu Manager to indicate when and how new frames or windows should be opened.  Some menu manager templates may ignore this option.'; 
+$lang['admin']['info_target'] = 'This option may used by the Menu Manager to indicate when and how new frames or windows should be opened.  Some menu manager templates may ignore this option.';
 $lang['admin']['close'] = 'Close';
 $lang['admin']['open'] = 'Open';
 $lang['admin']['revert'] = 'Revert all changes';
@@ -385,7 +385,7 @@ $lang['admin']['invalidparent'] = 'You must select a parent page (contact your a
 $lang['admin']['forgotpwprompt'] = 'Enter your admin username.  An email will then be sent to the email address associated with that username with new login information';
 $lang['admin']['info_basic_attributes'] = 'This field allows you to specify which content properties that users without the &quot;Manage All Content&quot; permission are allowed to edit. The selected properties will appear in the &quot;Main Tab&quot; on the edit content page.';
 $lang['admin']['basic_attributes'] = 'Basic Properties';
-$lang['admin']['no_permission'] = 'You have not permission to perform that function.';
+$lang['admin']['no_permission'] = 'You have no permission to perform that function.';
 $lang['admin']['bulk_success'] = 'Bulk operation was successfully updated.';
 $lang['admin']['no_bulk_performed'] = 'No bulk operation performed.';
 $lang['admin']['info_preview_notice'] = 'Warning: This preview panel behaves much like a browser window allowing you to navigate away from the initially previewed page. However, if you do that, you may experience unexpected behaviour. If you navigate away from the initial display and return, you may not see the un-committed content until you make a change to the content in the main tab, and then reload this tab. When adding content, if you navigate away from this page, you will be unable to return, and must refresh this panel.';
@@ -458,19 +458,19 @@ $lang['admin']['help_function_content_image'] = <<<EOT
   </li>
 
   <li><em>(optional)</em> label='' - A label or prompt for this content block in the edit content page.  If not specified, the block name will be used.</li>
- 
+
   <li><em>(optional)</em> dir='' - The name of a directory (relative to the uploads directory, from which to select image files. If not specified, the preference from the global settings page will be used.  If that preference is empty, the uploads directory will be used.
   <p>Example: use images from the uploads/images directory.</p>
   <pre>{content_image block='image1' dir='images'}</pre><br/>
   </li>
 
   <li><em>(optional)</em> class='' - The css class name to use on the img tag in frontend display.</li>
-  
+
   <li><em>(optional)</em> default='' - Use to set a default image used when no image is selected.</li>
 
-  <li><em>(optional)</em> id='' - The id name to use on the img tag in frontend display.</li> 
+  <li><em>(optional)</em> id='' - The id name to use on the img tag in frontend display.</li>
 
-  <li><em>(optional)</em> name='' - The tag name to use on the img tag in frontend display.</li> 
+  <li><em>(optional)</em> name='' - The tag name to use on the img tag in frontend display.</li>
 
   <li><em>(optional)</em> width='' - The desired width of the image.</li>
 
@@ -753,7 +753,7 @@ $lang['admin']['help_function_sitename'] = <<<EOT
 EOT;
 $lang['admin']['help_function_search'] = <<<EOT
 	<h3>What does this do?</h3>
-	<p>This is actually just a wrapper tag for the Search module to make the tag syntax easier. 
+	<p>This is actually just a wrapper tag for the Search module to make the tag syntax easier.
 	Instead of having to use <code>{cms_module module='Search'}</code> you can now just use <code>{search}</code> to insert the module in a template.
 	</p>
 	<h3>How do I use it?</h3>
@@ -789,9 +789,9 @@ $lang['admin']['help_function_recently_updated'] = <<<EOT
 	<ul>
 	 <li><p><em>(optional)</em> number='10' - Number of updated pages to show.</p><p>Example: {recently_updated number='15'}</p></li>
  	 <li><p><em>(optional)</em> leadin='Last changed' - Text to show left of the modified date.</p><p>Example: {recently_updated leadin='Last Changed'}</p></li>
- 	 <li><p><em>(optional)</em> showtitle='true' - Shows the titleattribute if it exists as well (true|false).</p><p>Example: {recently_updated showtitle='true'}</p></li>											 	
-	 <li><p><em>(optional)</em> css_class='some_name' - Warp a div tag with this class around the list.</p><p>Example: {recently_updated css_class='some_name'}</p></li>											 	
-	 <li><p><em>(optional)</em> dateformat='d.m.y h:m' - default is d.m.y h:m , use the format you whish (php -date- format)</p><p>Example: {recently_updated dateformat='D M j G:i:s T Y'}</p></li>	
+ 	 <li><p><em>(optional)</em> showtitle='true' - Shows the titleattribute if it exists as well (true|false).</p><p>Example: {recently_updated showtitle='true'}</p></li>
+	 <li><p><em>(optional)</em> css_class='some_name' - Warp a div tag with this class around the list.</p><p>Example: {recently_updated css_class='some_name'}</p></li>
+	 <li><p><em>(optional)</em> dateformat='d.m.y h:m' - default is d.m.y h:m , use the format you whish (php -date- format)</p><p>Example: {recently_updated dateformat='D M j G:i:s T Y'}</p></li>
 	 <li><em>(optional)</em> <tt>assign</tt> - Assign the results to the named smarty variable.</li>
 	</ul>
 	<p>or combined:</p>
@@ -799,7 +799,7 @@ $lang['admin']['help_function_recently_updated'] = <<<EOT
 EOT;
 $lang['admin']['help_function_print'] = <<<EOT
 	<h3>What does this do?</h3>
-	<p>This is actually just a wrapper tag for the CMSPrinting module to make the tag syntax easier. 
+	<p>This is actually just a wrapper tag for the CMSPrinting module to make the tag syntax easier.
 	Instead of having to use <code>{cms_module module='CMSPrinting'}</code> you can now just use <code>{print}</code> to insert the module on pages and templates.
 	</p>
 	<h3>How do I use it?</h3>
@@ -808,16 +808,16 @@ EOT;
 $lang['admin']['login_info_title'] = 'Information';
 $lang['admin']['login_info'] = 'For the Admin console to work properly';
 $lang['admin']['login_info_params'] = <<<EOT
-<ol> 
-  <li>Cookies must be enabled in your browser</li> 
-  <li>Javascript must be enabled in your browser</li> 
-  <li>Popup windows must be allowed for the following address:</li> 
+<ol>
+  <li>Cookies must be enabled in your browser</li>
+  <li>Javascript must be enabled in your browser</li>
+  <li>Popup windows must be allowed for the following address:</li>
 </ol>
 EOT;
 
 $lang['admin']['help_function_news'] = <<<EOT
 	<h3>What does this do?</h3>
-	<p>This is actually just a wrapper tag for the News module to make the tag syntax easier. 
+	<p>This is actually just a wrapper tag for the News module to make the tag syntax easier.
 	Instead of having to use <code>{cms_module module='News'}</code> you can now just use <code>{news}</code> to insert the module on pages and templates.
 	</p>
 	<h3>How do I use it?</h3>
@@ -855,7 +855,7 @@ $lang['admin']['help_function_menu_text'] = <<<EOT
 EOT;
 $lang['admin']['help_function_menu'] = <<<EOT
 	<h3>What does this do?</h3>
-	<p>This is actually just a wrapper tag for the Menu Manager module to make the tag syntax easier. 
+	<p>This is actually just a wrapper tag for the Menu Manager module to make the tag syntax easier.
 	Instead of having to use <code>{cms_module module='MenuManager'}</code> you can now just use <code>{menu}</code> to insert the module on pages and templates.
 	</p>
 	<h3>How do I use it?</h3>
@@ -941,8 +941,8 @@ EOT;
 
 $lang['admin']['help_function_embed'] = <<<EOT
 	<h3>What does this do?</h3>
-	<p>Enable inclusion (embedding) of any other application into the CMS. The most usual use could be a forum. 
-	This implementation is using IFRAMES so older browsers can have problems. Sorry bu this is the only known way 
+	<p>Enable inclusion (embedding) of any other application into the CMS. The most usual use could be a forum.
+	This implementation is using IFRAMES so older browsers can have problems. Sorry bu this is the only known way
 	that works without modifing the embedded application.</p>
 	<h3>How do I use it?</h3>
         <ul>
@@ -956,10 +956,10 @@ $lang['admin']['help_function_embed'] = <<<EOT
         <br/>
         <h3>What parameters does it take?</h3>
         <ul>
-            <li><em>(required)</em>url - the url to be included</li> 
+            <li><em>(required)</em>url - the url to be included</li>
             <li><em>(required)</em>header=true - this will generate the header code for good resizing of the IFRAME.</li>
             <li>(optional)name - an optional name to use for the iframe (instead of myframe).<p>If this option is used, it must be used identically in both calls, i.e: {embed header=true name=foo} and {embed name=foo url=http://www.google.com} calls.</p></li>
-			
+
         </ul>
 EOT;
 
@@ -1240,7 +1240,7 @@ $lang['admin']['help_function_cms_jquery'] = <<<EOT
 	<li><tt>nestedSortable</tt>(1.3.4) - jquery.ui.nestedSortable.js</li>
 	<li><tt>jQuery json</tt><em>(2.3)</em> - jquery.json.min.js</li>
 </ul>
-    
+
 <h3>What parameters does it take?</h3>
 <ul>
 	<li><em>(optional) </em><tt>exclude</tt> - use comma seperated value(CSV) list of scripts you would like to exclude. <code>'jquery.ui.nestedSortable.js,jquery.json.min.js'</code></li>
@@ -1601,7 +1601,7 @@ $lang['admin']['apply'] = 'Apply';
 $lang['admin']['applydescription'] = 'Save changes and continue to edit';
 $lang['admin']['none'] = 'None';
 $lang['admin']['wysiwygtouse'] = 'Select WYSIWYG to use';
-$lang['admin']['syntaxhighlightertouse'] = 'Select syntax highlighter to use'; 
+$lang['admin']['syntaxhighlightertouse'] = 'Select syntax highlighter to use';
 $lang['admin']['cachable'] = 'Cachable';
 $lang['admin']['hasdependents'] = 'Has Dependents';
 $lang['admin']['missingdependency'] = 'Missing Dependency';
@@ -2137,6 +2137,7 @@ $lang['admin']['all_groups'] = 'All Groups'; //needs translation
 $lang['admin']['error_type'] = 'Error Type';
 $lang['admin']['contenttype_errorpage'] = 'Error Page';
 $lang['admin']['errorpagealreadyinuse'] = 'Error Code Already in Use';
+$lang['admin']['403description'] = 'Page Forbidden';
 $lang['admin']['404description'] = 'Page Not Found';
 $lang['admin']['usernotfound'] = 'User Not Found.';
 $lang['admin']['passwordchange'] = 'Please, provide the new password';

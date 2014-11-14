@@ -19,7 +19,7 @@
 #$Id$
 
 /**
- * @package CMS 
+ * @package CMS
  */
 
 /**
@@ -45,7 +45,7 @@ class AdminTheme extends CmsAdminThemeBase
 	 * Url
 	 */
 	protected $url;
-	
+
     /**
 	 * Script
 	 */
@@ -157,7 +157,7 @@ class AdminTheme extends CmsAdminThemeBase
 		  echo '</div>';
       }
     }
-    
+
 
     /**
      * DisplayBookmarks
@@ -221,7 +221,7 @@ class AdminTheme extends CmsAdminThemeBase
     function OutputHeaderJavascript()
     {
 		$config = cmsms()->GetConfig();
-		$ssl = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off');
+		$ssl = cmsms()->is_https_request();
 	    $ssl = $ssl && isset($config['ssl_url']);
 		return cms_get_jquery('',$ssl);
 	}
@@ -239,7 +239,7 @@ class AdminTheme extends CmsAdminThemeBase
     }
 
 
-    
+
     /**
      * DisplaySectionPages
      * Shows admin section pages in the specified section, wrapped in a
@@ -298,7 +298,7 @@ class AdminTheme extends CmsAdminThemeBase
 
     /**
      * ListSectionPages
-     * This method presents a nice, human-readable list of admin pages and 
+     * This method presents a nice, human-readable list of admin pages and
      * modules that are in the specified admin section.
      *
      *
@@ -422,7 +422,7 @@ class AdminTheme extends CmsAdminThemeBase
 </div>
 <?php
     }
-    
+
 
     /**
      * DisplayDocType
@@ -444,7 +444,7 @@ class AdminTheme extends CmsAdminThemeBase
 		$info = CmsNlsOperations::get_language_info(CmsNlsOperations::get_current_language());
     	echo ($info->direction() == 'rtl') ? "<html dir=\"rtl\"\n>" : "<html>\n";
     }
-	
+
 	/**
 	 * @since 1.9
      * ThemeHeader
@@ -452,7 +452,7 @@ class AdminTheme extends CmsAdminThemeBase
      * after OutputHeaderJavascript() and before $addt.
      */
 	function ThemeHeader(){
-		
+
 		if(file_exists('themes/'. $this->themeName. '/includes/standard.js')) {
 			return '<script type="text/javascript" src="themes/'. $this->themeName. '/includes/standard.js"></script>'."\n";
 		}
@@ -489,7 +489,7 @@ EOT;
 		}
 		$str .= $this->OutputHeaderJavascript()."\n";
 		$str .= "<!-- THIS IS WHERE HEADER STUFF SHOULD GO -->\n";
-		ob_start(); 
+		ob_start();
 		$tmp1 = $this->ThemeHeader();
 		$tmp2 = ob_get_contents();
 		ob_end_clean();
@@ -501,7 +501,7 @@ EOT;
 			// assume data is echoed
 			$str .= $tmp2;
 		}
-		
+
 		$str .= $addt."\n";
 		$str .= "</head>\n"; // fix to correct and add the end header tag -- JLB
 		echo $str;
@@ -517,7 +517,7 @@ EOT;
         echo "<body##BODYSUBMITSTUFFGOESHERE##>\n";
     }
 
-    
+
     /**
      * DisplayMainDivStart
      *
@@ -579,10 +579,10 @@ EOT;
 		for( $i = 0; $i < count($tnotifications); $i++ ) {
 			if( $tnotifications[$i]->priority <= $priority ) $count++;
 		}
-	  
+
 		// Define that is singular or plural
 		$singular_or_plural = $count;
-	  
+
 		if($singular_or_plural > 1) {
 			$tmp = lang('notifications_to_handle',$count);
 		}
@@ -592,7 +592,7 @@ EOT;
 
 		// remove html tags like <b>2</b>
 		$no_html_tags = preg_replace('/(<\/?)(\w+)([^>]*>)/e','',$tmp);
-	  
+
 		echo '<div class="full-Notifications clear">'."\n";
 		echo '<div class="Notifications-title">' . $tmp . '</div>'."\n";
 		echo '<div title="'.$no_html_tags.'" id="notifications-display" class="notifications-show" onclick="change(\'notifications-display\', \'notifications-hide\', \'notifications-show\'); change(\'notifications-container\', \'invisible\', \'visible\');"></div>'."\n";
@@ -610,7 +610,7 @@ EOT;
 			echo '<span class="NotificationsItemData">'."\n";
 			echo $data->html."\n";
 			echo "</span>\n";
-			echo '</li>';		  
+			echo '</li>';
 		}
 		echo "</ul>";
 		echo "</div><!-- notifications-container -->\n";
@@ -622,7 +622,7 @@ EOT;
    /**
 	* ShowHeader
 	* Outputs the page header title along with a help link to that section in the wiki.
-	* 
+	*
 	* @param title_name - page heading title
 	* @param extra_lang_param - extra parameters to pass to lang() (I don't think this parm is needed)
 	* @param link_text - Override the text to use for the help link.
@@ -632,7 +632,7 @@ EOT;
     public function ShowHeader($title_name, $extra_lang_param=array(), $link_text = '', $module_help_type = FALSE)
     {
 		$cms = cmsms();
-		$config = $cms->GetConfig();             
+		$config = $cms->GetConfig();
 		$header  = '<div class="pageheader">';
 		if (FALSE != $module_help_type) {
 			$module = '';
@@ -682,7 +682,7 @@ EOT;
 
 				$urlext='?'.CMS_SECURE_PARAM_NAME.'='.$_SESSION[CMS_USER_KEY];
 				$image_help = $this->DisplayImage('icons/system/info.gif', lang('module_help'),'','','systemicon');
-				//$image_help_external = $this->DisplayImage('icons/system/info-external.gif', lang('wikihelp'),'','','systemicon');		
+				//$image_help_external = $this->DisplayImage('icons/system/info-external.gif', lang('wikihelp'),'','','systemicon');
 				if ('both' == $module_help_type) {
 					$module_help_link = $config['admin_url'].'/listmodules.php'.$urlext.'&amp;action=showmodulehelp&amp;module='.$module_name;
 					$header .= '<span class="helptext"><a href="'.$module_help_link.'" title="'.lang('module_help').'">'.$image_help.'</a> <a href="'.$module_help_link.'">'.lang('module_help').'</a></span>';
@@ -690,7 +690,7 @@ EOT;
 			}
 		}
 		$header .= '</div>';
-		return $header;     
+		return $header;
     }
 
 
@@ -724,7 +724,7 @@ EOT;
      * Outputs supplied errors with a link to the wiki for troublshooting.
      *
      * @param errors - array or string of 1 or more errors to be shown
-     * @param get_var - Name of the _GET variable that contains the 
+     * @param get_var - Name of the _GET variable that contains the
      *                  name of the message lang string
      */
     public function ShowErrors($errors, $get_var = '')
@@ -755,13 +755,13 @@ EOT;
 		$output .= '</div></div>';
 		return $output;
     }
-    
+
     /**
      * ShowMessage
      * Outputs a page status message
      *
      * @param message - Message to be shown
-     * @param get_var - Name of the _GET variable that contains the 
+     * @param get_var - Name of the _GET variable that contains the
      *                  name of the message lang string
      */
     public function ShowMessage($message, $get_var = '')
@@ -780,7 +780,7 @@ EOT;
       $output .= '><p class="pagemessage">'.$image_done.' '.$message.'</p></div>';
       return $output;
     }
-    
+
 
 	public function do_header()
 	{

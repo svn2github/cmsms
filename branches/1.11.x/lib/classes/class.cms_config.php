@@ -34,7 +34,7 @@ class cms_config implements ArrayAccess
   const TYPE_STRING = 'STRING';
   const TYPE_INT = 'INT';
   const TYPE_BOOL = 'BOOL';
-  
+
   private static $_instance;
   private $_types;
   private $_data = array();
@@ -251,11 +251,11 @@ class cms_config implements ArrayAccess
 		  $this->_cache[$key] = $str;
 		  return $str;
 		  break;
-		  
+
 	  case 'ssl_url':
 		  $this->_cache[$key] = str_replace('http://','https://',$this->offsetGet('root_url'));
 		  return $this->_cache[$key];
-		  
+
 	  case 'uploads_path':
 		  $this->_cache[$key] = cms_join_path($this->offsetGet('root_path'),'uploads');
 		  return $this->_cache[$key];
@@ -263,11 +263,11 @@ class cms_config implements ArrayAccess
 	  case 'uploads_url':
 		  $this->_cache[$key] = $this->offsetGet('root_url').'/uploads';
 		  return $this->_cache[$key];
-		  
+
 	  case 'ssl_uploads_url':
 		  $this->_cache[$key] = str_replace('http://','https://',$this->offsetGet('uploads_url'));
 		  return $this->_cache[$key];
-		  
+
 	  case 'image_uploads_path':
 		  $this->_cache[$key] = cms_join_path($this->offsetGet('uploads_path'),'images');
 		  return $this->_cache[$key];
@@ -279,7 +279,7 @@ class cms_config implements ArrayAccess
 	  case 'ssl_image_uploads_url':
 		  $this->_cache[$key] = str_replace('http://','https://',$this->offsetGet('image_uploads_url'));
 		  return $this->_cache[$key];
-		  
+
 	  case 'previews_path':
 		  return TMP_CACHE_LOCATION;
 
@@ -399,7 +399,7 @@ class cms_config implements ArrayAccess
    * before overwriting.
    *
    *
-   * @param boolean indicates wether comments should be stored in the config.php file. 
+   * @param boolean indicates wether comments should be stored in the config.php file.
    * @param string  An optional complete file specification.  If not specified the standard config file location will be used.
    */
   public function save($verbose = true,$filename = '')
@@ -429,19 +429,19 @@ class cms_config implements ArrayAccess
 
   public function smart_root_url()
   {
-	  if( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ) return $this->offsetGet('ssl_url');
+	  if( cmsms()->is_https_request() ) return $this->offsetGet('ssl_url');
 	  return $this->offsetGet('root_url');
   }
 
   public function smart_uploads_url()
   {
-	  if( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ) return $this->offsetGet('ssl_uploads_url');
+	  if( cmsms()->is_https_request() ) return $this->offsetGet('ssl_uploads_url');
 	  return $this->offsetGet('uploads_url');
   }
 
   public function smart_image_uploads_url()
   {
-	  if( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ) return $this->offsetGet('ssl_image_uploads_url');
+	  if( cmsms()->is_https_request() ) return $this->offsetGet('ssl_image_uploads_url');
 	  return $this->offsetGet('image_uploads_url');
   }
 } // end of class

@@ -23,10 +23,10 @@ function smarty_function_metadata($params, &$template)
 	$config = $gCms->GetConfig();
 	$content_obj = $gCms->variables['content_obj'];
 
-	$result = '';	
+	$result = '';
 
 	$showbase = true;
-	
+
 	#Show a base tag unless showbase is false in config.php
 	#It really can't hinder, only help.
 	if( isset($config['showbase']))  $showbase = $config['showbase'];
@@ -42,13 +42,9 @@ function smarty_function_metadata($params, &$template)
 
 	if ($showbase)
 	{
-	  $base = $config['root_url'];
-	  if (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off')
-	  {
-	    $base = $config['ssl_url'];
-	  }
-
-	  $result .= "\n<base href=\"".$base."/\" />\n";
+        $base = $config['root_url'];
+        if( cmsms()->is_https_request() ) $base = $config['ssl_url'];
+   	    $result .= "\n<base href=\"".$base."/\" />\n";
 	}
 
 	$result .= get_site_preference('metadata', '');

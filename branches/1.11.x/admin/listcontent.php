@@ -79,7 +79,7 @@ function setdefault($contentid)
 {
   $gCms = cmsms();
 	$userid = get_userid();
-	
+
 	$result = false;
 
 	if (check_permission($userid,'Manage All Content'))
@@ -99,7 +99,7 @@ function setdefault($contentid)
 				}
 			}
 		}
-		
+
 		$db = $gCms->GetDb();
 		$query = "SELECT content_id FROM ".cms_db_prefix()."content WHERE default_content=1";
 		$old_id = $db->GetOne($query);
@@ -116,7 +116,7 @@ function setdefault($contentid)
 				}
 			}
 		}
-		
+
 		$node = $hierManager->getNodeById($contentid);
 		if (isset($node))
 		{
@@ -140,7 +140,7 @@ function setdefault($contentid)
 function content_setdefault($contentid)
 {
 	$objResponse = new xajaxResponse();
-	
+
 	setdefault($contentid);
 
 	$objResponse->assign("contentlist", "innerHTML", display_content_list());
@@ -151,7 +151,7 @@ function content_setdefault($contentid)
 function content_setactive($contentid)
 {
 	$objResponse = new xajaxResponse();
-	
+
 	setactive($contentid);
 
 	$objResponse->assign("contentlist", "innerHTML", display_content_list());
@@ -162,7 +162,7 @@ function content_setactive($contentid)
 function content_setinactive($contentid)
 {
 	$objResponse = new xajaxResponse();
-	
+
 	setactive($contentid, false);
 
 	$objResponse->assign("contentlist", "innerHTML", display_content_list());
@@ -173,7 +173,7 @@ function content_setinactive($contentid)
 function content_expandall()
 {
 	$objResponse = new xajaxResponse();
-	
+
 	expandall();
 
 	$objResponse->assign("contentlist", "innerHTML", display_content_list());
@@ -183,7 +183,7 @@ function content_expandall()
 function content_collapseall()
 {
 	$objResponse = new xajaxResponse();
-	
+
 	collapseall();
 
 	$objResponse->assign("contentlist", "innerHTML", display_content_list());
@@ -221,7 +221,7 @@ function collapseall()
 function content_toggleexpand($contentid, $collapse)
 {
 	$objResponse = new xajaxResponse();
-	
+
 	toggleexpand($contentid, $collapse=='true'?true:false);
 
 	$objResponse->assign("contentlist", "innerHTML", display_content_list());
@@ -232,7 +232,7 @@ function content_toggleexpand($contentid, $collapse)
 function content_delete($contentid)
 {
 	$objResponse = new xajaxResponse();
-	
+
 	deletecontent($contentid);
 
 	$objResponse->script("$('#tr_$contentid').effect('fade', [], 3000);");
@@ -276,9 +276,9 @@ function toggleexpand($contentid, $collapse = false)
 function setactive($contentid, $active = true)
 {
 	$userid = get_userid();
-	
+
 	$hierManager = cmsms()->GetHierarchyManager();
-	
+
 	// to activate a page, you must be admin, owner, or additional author
 	$permission = (	check_ownership($userid, $contentid) ||
 			check_authorship($userid, $contentid) ||
@@ -307,7 +307,7 @@ function content_move($contentid, $parentid, $direction)
       return $objResponse; // delay between requests
     }
   set_site_preference('__listcontent_timelock__',$time);
-	
+
 	movecontent($contentid, $parentid, $direction);
 
 	$objResponse->assign("contentlist", "innerHTML", display_content_list());
@@ -327,11 +327,11 @@ function movecontent($contentid, $parentid, $direction = 'down')
       (check_permission($userid, 'Reorder Content') && check_peer_authorship($userid,$contentid)) )
     {
       $order = 1;
-      
+
       // Grab necessary info for fixing the item_order
       $query = "SELECT item_order FROM ".cms_db_prefix()."content WHERE content_id = ?";
       $order = $db->GetOne($query, array($contentid));
-      
+
       $time = $db->DBTimeStamp(time());
       if ($direction == "down")
 	{
@@ -367,7 +367,7 @@ function deletecontent($contentid)
 	$access = (check_permission($userid, 'Remove Pages') &&
 	  (check_ownership($userid,$contentid) ||
 	   quick_check_authorship($contentid,$mypages)))
-	  || check_permission($userid, 'Manage All Content') 
+	  || check_permission($userid, 'Manage All Content')
 	  || check_permission($userid, 'Modify Any Page');
 
 	$gCms = cmsms();
@@ -395,40 +395,40 @@ function deletecontent($contentid)
 			if ($contentobj)
 			{
 				$title = $contentobj->Name();
-	
+
 				#Check for children
 				if ($contentobj->HasChildren())
 				{
 					$_GET['error'] = 'errorchildcontent';
 				}
-	
+
 				#Check for default
 				if ($contentobj->DefaultContent())
 				{
 					$_GET['error'] = 'errordefaultpage';
 				}
-			
+
 				$title = $contentobj->Name();
 				$contentobj->Delete();
 
 				$contentops = $gCms->GetContentOperations();
 				$contentops->SetAllHierarchyPositions();
-				
+
 				#See if this is the last child... if so, remove
 				#the expand for it
 				if ($childcount == 1 && $parentid > -1)
 				{
 					toggleexpand($parentid, true);
 				}
-				
+
 				#Do the same with this page as well
 				toggleexpand($contentid, true);
-				
+
 				// put mention into the admin log
 				audit($contentid, 'Core', 'Content Item: '.$title, 'Deleted');
-				
+
 				$contentops->ClearCache();
-			
+
 				$_GET['message'] = 'contentdeleted';
 			}
 		}
@@ -451,7 +451,7 @@ function check_peer_authorship($userid,$contentid)
   $hm = cmsms()->GetHierarchyManager();
   $node = $hm->getNodeById($contentid);
   if( !$node ) return FALSE;
-  
+
   $parent = $node->getParentNode();
   if( !$node )
     {
@@ -506,9 +506,9 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
   global $config;
   global $page;
   global $indent;
-  
+
   if(empty($currow)) $currow = 'row1';
-  
+
   $children = $root->getChildren(false,true);
   $one = $root->getContent();
   $thelist = '';
@@ -518,13 +518,13 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
       audit($root->get_tag('id'),'Core','failed to get content for valid content id '.$root->get_tag('id'));
       return;
     }
-  
+
   if (!array_key_exists($one->Owner(), $users))
     {
       $userops = cmsms()->GetUserOperations();
       $users[$one->Owner()] = $userops->LoadUserById($one->Owner());
     }
-  
+
   $display = 'none';
   if (check_modify_all($userid) || check_ownership($userid, $one->Id()) || quick_check_authorship($one->Id(), $mypages))
     {
@@ -543,7 +543,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
   if ($display != 'none')
     {
       $thelist .= "<tr id=\"tr_".$one->Id()."\" class=\"$currow\">\n";
-      
+
       /* expand/collapse column */
       $columns['expand'] = '&nbsp;';
       if( $columnstodisplay['expand'] )
@@ -566,7 +566,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	    }
 	  if( !empty($txt) ) $columns['expand'] = $txt;
 	}
-	  
+
 
       /* hierarchy column */
       if( $columnstodisplay['hier'] )
@@ -580,26 +580,23 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	{
 	  $columns['page'] = '&nbsp;';
 	  $txt = '';
-	  if( $one->MenuText() != CMS_CONTENT_HIDDEN_NAME )
-	    {
-	      if ($indent)
-		{
-		  for ($i=0;$i < $root->getLevel();$i++)
-		    {
-		      $txt .= "-&nbsp;&nbsp;&nbsp;";
-		    }
-		} 
+	  if( $one->MenuText() != CMS_CONTENT_HIDDEN_NAME ) {
+	      if ($indent) {
+              for ($i=0;$i < $root->getLevel();$i++) {
+                  $txt .= "-&nbsp;&nbsp;&nbsp;";
+              }
+          }
 	      $str = $one->MenuText();
-	      if( get_site_preference('listcontent_showtitle',0) )
-		{
-		  $str = $one->Name();
-		}
+
+	      if( get_site_preference('listcontent_showtitle',0) ) {
+              $str = $one->Name();
+          }
 	      if ($display == 'edit')
-		$txt .= '<a class="tooltip" href="editcontent.php'.$urlext.'&amp;content_id='.$one->Id().'&amp;page='.$page.'" title="'. cms_htmlentities($one->Name().' ('.$one->Alias().')', '', '', true). '" onmouseover="document.getElementById(\'' .$one->Id().'_info\').style.display = \'inline-block\';" onmouseout="document.getElementById(\''.$one->Id().'_info\').style.display = \'none\';">
+              $txt .= '<a class="tooltip" href="editcontent.php'.$urlext.'&amp;content_id='.$one->Id().'&amp;page='.$page.'" title="'. cms_htmlentities($one->Name().' ('.$one->Alias().')', '', '', true). '" onmouseover="document.getElementById(\'' .$one->Id().'_info\').style.display = \'inline-block\';" onmouseout="document.getElementById(\''.$one->Id().'_info\').style.display = \'none\';">
 			' . cms_htmlentities($str, '', '', true) . '<span id="'.$one->Id().'_info"><strong>'.lang('content_id').':</strong> '.$one->Id().'<br /> <strong>'.lang('title').':</strong> '. cms_htmlentities($one->Name()).'<br /> <strong>'.lang('pagealias').':</strong> '.$one->Alias().'</span></a>';
 	      else
-		$txt .= cms_htmlentities($str, '', '', true);
-	    }
+              $txt .= cms_htmlentities($str, '', '', true);
+      }
 	  if( !empty($txt) ) $columns['page'] = $txt;
 	}
 
@@ -608,13 +605,12 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	{
 	  $columns['alias'] = '&nbsp;';
 	  $txt = '';
-	  if( $one->HasUsableLink() && $one->Alias() != '' )
-	    {
+	  if( ($one->HasUsableLink() || $one->Type() == 'errorpage') && $one->Alias() != '' ) {
 	      $txt = $one->Alias();
-	    }
+      }
 	  if( !empty($txt) ) $columns['alias'] = $txt;
 	}
-       
+
       /* url column */
       if( $columnstodisplay['url'] )
 	{
@@ -642,9 +638,9 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	{
 	  $columns['template'] = '&nbsp;';
 	  $txt = '';
-	  if( $one->Type() != 'pagelink' && 
-	      $one->Type() != 'link' && 
-	      $one->Type() != 'sectionheader' && 
+	  if( $one->Type() != 'pagelink' &&
+	      $one->Type() != 'link' &&
+	      $one->Type() != 'sectionheader' &&
 	      $one->Type() != 'separator' )
 	    {
 	      $template = TemplateOperations::get_instance()->LoadTemplateById($one->TemplateId());
@@ -736,7 +732,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	      if ($sameLevel>1)
 		{
 		  if (($one->ItemOrder() - 1) <= 0) #first
-		    { 
+		    {
 		      $txt .= "<a onclick=\"xajax_content_move(".$one->Id().", ".$one->ParentId().", 'down'); return false;\" href=\"{$thisurl}&amp;direction=down&amp;content_id=".$one->Id()."&amp;parent_id=".$one->ParentId()."&amp;page=".$page."\">";
 		      $txt .= $downImg;
 		      $txt .= "</a>&nbsp;&nbsp;";
@@ -756,7 +752,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 		      $txt .= "</a>";
 		    }
 		}
-	      
+
 	      // $txt .= '<input clsss="hidden" type="text" name="order-'. $one->Id().'" value="'.$one->ItemOrder().'" class="order" />';
 	    }
 	  if( !empty($txt) )
@@ -765,7 +761,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	    }
 	  // end of move code
 	}
-	
+
 
       /* view column */
       if( $columnstodisplay['view'] )
@@ -792,7 +788,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	{
 	  $columns['copy'] = '&nbsp;';
 	  $txt = '';
-	  if( $one->IsCopyable() && 
+	  if( $one->IsCopyable() &&
 	      ((check_permission($userid,'Add Pages') &&
 		(check_ownership($userid, $one->Id()) || quick_check_authorship($one->Id(), $mypages)))
 	       || check_permission($userid,'Manage All Content')) )
@@ -812,8 +808,8 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	{
 	  $columns['edit'] = '&nbsp;';
 	  $txt = '';
-	  if (check_modify_all($userid) || 
-	      check_ownership($userid, $one->Id()) || 
+	  if (check_modify_all($userid) ||
+	      check_ownership($userid, $one->Id()) ||
 	      quick_check_authorship($one->Id(), $mypages) ||
 	      check_permission($userid, 'Manage All Content'))
 	    {
@@ -836,7 +832,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	  $txt = '';
 	  if ($one->DefaultContent() != true)
 	    {
-	      if ($root->getChildrenCount() == 0 && 
+	      if ($root->getChildrenCount() == 0 &&
 		  ((check_permission($userid, 'Remove Pages') &&
 		    (check_ownership($userid,$one->Id()) || quick_check_authorship($one->Id(),$mypages))) || check_permission($userid,'Manage All Content') || check_permission($userid,'Modify Any Page'))
 		 )
@@ -852,7 +848,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	      $columns['delete'] = $txt;
 	    }
 	}
-	    
+
       if( $columnstodisplay['multiselect'] )
 	{
 	  /* multiselect */
@@ -874,7 +870,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	      $columns['multiselect'] = $txt;
 	    }
 	}
-	  
+
       /* done */
       foreach( $columns as $name => $value )
 	{
@@ -890,7 +886,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	    case 'active':
 	      $thelist .= '<td class="pagepos">'.$value."</td>\n";
 	      break;
-	      
+
 	    case 'move':
 	      $thelist .= '<td class="move">'.$value."</td>\n";
 	      break;
@@ -898,7 +894,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
 	    case 'multiselect':
 	      $thelist .= '<td class="checkbox">'.$value."</td>\n";
 	      break;
-	      
+
 	    default:
 	      $thelist .= '<td>'.$value."</td>\n";
 	      break;
@@ -918,7 +914,7 @@ function display_hierarchy(&$root, &$userid, $modifyall, &$users, &$menupos, &$o
       $author_allpages = check_permission($userid,'Reorder Content') && check_peer_authorship($userid,$children[0]->getId());
 
       foreach ($children as $child)
-        { 
+        {
 	  display_hierarchy($child, $userid, $modifyall, $users, $menupos, $openedArray, $pagelist, $image_true, $image_set_false, $image_set_true, $upImg, $downImg, $viewImg, $editImg, $copyImg, $deleteImg, $expandImg, $contractImg, $mypages, $page, $columnstodisplay, $author_allpages);
         }
     }
@@ -932,7 +928,7 @@ function display_content_list($themeObject = null)
 
 	check_login();
 	$userid = get_userid();
-	
+
 	// setup which columns to display.
 	$mypages = author_pages($userid);
 	$columnstodisplay = array();
@@ -952,7 +948,7 @@ function display_content_list($themeObject = null)
 	$columnstodisplay['edit'] = 1;
 	$columnstodisplay['delete'] = check_permission($userid, 'Remove Pages') || check_permission($userid,'Manage All Content');
 	$columnstodisplay['multiselect'] = check_permission($userid, 'Remove Pages') || check_permission($userid,'Manage All Content');
-	
+
 	$page = 1;
 	if (isset($_GET['page']))
 		$page = $_GET['page'];
@@ -963,7 +959,7 @@ function display_content_list($themeObject = null)
 	$count = 0;
 
 	$currow = "row1";
-	
+
 	if ($themeObject == null)
 		$themeObject = AdminTheme::GetThemeObject();
 
@@ -987,7 +983,7 @@ function display_content_list($themeObject = null)
 	$users = array();
 
 	$menupos = array();
-	
+
 	$openedArray=array();
 	if (get_preference($userid, 'collapse', '') != '')
 	{
@@ -1012,7 +1008,7 @@ function display_content_list($themeObject = null)
 		$author_allpages = check_permission($userid,'Reorder Content') && check_peer_authorship($userid,$children[0]->getId());
 
 		foreach ($children as $child)
-		{ 
+		{
 		  display_hierarchy($child, $userid, check_modify_all($userid), $users, $menupos, $openedArray, $pagelist, $image_true, $image_set_false, $image_set_true, $upImg, $downImg, $viewImg, $editImg, $copyImg, $deleteImg, $expandImg, $contractImg, $mypages, $page, $columnstodisplay, $author_allpages );
 		}
 		$rowcount += count($pagelist);
@@ -1138,7 +1134,7 @@ function display_content_list($themeObject = null)
 	  {
 	    bulkcontentoperations::register_function(lang('delete'),'delete');
 	  }
-	if (check_permission($userid, 'Manage All Content')) 
+	if (check_permission($userid, 'Manage All Content'))
 	  {
 	    bulkcontentoperations::register_function(lang('active'),'active');
 	    bulkcontentoperations::register_function(lang('inactive'),'inactive');
@@ -1156,7 +1152,7 @@ function display_content_list($themeObject = null)
 	  {
 	    echo '<div class="pageoptions">'."\n";
 	    echo '<div style="margin-top: 0; float: right; text-align: right">'."\n";
-	    echo '<label for="multiaction">'.lang('selecteditems').'</label>:&nbsp;&nbsp;'; 
+	    echo '<label for="multiaction">'.lang('selecteditems').'</label>:&nbsp;&nbsp;';
 	    echo '<select name="multiaction" id="multiaction">';
 	    foreach( $opts as $key => $value )
 	      {
@@ -1173,22 +1169,22 @@ function display_content_list($themeObject = null)
 	{
 ?>
 			<a href="addcontent.php<?php echo $urlext ?>" class="pageoptions">
-<?php 
+<?php
             echo $themeObject->DisplayImage('icons/system/newobject.gif', lang('addcontent'),'','','systemicon').'</a>';
             echo ' <a class="pageoptions" href="addcontent.php'.$urlext.'">'.lang("addcontent");
 ?>
 			</a>
-<?php 
-    } 
+<?php
+    }
 ?>
 		<a style="margin-left: 10px;" href="'.$thisurl.'&amp;expandall=1" onclick="xajax_content_expandall(); return false;">
-<?php 
+<?php
 			echo $themeObject->DisplayImage('icons/system/expandall.gif', lang('expandall'),'','','systemicon').'</a>';
 		echo ' <a class="pageoptions" href="'.$thisurl.'&amp;expandall=1" onclick="xajax_content_expandall(); return false;">'.lang("expandall");
 ?>
 			</a>&nbsp;&nbsp;&nbsp;
 		<a href="<?php echo $thisurl ?>&amp;collapseall=1" onclick="xajax_content_collapseall(); return false;">
-<?php 
+<?php
 			echo $themeObject->DisplayImage('icons/system/contractall.gif', lang('contractall'),'','','systemicon').'</a>';
 		echo ' <a class="pageoptions" href="'.$thisurl.'&amp;collapseall=1" onclick="xajax_content_collapseall(); return false;">'.lang("contractall").'</a>';
 		if (check_permission($userid, 'Manage All Content'))
@@ -1283,7 +1279,7 @@ echo '<div id="contentlist">'.display_content_list($themeObject).'</div>';
 		state = elem.checked;
 	        for (i=0; i<checkboxes.length ; i++)
 	        {
-	                if (checkboxes[i].type == "checkbox") 
+	                if (checkboxes[i].type == "checkbox")
 			  {
 			    checkboxes[i].checked=state;
 			  }

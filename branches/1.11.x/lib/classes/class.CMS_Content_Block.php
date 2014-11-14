@@ -81,7 +81,7 @@ final class CMS_Content_Block
 	  }
       }
 
-    if( !$rec['name'] ) 
+    if( !$rec['name'] )
       {
 	$rec['name'] = 'content_en';
 	$rec['id'] = 'content_en';
@@ -147,7 +147,7 @@ final class CMS_Content_Block
     foreach( $params as $key => $value )
       {
 	if( $key == 'block' )
-	  {	
+	  {
 	    $key = 'name';
 	  }
 
@@ -168,7 +168,7 @@ final class CMS_Content_Block
 	$rec['id'] = $rec['name'] = 'module_'+$n;
       }
     if( !$rec['id'] )
-      {	
+      {
 	$rec['id'] = str_replace(' ','_',$rec['name']);
       }
     $rec['params'] = $parms;
@@ -212,155 +212,133 @@ final class CMS_Content_Block
 
     $contentobj = $gCms->variables['content_obj'];
     $page_id = cmsms()->get_variable('page_id');
-    if (is_object($contentobj))
-      {
-	$id = '';
-	$modulename = '';
-	$action = '';
-	$inline = false;
-	if (isset($_REQUEST['module'])) $modulename = $_REQUEST['module'];
-	if (isset($_REQUEST['id']))
-	  {
-	    $id = $_REQUEST['id'];
-	  }
-	elseif (isset($_REQUEST['mact']))
-	  {
-	    $ary = explode(',', cms_htmlentities($_REQUEST['mact']), 4);
-	    $modulename = (isset($ary[0])?$ary[0]:'');
-	    $id = (isset($ary[1])?$ary[1]:'');
-	    $action = (isset($ary[2])?$ary[2]:'');
-	    $inline = (isset($ary[3]) && $ary[3] == 1?true:false);
-	  }
-	if (isset($_REQUEST[$id.'action'])) $action = $_REQUEST[$id.'action'];
-	else if (isset($_REQUEST['action'])) $action = $_REQUEST['action'];
+    if( is_object($contentobj) ) {
+        if( !$contentobj->IsPermitted() ) throw new CmsError403Exception();
 
-	//Only consider doing module processing if
-	//a. There is no block parameter
-	//b. then
-	//   1. $id is cntnt01 or _preview_
-	//   2. or inline is false
+        $id = '';
+        $modulename = '';
+        $action = '';
+        $inline = false;
+        if (isset($_REQUEST['module'])) $modulename = $_REQUEST['module'];
+        if (isset($_REQUEST['id'])) {
+            $id = $_REQUEST['id'];
+        }
+        elseif (isset($_REQUEST['mact'])) {
+            $ary = explode(',', cms_htmlentities($_REQUEST['mact']), 4);
+            $modulename = (isset($ary[0])?$ary[0]:'');
+            $id = (isset($ary[1])?$ary[1]:'');
+            $action = (isset($ary[2])?$ary[2]:'');
+            $inline = (isset($ary[3]) && $ary[3] == 1?true:false);
+        }
+        if (isset($_REQUEST[$id.'action'])) $action = $_REQUEST[$id.'action'];
+        else if (isset($_REQUEST['action'])) $action = $_REQUEST['action'];
 
-	if (!isset($params['block']) && ($id == 'cntnt01' || $id == '_preview_' || ($id != '' && $inline == false)))
-	  {
-	    // todo, would be neat here if we could get a list of only frontend modules.
-	    $installedmodules = ModuleOperations::get_instance()->GetInstalledModules();
-	    if( count($installedmodules) )
-	      {
-		// case insensitive module match.
-		foreach( $installedmodules  as $key )
-		  {
-		    if (strtolower($modulename) == strtolower($key))
-		      {
-			$modulename = $key;
-		      }
-		  }
-		      
-		if (!isset($modulename) || empty($modulename) )
-		  {
-		    // no module specified.
-		    @trigger_error('Attempt to call a module action, without specifying a valid module name');
-		    return self::content_return('', $params, $smarty);
-		  }
+        //Only consider doing module processing if
+        //a. There is no block parameter
+        //b. then
+        //   1. $id is cntnt01 or _preview_
+        //   2. or inline is false
 
-		$modobj = ModuleOperations::get_instance()->get_module_instance($modulename);
-		if( !$modobj )
-		  {
-		    // module not found... couldn't even autoload it.
-		    @trigger_error('Attempt to access module '.$modulename.' which could not be found (is it properly installed and configured?');
-		    return self::content_return('', $params, $smarty);
-		  }
+        if (!isset($params['block']) && ($id == 'cntnt01' || $id == '_preview_' || ($id != '' && $inline == false))) {
+            // todo, would be neat here if we could get a list of only frontend modules.
+            $installedmodules = ModuleOperations::get_instance()->GetInstalledModules();
+            if( count($installedmodules) ) {
+                // case insensitive module match.
+                foreach( $installedmodules  as $key ) {
+                    if (strtolower($modulename) == strtolower($key)) $modulename = $key;
+                }
 
-		if ($modobj->IsPluginModule() )
-		  {
-		    @ob_start();
-		    unset($params['block']);
-		    unset($params['label']);
-		    unset($params['wysiwyg']);
-		    unset($params['oneline']);
-		    unset($params['default']);
-		    unset($params['size']);
+                if (!isset($modulename) || empty($modulename) ) {
+                    // no module specified.
+                    @trigger_error('Attempt to call a module action, without specifying a valid module name');
+                    return self::content_return('', $params, $smarty);
+                }
+
+                $modobj = ModuleOperations::get_instance()->get_module_instance($modulename);
+                if( !$modobj ) {
+                    // module not found... couldn't even autoload it.
+                    @trigger_error('Attempt to access module '.$modulename.' which could not be found (is it properly installed and configured?');
+                    return self::content_return('', $params, $smarty);
+                }
+
+                if ($modobj->IsPluginModule() ) {
+                    @ob_start();
+                    unset($params['block']);
+                    unset($params['label']);
+                    unset($params['wysiwyg']);
+                    unset($params['oneline']);
+                    unset($params['default']);
+                    unset($params['size']);
                     unset($params['tab']);
-		    $params = array_merge($params, GetModuleParameters($id));
-		    $returnid = '';
-		    if (isset($params['returnid']))
-		      {
-			$returnid = $params['returnid'];
-		      }
-		    else
-		      {
-			$returnid = $contentobj->Id();
-		      }
+                    $params = array_merge($params, GetModuleParameters($id));
+                    $returnid = '';
+                    if (isset($params['returnid'])) {
+                        $returnid = $params['returnid'];
+                    }
+                    else {
+                        $returnid = $contentobj->Id();
+                    }
 
-		    $oldcache = $smarty->caching;
-		    $smarty->caching = false;
-		    $result = $modobj->DoActionBase($action, $id, $params, $returnid);
-		    $smarty->caching = $oldcache;
+                    $oldcache = $smarty->caching;
+                    $smarty->caching = false;
+                    $result = $modobj->DoActionBase($action, $id, $params, $returnid);
+                    $smarty->caching = $oldcache;
 
-		    if ($result !== FALSE)
-		      {
-			echo $result;
-		      }
-		    $modresult = @ob_get_contents();
-		    @ob_end_clean();
-		    return self::content_return($modresult, $params, $smarty);
-		  }
-		else
-		  {
-		    @trigger_error('Attempt to access module '.$key.' which could not be found (is it properly installed and configured?');
-		    return self::content_return("<!-- Not a tag module -->\n", $params, $smarty);
-		  }
-	      }
-	  }
-	else
-	  {
-	    $block = (isset($params['block']))?$params['block']:'content_en';
-	    $result = '';
+                    if ($result !== FALSE) echo $result;
+                    $modresult = @ob_get_contents();
+                    @ob_end_clean();
+                    return self::content_return($modresult, $params, $smarty);
+                }
+                else {
+                    @trigger_error('Attempt to access module '.$key.' which could not be found (is it properly installed and configured?');
+                    return self::content_return("<!-- Not a tag module -->\n", $params, $smarty);
+                }
+            }
+        }
+        else {
+            $block = (isset($params['block']))?$params['block']:'content_en';
+            $result = '';
 
-	    $oldvalue = $smarty->caching;
-	    $smarty->caching = false;
-	    if( $id == '_preview_' || $page_id == '__CMS_PREVIEW_PAGE__') {
-	      // note: content precompile/postcompile events will not be triggererd in preview.
-	      $val = $contentobj->Show($block);
-	      $result = $smarty->fetch('string:'.$val);
-	    }
-	    else {
-	      $result = $smarty->fetch(str_replace(' ', '_', 'content:' . $block), '|'.$block, $contentobj->Id().$block);
-	    }
-	    $smarty->caching = $oldvalue;
+            $oldvalue = $smarty->caching;
+            $smarty->caching = false;
+            if( $id == '_preview_' || $page_id == '__CMS_PREVIEW_PAGE__') {
+                // note: content precompile/postcompile events will not be triggererd in preview.
+                $val = $contentobj->Show($block);
+                $result = $smarty->fetch('string:'.$val);
+            }
+            else {
+                $result = $smarty->fetch(str_replace(' ', '_', 'content:' . $block), '|'.$block, $contentobj->Id().$block);
+            }
+            $smarty->caching = $oldvalue;
 
-	    return self::content_return($result, $params, $smarty);
-	  }
-      }
+            return self::content_return($result, $params, $smarty);
+        }
+    }
     return _smarty_cms_function_content_return('', $params, $smarty);
   }
 
   public static function smarty_fetch_pagedata($params,&$template)
   {
-    $smarty = $template->smarty;
-    $gCms = cmsms();
+      $smarty = $template->smarty;
+      $gCms = cmsms();
 
-    $contentobj = $gCms->variables['content_obj'];
-    if( isset($_SESSION['cms_preview_data']) && $contentobj->Id() == '__CMS_PREVIEW_PAGE__' )
-      {
-	// it's a preview.
-	if( !isset($_SESSION['cms_preview_data']['content_obj']) )
-	  {
-	    $contentops =& $gCms->GetContentOperations();
-	    $_SESSION['cms_preview_data']['content_obj'] = $contentops->LoadContentFromSerializedData($_SESSION['cms_preview_data']);
-	  }
-	$contentobj =& $_SESSION['cms_preview_data']['content_obj'];
+      $contentobj = $gCms->variables['content_obj'];
+      if( isset($_SESSION['cms_preview_data']) && $contentobj->Id() == '__CMS_PREVIEW_PAGE__' ) {
+          // it's a preview.
+          if( !isset($_SESSION['cms_preview_data']['content_obj']) ) {
+              $contentops =& $gCms->GetContentOperations();
+              $_SESSION['cms_preview_data']['content_obj'] = $contentops->LoadContentFromSerializedData($_SESSION['cms_preview_data']);
+          }
+          $contentobj =& $_SESSION['cms_preview_data']['content_obj'];
       }
-    if( !is_object($contentobj) || $contentobj->Id() <= 0 )
-      {
-	return self::content_return('', $params, $smarty);
-      }
+      if( !is_object($contentobj) || $contentobj->Id() <= 0 ) return self::content_return('', $params, $smarty);
 
-    $result = $smarty->fetch('content:pagedata','',$contentobj->Id());
-    if( isset($params['assign']) ){
-      $smarty->assign(trim($params['assign']),$result);
-      return;
-    }
-    return $result;
+      $result = $smarty->fetch('content:pagedata','',$contentobj->Id());
+      if( isset($params['assign']) ){
+          $smarty->assign(trim($params['assign']),$result);
+          return;
+      }
+      return $result;
   }
 
   public static function smarty_fetch_imageblock($params,&$template)
@@ -426,7 +404,7 @@ final class CMS_Content_Block
     if( isset($params['height']) ) $height = $params['height'];
     if( isset($params['urlonly']) ) $urlonly = true;
     if( !isset($params['alt']) ) $alt = $img;
-  
+
     $out = '';
     if( $urlonly ) {
       $out = $img;

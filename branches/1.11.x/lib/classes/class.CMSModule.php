@@ -1791,7 +1791,6 @@ abstract class CMSModule
 	  $smarty->assign('actionparams',$params);
 	  $smarty->assign('returnid',$returnid);
 	  $smarty->assign('actionmodule',$this->GetName());
-
 	  $output = $this->DoAction($name, $id, $params, $returnid);
 
 	  if( isset($params['assign']) )

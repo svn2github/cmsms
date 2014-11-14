@@ -74,7 +74,7 @@ class ContentOperations
 
 
 	/**
-	 * Given an array of content_type and seralized_content, reconstructs a 
+	 * Given an array of content_type and seralized_content, reconstructs a
 	 * content object.  It will handled loading the content type if it hasn't
 	 * already been loaded.
 	 *
@@ -145,7 +145,7 @@ class ContentOperations
 		return $result;
 	}
 
-	
+
     /**
      * Given a content id, load and return the loaded content object.
      *
@@ -404,7 +404,7 @@ class ContentOperations
 			if( $tmp )
 				$disallowed_a = explode(',',$tmp);
 		}
-			
+
 		$this->_get_content_types();
 		$types = $this->_content_types;
 		if ( isset($types) )
@@ -415,7 +415,7 @@ class ContentOperations
 					global $CMS_ADMIN_PAGE;
 					if( !isset($obj->friendlyname) && isset($obj->friendlyname_key) && isset($CMS_ADMIN_PAGE) )
 						{
-							$txt = lang($obj->friendlyname_key); 
+							$txt = lang($obj->friendlyname_key);
 							$obj->friendlyname = $txt;
 						}
 					if( !$allowed || count($disallowed_a) == 0 || !in_array($obj->type,$disallowed_a) )
@@ -512,18 +512,18 @@ class ContentOperations
 		    $this->SetHierarchyPosition($dbresult->fields['content_id']);
 			$dbresult->MoveNext();
 		}
-		
+
 		if ($dbresult) $dbresult->Close();
 		cms_content_cache::clear();
 	}
 
-	
+
 	/**
 	 * Loads a set of content objects into the cached tree.
 	 *
 	 * @param boolean $loadprops If true, load the properties of those content objects
 	 * @param boolean $onlyexpanded Not implemented
-	 * @param boolean $loadcontent If false, only create the nodes in the tree, 
+	 * @param boolean $loadcontent If false, only create the nodes in the tree,
 	 *                             don't load the content objects
 	 * @return mixed The cached tree of content
 	 */
@@ -550,13 +550,13 @@ class ContentOperations
 			if ($last_modified > 0 && $last_modified < filemtime($cachefilename))
 			{
 				debug_buffer('Content tree file needs loading');
-				
+
 				$handle = fopen($cachefilename, "r");
 				$data = fread($handle, filesize($cachefilename));
 				fclose($handle);
-				
+
 				$tree = unserialize(substr($data, 16));
-				
+
 				if (strtolower(get_class($tree)) == 'cms_content_tree')
 				{
 					$loadedcache = true;
@@ -593,7 +593,7 @@ class ContentOperations
 		return $tree;
 	}
 
-	
+
 	/**
 	 * Loads additional, active children into a given tree object
 	 *
@@ -605,7 +605,7 @@ class ContentOperations
 	 * @author Ted Kulp
 	 */
 	function LoadChildren($id, $loadprops = false, $all = false, $explicit_ids = array() )
-	{	
+	{
 		$gCms = cmsms();
 		$db = $gCms->GetDb();
 
@@ -630,7 +630,7 @@ class ContentOperations
 			$query = 'SELECT * FROM '.cms_db_prefix().'content FORCE INDEX ('.cms_db_prefix().'index_content_by_idhier) WHERE '.$expr.' ORDER BY hierarchy';
 			$contentrows = $db->GetArray($query);
 		}
-		else 
+		else
 		{
 			if( !$id ) { $id = -1; }
 			// get the content rows
@@ -654,7 +654,7 @@ class ContentOperations
 				$query = 'SELECT * FROM '.cms_db_prefix().'content_props WHERE content_id IN ('.implode(',',$child_ids).') ORDER BY content_id';
 				$tmp = $db->GetArray($query);
 			}
-				
+
 		    // re-organize the tmp data into a hash of arrays of properties for each content id.
 		    if( $tmp ) {
 				$contentprops = array();
@@ -668,7 +668,7 @@ class ContentOperations
 				unset($tmp);
 			}
 		}
-		
+
 		// build the content objects
 		for( $i = 0; $i < count($contentrows); $i++ ) {
 		    $row = $contentrows[$i];
@@ -705,7 +705,7 @@ class ContentOperations
 		$db = $gCms->GetDb();
 		$query = "SELECT content_id FROM ".cms_db_prefix()."content WHERE default_content=1";
 		$old_id = $db->GetOne($query);
-		if (isset($old_id)) 
+		if (isset($old_id))
 		{
 			$one = new Content();
 			$one->LoadFromId($old_id);
@@ -777,7 +777,7 @@ class ContentOperations
 		for( $i = 0; $i < count($contentrows); $i++ ) {
 		    $row = $contentrows[$i];
 		    $id = $row['content_id'];
-			
+
 		    if (!in_array($row['type'], array_keys($this->ListContentTypes()))) continue;
 		    $contentobj = $this->CreateNewContent($row['type']);
 
@@ -838,7 +838,7 @@ class ContentOperations
 	 * @param boolean $use_perms If true, checks authorship permissions on pages and only shows those the current
 	 *                user has access to.
 	 * @param boolean $ignore_current Ignores the value of $current totally by not marking any items as invalid.
-	 * @param boolean $allow_all If true, show all items, even if the content object 
+	 * @param boolean $allow_all If true, show all items, even if the content object
 	 *                           doesn't have a valid link. Defaults to false.
 	 * @param boolean $use_name if true use Name() else use MenuText() Defaults to using the system preference.
 	 * @return string The html dropdown of the hierarchy
@@ -860,7 +860,7 @@ class ContentOperations
 			  {
 			    $userid = get_userid();
 			  }
-			if( ($userid > 0 && check_permission($userid,'Manage All Content')) || 
+			if( ($userid > 0 && check_permission($userid,'Manage All Content')) ||
 			    $userid == -1 ||
 			    $parent == -1 )
 			  {
@@ -877,7 +877,7 @@ class ContentOperations
 			      // Grab hierarchy just in case we need to check children
 			      // (which will always be after)
 			      $curhierarchy = $one->Hierarchy();
-			      
+
 			      if( !$allowcurrent )
 				{
 				  // Then jump out.  We don't want ourselves in the list.
@@ -895,8 +895,8 @@ class ContentOperations
 
 			  // If it's a child of the current, we don't want to show it as it
 			  // could cause a deadlock.
-			  if (!$allowcurrent && 
-			      $curhierarchy != '' && 
+			  if (!$allowcurrent &&
+			      $curhierarchy != '' &&
 			      strstr($one->Hierarchy() . '.', $curhierarchy . '.') == $one->Hierarchy() . '.')
 			    {
 			      continue;
@@ -906,18 +906,18 @@ class ContentOperations
                           // has write access... or is an admin user... or has appropriate permission.
 			  if( $userid > 0 && $one->Id() != $parent)
 			    {
-			      if( !check_permission($userid,'Manage All Content') && 
+			      if( !check_permission($userid,'Manage All Content') &&
 				  !check_authorship($userid,$one->Id()) )
 				{
 				  continue;
 				}
-			    }				
+			    }
 
 			  // Don't include content types that do not want children either...
 			  if (!$one->WantsChildren()) continue;
 			  {
 			    $result .= '<option value="'.$value.'"';
-			    
+
 			    // Select current parent if it exists
 			    if ($one->Id() == $parent)
 			      {
@@ -984,11 +984,11 @@ class ContentOperations
 		{
 			return false;
 		}
-		
+
 		return $row['content_id'];
 	}
 
-	
+
 	/**
 	 * Returns the content id given a valid hierarchical position.
 	 *
@@ -1083,7 +1083,7 @@ class ContentOperations
 
 		return $error;
 	}
-	
+
 	/**
 	 * Clears the content cache
 	 *
@@ -1123,7 +1123,7 @@ class ContentOperations
 		#Change padded numbers back into user-friendly values
 		$tmp = '';
     $levels = preg_split('/\./', $position);
-    
+
 		foreach ($levels as $onelevel)
 		{
 			$tmp .= ltrim($onelevel, '0') . '.';
@@ -1143,9 +1143,9 @@ class ContentOperations
 	{
 		#Change user-friendly values into padded numbers
 		$tmp = '';
-        
+
     $levels = preg_split('/\./', $position);
-    
+
 		foreach ($levels as $onelevel)
 		{
 			$tmp .= str_pad($onelevel, 5, '0', STR_PAD_LEFT) . '.';

@@ -43,10 +43,9 @@ if( isset($CMS_ADMIN_PAGE) || isset($CMS_INSTALL_PAGE) )
     header("Cache-Control: post-check=0, pre-check=0", false);
     header("Pragma: no-cache");
   }
-else
-  {
+else {
     @session_cache_limiter('public');
-  }
+}
 
 if(!@session_id()) session_start();
 
@@ -97,14 +96,14 @@ if( isset($CMS_ADMIN_PAGE) )
 
       // always modified
       header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
- 
+
       // HTTP/1.1
       header("Cache-Control: no-store, no-cache, must-revalidate");
       header("Cache-Control: post-check=0, pre-check=0", false);
 
       // HTTP/1.0
       header("Pragma: no-cache");
-        
+
       // Language shizzle
       header("Content-Type: $content_type; charset=$charset");
     }
@@ -265,7 +264,7 @@ if (! isset($CMS_INSTALL_PAGE))
   }
 
 #Setup language stuff.... will auto-detect languages (Launch only to admin at this point)
-if(isset($CMS_ADMIN_PAGE)) 
+if(isset($CMS_ADMIN_PAGE))
 	CmsNlsOperations::set_language();
 
 $CMS_LAZYLOAD_MODULES = 1; // still used ??

@@ -976,6 +976,17 @@ abstract class ContentBase
       return TRUE;
     }
 
+    /**
+     * Indicates wether the current user is permitted to view this content page.
+     *
+     * @abstract
+     * @return boolean
+     */
+    public function IsPermitted()
+    {
+      return TRUE;
+    }
+
 
     /**
      * Set the page alias for this content page.
@@ -1007,8 +1018,7 @@ abstract class ContentBase
 	  // Make sure auto-generated new alias is not already in use on a different page, if it does, add "-2" to the alias
 	  $contentops = $gCms->GetContentOperations();
 	  $error = $contentops->CheckAliasError($alias, $this->Id());
-	  if ($error !== FALSE)
-	    {
+	  if ($error !== FALSE) {
 	      if (FALSE == empty($alias))
 		{
 		  $alias_num_add = 2;

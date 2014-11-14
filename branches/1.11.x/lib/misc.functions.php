@@ -39,7 +39,7 @@ function redirect($to, $noappend=false)
   $_SERVER['PHP_SELF'] = null;
 
   $schema = 'http';
-  if( isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off' ) $schema = 'https';
+  if( cmsms()->is_https_request() ) $schema = 'https';
 
   $host = strlen($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:$_SERVER['SERVER_NAME'];
 

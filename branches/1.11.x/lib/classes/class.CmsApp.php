@@ -160,7 +160,7 @@ final class CmsApp {
 		}
 	}
 
-	
+
 	/**
 	 * Set the value of an internal variable
 	 *
@@ -201,7 +201,7 @@ final class CmsApp {
 	 *
 	 * @since 1.9
 	 * @param string Module Name.
-	 * @param string (optional) version number for a check.  
+	 * @param string (optional) version number for a check.
 	 * @return object Reference to the module object, or null.
 	 * @deprecated
 	 */
@@ -228,7 +228,7 @@ final class CmsApp {
 		{
 			$this->db = adodb_connect();
 		}
-		
+
 		return $this->db;
 	}
 
@@ -244,7 +244,7 @@ final class CmsApp {
 		return cms_config::get_instance();
 	}
 
-	
+
 	/**
 	* Get a handle to the CMS ModuleOperations object. If it does not yet
 	* exist, this method will instantiate it.
@@ -258,7 +258,7 @@ final class CmsApp {
 		return ModuleOperations::get_instance();
 	}
 
-	
+
 	/**
 	* Get a handle to the CMS UserOperations object. If it does not yet
 	* exist, this method will instantiate it.
@@ -271,7 +271,7 @@ final class CmsApp {
 	{
 		return UserOperations::get_instance();
 	}
-	
+
 	/**
 	* Get a handle to the CMS ContentOperations object. If it does not yet
 	* exist, this method will instantiate it. To disambiguate, this is a globally-available
@@ -294,7 +294,7 @@ final class CmsApp {
 	* @final
 	* @see BookmarkOperations
 	* @return BookmarkOperations handle to the BookmarkOperations object, useful only in the admin
-	*/	
+	*/
 	public function & GetBookmarkOperations()
 	{
         if (!isset($this->bookmarkoperations))
@@ -304,7 +304,7 @@ final class CmsApp {
 
 		return $this->bookmarkoperations;
 	}
-	
+
 	/**
 	* Get a handle to the CMS TemplateOperations object. If it does not yet
 	* exist, this method will instantiate it.
@@ -326,12 +326,12 @@ final class CmsApp {
 	* @final
 	* @see StylesheetOperations
 	* @return StylesheetOperations handle to the StylesheetOperations object
-	*/	
+	*/
 	public function & GetStylesheetOperations()
 	{
 		return StylesheetOperations::get_instance();
 	}
-	
+
 	/**
 	* Get a handle to the CMS GroupOperations object. If it does not yet
 	* exist, this method will instantiate it.
@@ -349,7 +349,7 @@ final class CmsApp {
 
 		return $this->groupoperations;
 	}
-	
+
 	/**
 	* Get a handle to the CMS GlobalContentOperations object. If it does not yet
 	* exist, this method will instantiate it. To disambiguate, this object has methods
@@ -365,7 +365,7 @@ final class CmsApp {
 		return GlobalContentOperations::get_instance();
 	}
 
-	
+
 	/**
 	* Get a handle to the CMS UserTagOperations object. If it does not yet
 	* exist, this method will instantiate it.
@@ -390,8 +390,8 @@ final class CmsApp {
 	* @return Smarty_CMS handle to the Smarty object
 	*/
 	public function & GetSmarty()
-	{	
-		return Smarty_CMS::get_instance();	
+	{
+		return Smarty_CMS::get_instance();
 	}
 
 	/**
@@ -473,14 +473,14 @@ final class CmsApp {
 	 * @internal
 	 * @since 1.11.3
 	 * @author Tapio Löytty
-	 * @return Smarty_Parser handle to the Smarty object	 
+	 * @return Smarty_Parser handle to the Smarty object
 	 * @ignore
 	 */
 	final public function & get_template_parser()
-	{	
+	{
 		return Smarty_Parser::get_instance();
 	}
-	
+
 	/**
 	 * Set all known states from global variables.
 	 *
@@ -497,20 +497,20 @@ final class CmsApp {
 			global $CMS_STYLESHEET;
 
 			$this->_states = array();
-			
-			if( isset($CMS_ADMIN_PAGE) ) 
+
+			if( isset($CMS_ADMIN_PAGE) )
 				$this->_states[] = self::STATE_ADMIN_PAGE;
-						
-			if( isset($CMS_INSTALL_PAGE) ) 
+
+			if( isset($CMS_INSTALL_PAGE) )
 				$this->_states[] = self::STATE_INSTALL;
-			
+
 			if( isset($CMS_STYLESHEET) )
 				$this->_states[] = self::STATE_STYLESHEET;
-			
+
 		}
 	}
 
-    /** 
+    /**
 	 * Test if the current application state matches the requested value.
 
 	 * This method will throw an exception if invalid data is passed in.
@@ -605,6 +605,19 @@ final class CmsApp {
 		}
 		return FALSE;
 	}
+
+
+    /** A convenience method to test if the current request was over HTTPS.
+     *
+	 * @since 1.11.12
+	 * @author Robert Campbell
+	 * @return boolean
+	 */
+    public function is_https_request()
+    {
+        if( isset($_SERVER['HTTPS']) && !empty($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) != 'off' ) return TRUE;
+        return FALSE;
+    }
 }
 
 

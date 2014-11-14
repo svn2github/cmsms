@@ -26,7 +26,7 @@ require_once($dirname.'/fileloc.php');
  * Entry point for all non-admin pages
  *
  * @package CMS
- */	
+ */
 
 $starttime = microtime();
 clearstatcache();
@@ -68,7 +68,7 @@ if (!is_writable(TMP_TEMPLATES_C_LOCATION) || !is_writable(TMP_CACHE_LOCATION))
 	exit;
 }
 
-require_once($dirname.'/include.php'); 
+require_once($dirname.'/include.php');
 @ob_start();
 
 // initial setup
@@ -87,7 +87,7 @@ while( $trycount < 2 )
 
 try {
 
-	if( !is_object($contentobj) ) 
+	if( !is_object($contentobj) )
 	{
 		if( $page == '__CMS_PREVIEW_PAGE__' && isset($_SESSION['cms_preview']) ) // temporary
 		{
@@ -121,11 +121,12 @@ try {
 			$contentobj = $contentops->LoadContentFromAlias($page,true);
 		}
 	}
-	
+
 	if( !is_object($contentobj) )
 	{
 		throw new CmsError404Exception('Page '.$page.' not found');
-	}
+    }
+
 	//debug_display('got content '.$contentobj->Alias());
 
 	// from here in, we're assured to have a content object.
@@ -140,17 +141,20 @@ try {
 		throw new CmsError404Exception('Cannot view an unviewable page');
 	}
 
-	if( $contentobj->Secure() && (! isset($_SERVER['HTTPS']) || empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off') )
+	if( $contentobj->Secure() && !cmsms()->is_https_request() )
 	{
 		// if this page is marked to be secure, make sure we redirect to the secure page.
 		redirect($contentobj->GetURL());
 	}
 
+    if( !$contentobj->IsPermitted() ) {
+        throw new CmsError403Exception('Permission denied');
+    }
+
 	$allow_cache = (int)get_site_preference('allow_browser_cache',0);
 	$expiry = (int)max(0,get_site_preference('browser_cache_expiry',60));
 	$expiry *= $allow_cache;
-	if( $_SERVER['REQUEST_METHOD'] == 'POST' || !$contentobj->Cachable() ||$page == '__CMS_PREVIEW_PAGE__' || $expiry == 0 )
-	{
+	if( $_SERVER['REQUEST_METHOD'] == 'POST' || !$contentobj->Cachable() ||$page == '__CMS_PREVIEW_PAGE__' || $expiry == 0 ) {
 		// Here we adjust headers for non cachable pages
 		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
 		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
@@ -158,9 +162,8 @@ try {
 		header("Cache-Control: post-check=0, pre-check=0", false);
 		header("Pragma: no-cache");
 	}
-	else
-	{
-		// as far as we know, the output is cachable at this point... 
+	else {
+		// as far as we know, the output is cachable at this point...
 		// so we mark it so that the output can be cached.
 		header('Expires: '.gmdate("D, d M Y H:i:s",time() + $expiry * 60).' GMT');
 		$the_date = time();
@@ -174,7 +177,7 @@ try {
 	cmsms()->set_variable('content_obj',$contentobj);
 	$smarty->assign('content_obj',$contentobj);
 
-	if( $contentobj->Secure() && (! isset($_SERVER['HTTPS']) || empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off') )
+	if( $contentobj->Secure() && !cmsms()->is_https_request() )
 	{
 		// if this page is marked to be secure, make sure we redirect to the secure page.
 		redirect($contentobj->GetURL());
@@ -195,18 +198,18 @@ try {
 	$smarty->assign('page_alias', $contentobj->Alias());
 	$smarty->assign('position', $contentobj->Hierarchy());
 	$smarty->assign('friendly_position', $gCms->variables['friendly_position']);
-	
+
 	CmsNlsOperations::set_language(); // <- NLS detection for frontend
 	$smarty->assign('lang',CmsNlsOperations::get_current_language());
 	$smarty->assign('encoding',CmsNlsOperations::get_encoding());
 
 	$html = '';
-	$showtemplate = true; 
-	
-	if ((isset($_REQUEST['showtemplate']) && 
-	     $_REQUEST['showtemplate'] == 'false') || 
-		(isset($smarty->id) && $smarty->id != '' && 
-		 isset($_REQUEST[$smarty->id.'showtemplate']) 
+	$showtemplate = true;
+
+	if ((isset($_REQUEST['showtemplate']) &&
+	     $_REQUEST['showtemplate'] == 'false') ||
+		(isset($smarty->id) && $smarty->id != '' &&
+		 isset($_REQUEST[$smarty->id.'showtemplate'])
 		&& $_REQUEST[$smarty->id.'showtemplate'] == 'false'))
 	{
 		$showtemplate = false;
@@ -235,31 +238,31 @@ try {
 		//debug_display('display content '.$contentobj->Alias().' '.$page);
 		debug_buffer('process template top');
 		$top  = $smarty->fetch('tpl_top:'.$contentobj->TemplateId());
-		
+
 		debug_buffer('process template body');
 		$body = $smarty->fetch('tpl_body:'.$contentobj->TemplateId());
-		
+
 		debug_buffer('process template head');
 		$head = $smarty->fetch('tpl_head:'.$contentobj->TemplateId());
-		
-		$html = $top.$head.$body;		
+
+		$html = $top.$head.$body;
 		$trycount = 99; // no more iterations.
 	}
-} 
-catch (SmartyCompilerException $e) // <- Catch Smarty compile errors 
+}
+catch (SmartyCompilerException $e) // <- Catch Smarty compile errors
 {
-	$handlers = ob_list_handlers(); 
-	for ($cnt = 0; $cnt < sizeof($handlers); $cnt++) { ob_end_clean(); }
-	echo $smarty->errorConsole($e);	
-	return;
-} 
-catch (SmartyException $e) // <- Catch rest of Smarty errors
-{
-	$handlers = ob_list_handlers(); 
+	$handlers = ob_list_handlers();
 	for ($cnt = 0; $cnt < sizeof($handlers); $cnt++) { ob_end_clean(); }
 	echo $smarty->errorConsole($e);
 	return;
-}	
+}
+catch (SmartyException $e) // <- Catch rest of Smarty errors
+{
+	$handlers = ob_list_handlers();
+	for ($cnt = 0; $cnt < sizeof($handlers); $cnt++) { ob_end_clean(); }
+	echo $smarty->errorConsole($e);
+	return;
+}
 catch (CmsError404Exception $e) // <- Catch CMSMS 404 error
 {
 	//debug_display('handle 404 exception '.$e->getFile().' at '.$e->getLine().' -- '.$e->getMessage());
@@ -269,7 +272,7 @@ catch (CmsError404Exception $e) // <- Catch CMSMS 404 error
 	unset($_REQUEST['mact']);
 	unset($_REQUEST['module']);
 	unset($_REQUEST['action']);
-	$handlers = ob_list_handlers(); 
+	$handlers = ob_list_handlers();
 	for ($cnt = 0; $cnt < sizeof($handlers); $cnt++) { ob_end_clean(); }
 
 	// specified page not found, load the 404 error page.
@@ -277,16 +280,75 @@ catch (CmsError404Exception $e) // <- Catch CMSMS 404 error
 	if( is_object($contentobj) )
 	{
 		// we have a 404 error page.
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		header("Cache-Control: no-store, no-cache, must-revalidate");
+		header("Cache-Control: post-check=0, pre-check=0", false);
+		header("Pragma: no-cache");
+
 		header("HTTP/1.0 404 Not Found");
 		header("Status: 404 Not Found");
 	}
 	else
 	{
 		// no 404 error page.
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		header("Cache-Control: no-store, no-cache, must-revalidate");
+		header("Cache-Control: post-check=0, pre-check=0", false);
+		header("Pragma: no-cache");
+
 		ErrorHandler404();
 		return;
 	}
 }
+catch (CmsError403Exception $e) // <- Catch CMSMS 403 error
+{
+	//debug_display('handle 404 exception '.$e->getFile().' at '.$e->getLine().' -- '.$e->getMessage());
+	// 404 error thrown... gotta do this process all over again.
+	$page = 'error403';
+	$showtemplate = true;
+	unset($_REQUEST['mact']);
+	unset($_REQUEST['module']);
+	unset($_REQUEST['action']);
+	$handlers = ob_list_handlers();
+	for ($cnt = 0; $cnt < sizeof($handlers); $cnt++) { ob_end_clean(); }
+
+	// specified page not found, load the 404 error page.
+	$contentobj = $contentops->LoadContentFromAlias('error403',true);
+	if( is_object($contentobj) )
+	{
+		// we have a 403 error page.
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		header("Cache-Control: no-store, no-cache, must-revalidate");
+		header("Cache-Control: post-check=0, pre-check=0", false);
+		header("Pragma: no-cache");
+
+		header("HTTP/1.0 403 Forbidden");
+		header("Status: 403 Forbidden");
+	}
+	else
+	{
+		@ob_end_clean();
+		header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+		header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
+		header("Cache-Control: no-store, no-cache, must-revalidate");
+		header("Cache-Control: post-check=0, pre-check=0", false);
+		header("Pragma: no-cache");
+		header("HTTP/1.0 403 Forbidden");
+		header("Status: 403 Forbidden");
+		echo '<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML 2.0//EN">
+<html><head>
+<title>403 Forbidden</title>
+</head><body>
+<h1>Forbidden</h1>
+<p>We are sorry, but you do not have the appropriate permission to view this item.</p>
+</body></html>';
+		exit();
+    }
+}
+
 } // while trycount
 
 Events::SendEvent('Core', 'ContentPostRender', array('content' => &$html));
@@ -329,7 +391,7 @@ if( is_sitedown() || $config['debug'] == true)
 if ( !is_sitedown() && $config["debug"] == true)
 {
 	#$db->LogSQL(false); // turn off logging
-	
+
 	# output summary of SQL logging results
 	#$perf = NewPerfMonitor($db);
 	#echo $perf->SuspiciousSQL();
