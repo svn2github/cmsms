@@ -72,10 +72,7 @@ class cms_url
   {
     $this->_orig = $url;
     $this->_parts = parse_url($url);
-    if( ($str = $this->get_query()) )
-      {
-	$this->_query = parse_str($str);
-      }
+    if( ($str = $this->get_query()) ) parse_str($str,$this->_query);
   }
 
   /**
@@ -83,10 +80,7 @@ class cms_url
    */
   private function _get_part($key)
   {
-    if( isset($this->_parts[$key]) )
-      {
-	return $this->_parts[$key];
-      }
+    if( isset($this->_parts[$key]) ) return $this->_parts[$key];
   }
 
   /**
