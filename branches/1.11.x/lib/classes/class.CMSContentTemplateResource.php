@@ -67,6 +67,9 @@ class CMSContentTemplateResource extends CMS_Fixed_Resource_Custom
             if (isset($contentobj) && $contentobj !== FALSE) {
                 $source = $contentobj->Show($name);
                 $mtime = $contentobj->GetModifiedDate();
+                if( !$contentobj->Cachable() ) {
+                    $mtime = time()+1;
+                }
 
                 // So no one can do anything nasty, take out the php smarty tags.  Use a user
                 // defined plugin instead.
