@@ -448,7 +448,12 @@ abstract class CMSModule
 
 	/**
 	 * Returns a sufficient help page for a module
-	 * this function should not be overridden
+	 * this function should not be overridden.
+     *
+     * Note: New for CMSMS 1.11.12 - If the global variable CMSMS_GENERATING_XML is set
+     * it indicates that the help output will be stored in an XML file.  This variable
+     * can be used to check wether advanced html output (like links to other documents)
+     * should be generated.
 	 *
 	 * @return string The help page HTML text.
 	 * @final
@@ -941,7 +946,7 @@ abstract class CMSModule
 	 * Register a bulk content action
 	 *
 	 * For use in the CMSMS content list this method allows a module to
-         * register a bulk content action.
+     * register a bulk content action.
 	 *
 	 * @final
 	 * @param string A label for the action
@@ -3519,8 +3524,8 @@ abstract class CMSModule
 	 * @return string dashboard-content
 	 */
 	function GetDashboardOutput()
-        {
-	  return '';
+    {
+        return '';
 	}
 
 
