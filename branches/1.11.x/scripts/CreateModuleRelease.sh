@@ -206,6 +206,8 @@ if [ $_doc = 1 -a -r phpdoc.xml ]; then
 	echo "INFO: generating phpdocs. Output from this command will be stored in $_o";
 	phpdoc --defaultpackagename $_name --title "${_tpl}" > $_o;
     fi
+else
+    _excludes="$_excludes apidoc apidocs"
 fi
 
 # do an svn update
