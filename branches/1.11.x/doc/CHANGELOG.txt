@@ -2,6 +2,8 @@ Version 1.11.12 - No Name Set
 -----------------------------
 Core - General
   - Fixes ShowMessage() and ShowErrors() when using the NCleanGray admin theme
+  - now determine SSL requests in a centralized, and consistent manner.
+  - dynamic root_url calculations now correctly determine schema.
   - Using HTTPS by default now works for new pages.
   - Minor fix for default content type selection when loading an object.
   - Rationalize HTTPS request detection

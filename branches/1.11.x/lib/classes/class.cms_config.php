@@ -247,7 +247,9 @@ class cms_config implements ArrayAccess
 				  $path = substr($path,0,$pos);
 			  }
 		  }
-		  $str = 'http://'.$_SERVER['HTTP_HOST'].$path;
+		  $prefix = 'http://';
+		  if( cmsms()->is_https_request() ) $prefix = 'https://';
+		  $str = $prefix.$_SERVER['HTTP_HOST'].$path;
 		  $this->_cache[$key] = $str;
 		  return $str;
 		  break;
