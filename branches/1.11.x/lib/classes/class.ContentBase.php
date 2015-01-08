@@ -979,6 +979,7 @@ abstract class ContentBase
     /**
      * Indicates wether the current user is permitted to view this content page.
      *
+     * @since 1.11.12
      * @abstract
      * @return boolean
      */
