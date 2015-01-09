@@ -7,7 +7,7 @@
 // Version     : 1.0.000
 // License     : GNU LGPL (http://www.gnu.org/copyleft/lesser.html)
 //
-// Description : This is a PHP4 function that redefine the 
+// Description : This is a PHP4 function that redefine the
 //               standard html_entity_decode function to support
 //               UTF-8 encoding.
 //
@@ -303,8 +303,14 @@ function cms_html_entity_decode($text_to_convert) {
 		"&lt;" => "<"
 	);
 	$return_text = strtr($text_to_convert, $htmlentities_table);
-	$return_text = preg_replace('~&#x([0-9a-f]+);~ei', 'code_to_utf8(hexdec("\\1"))', $return_text);
-	$return_text = preg_replace('~&#([0-9]+);~e', 'code_to_utf8("\\1")', $return_text);
+	$return_text = preg_replace_callback('~&#x([0-9a-f]+);~i',
+					     function($matches) {
+					       __code_to_utf8($matches[1]);
+					     }, $return_text);
+	$return_text = preg_replace_callback('~&#([0-9]+);~',
+					     function($matches) {
+					       __code_to_utf8($matches[1]);
+					     }, $return_text);
 	return $return_text;
 }
 

@@ -679,8 +679,8 @@ function cms_module_CreateInputSelectList(&$modinstance, $id, $name, $items, $se
   $size = cms_htmlentities($size);
   $multiple = cms_htmlentities($multiple);
 
-  if( strstr($name,'[]') === FALSE && $multiple === true )
-    {
+
+  if( strstr($name,'[]') === FALSE && $multiple ) {
       $name.='[]';
     }
   $text = '<select class="cms_select" name="'.$id.$name.'"';
@@ -698,8 +698,8 @@ function cms_module_CreateInputSelectList(&$modinstance, $id, $name, $items, $se
 	{
 	  $value = cms_htmlentities($value);
 
-		$text .= '<option value="'.$value.'"';
-		if (in_array($value, $selecteditems))
+        $text .= '<option value="'.$value.'"';
+        if (is_array($selecteditems) && in_array($value, $selecteditems))
 		{
 			$text .= ' ' . 'selected="selected"';
 		}
