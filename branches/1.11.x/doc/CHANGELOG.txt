@@ -1,5 +1,5 @@
-Version 1.11.12 - No Name Set
------------------------------
+Version 1.11.12 - Seymour Norte
+--------------------------------
 Core - General
   - Fixes ShowMessage() and ShowErrors() when using the NCleanGrey Admin theme
   - now determine SSL requests in a centralized, and consistent manner

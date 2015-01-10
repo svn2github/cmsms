@@ -18,8 +18,8 @@
 #
 #$Id$
 
-$CMS_VERSION = "1.11.12-alpha1";
-$CMS_VERSION_NAME = "San Cristobal";
+$CMS_VERSION = "1.11.12";
+$CMS_VERSION_NAME = "Seymour Norte";
 $CMS_SCHEMA_VERSION = "37";
 
 define('CMS_VERSION', $CMS_VERSION);
