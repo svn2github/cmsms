@@ -26,7 +26,7 @@
  * @param $num unicode value to convert.
  * @return string converted
  */
-function code_to_utf8($num) {
+function __code_to_utf8($num) {
 	if ($num <= 0x7F) {
 		return chr($num);
 	} elseif ($num <= 0x7FF) {
