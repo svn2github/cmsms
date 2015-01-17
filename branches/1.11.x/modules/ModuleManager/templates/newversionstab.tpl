@@ -22,7 +22,7 @@
 	</thead>
 	<tbody>
 {foreach from=$items item=entry}
-		<tr class="{$entry->rowclass}">
+			<tr class="{$entry->rowclass|default:''}">
 			<td>{$entry->name|default:''}</td>
 			<td>{$entry->version|default:''}</td>
 			<td>{if isset($entry->haveversion)}{$entry->haveversion}{/if}</td>
