@@ -513,6 +513,7 @@ final class ModuleOperations
 		  if( is_array($deps) && count($deps) ) {
 			  $res = true;
 			  foreach( $deps as $name => $ver ) {
+				  if( $name == $module_name ) continue; // module cannot depend on itself.
 				  // this is the start of a recursive routine.
 				  // get_module_instance may call _load_module.
 				  $obj2 = $this->get_module_instance($name,$ver);
